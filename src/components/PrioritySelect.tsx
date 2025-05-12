@@ -17,13 +17,18 @@ const priorities = [
 export default function PrioritySelect({ value, onChange, disabled = false }: PrioritySelectProps) {
   const selectedPriority = priorities.find(p => p.value === value) || priorities[2];
   
+  const handleValueChange = (val: string) => {
+    const numericValue = parseInt(val, 10);
+    onChange(numericValue);
+  };
+  
   return (
     <Select 
       value={value.toString()} 
-      onValueChange={(val) => onChange(parseInt(val))}
+      onValueChange={handleValueChange}
       disabled={disabled}
     >
-      <SelectTrigger>
+      <SelectTrigger className="w-full">
         <SelectValue>
           <Badge className={selectedPriority.className}>
             {selectedPriority.label}

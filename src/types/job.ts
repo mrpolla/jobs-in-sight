@@ -32,17 +32,61 @@ export interface Job {
   interview_notes?: string;
   rating_match?: number;
   last_updated: string;
+  hidden?: boolean;
+  cv_match?: {
+    overall_match_percentage: number;
+    tech_stack_match: {
+      score: number;
+      matched_skills: string[];
+      missing_skills: string[];
+      transferable_skills: string[];
+    };
+    experience_match: {
+      score: number;
+      years_required: number;
+      years_experience: number;
+      domain_match: string;
+      domain_overlap: string[];
+      role_similarity: string;
+    };
+    seniority_match: {
+      score: number;
+      alignment: string;
+      notes: string;
+    };
+    industry_match: {
+      score: number;
+      familiarity: string;
+      transferable_experience: string;
+    };
+    project_match: {
+      score: number;
+      similar_projects: string[];
+      environment_similarity: string;
+    };
+    compensation_alignment: {
+      score: number;
+      notes: string;
+    };
+    location_compatibility: {
+      score: number;
+      notes: string;
+    };
+  };
+  match_summary?: string;
+  match_score?: number;
 }
 
 export type JobStatus = 'New' | 'Applied' | 'Interview' | 'Rejected' | 'Offer';
 
 export type SortField = 'position' | 'company' | 'location' | 'status' | 'priority_level' | 
-  'tech_stack' | 'project_or_product' | 'remote_policy' | 'possible_salary' | 'start_date' | 'last_updated';
+  'tech_stack' | 'project_or_product' | 'remote_policy' | 'possible_salary' | 'start_date' | 'last_updated' | 'match_score';
 
 export interface JobFilters {
   status?: JobStatus | 'All';
   priority?: number | 'All';
   search?: string;
+  hideHidden?: boolean;
 }
 
 export interface JobSort {

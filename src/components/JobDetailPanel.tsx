@@ -1,8 +1,9 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { Job, JobStatus } from '@/types/job';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { X, Pen, Trash } from 'lucide-react';
+import { X, Pen, Trash, EyeOff, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
@@ -11,6 +12,7 @@ import PrioritySelect from './PrioritySelect';
 import { updateJob, deleteJob } from '@/lib/storage';
 import { toast } from 'sonner';
 import DeleteConfirmationDialog from './DeleteConfirmationDialog';
+import { Progress } from './ui/progress';
 
 interface JobDetailPanelProps {
   job: Job | null;
@@ -24,7 +26,18 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
   const [notes, setNotes] = useState(job?.interview_notes || '');
   const [status, setStatus] = useState<JobStatus>(job?.status || 'New');
   const [priority, setPriority] = useState<number>(job?.priority_level || 3);
+  const [hidden, setHidden] = useState<boolean>(job?.hidden || false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  // Update state when job changes
+  useEffect(() => {
+    if (job) {
+      setNotes(job.interview_notes || '');
+      setStatus(job.status);
+      setPriority(job.priority_level);
+      setHidden(job.hidden || false);
+    }
+  }, [job]);
 
   console.log("Side panel rendered with job:", job);
 
@@ -49,6 +62,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
       interview_notes: notes,
       status,
       priority_level: priority,
+      hidden,
       last_updated: new Date().toISOString()
     };
     
@@ -86,6 +100,21 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
     }
   };
 
+  const handleToggleHidden = () => {
+    const newHidden = !hidden;
+    setHidden(newHidden);
+    if (!editMode) {
+      const updatedJob: Job = {
+        ...job,
+        hidden: newHidden,
+        last_updated: new Date().toISOString()
+      };
+      updateJob(updatedJob);
+      onJobUpdated(updatedJob);
+      toast.success(newHidden ? 'Job hidden' : 'Job unhidden');
+    }
+  };
+
   const handleDelete = () => {
     setShowDeleteConfirm(true);
   };
@@ -103,16 +132,32 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
     setShowDeleteConfirm(false);
   };
 
+  // Get match color based on score
+  const getMatchScoreColor = (score?: number) => {
+    if (!score) return '';
+    if (score >= 80) return 'bg-green-500';
+    if (score >= 60) return 'bg-amber-500';
+    return 'bg-red-500';
+  };
+
   return (
     <>
-      <div className="side-panel w-full sm:w-[500px]">
-        <div className="p-6">
+      <div className="side-panel w-full sm:w-[500px] bg-background shadow-xl border-l">
+        <div className="p-6 relative">
           <div className="flex justify-between items-start mb-4">
             <div>
               <h2 className="text-2xl font-bold">{job.position}</h2>
               <h3 className="text-xl text-muted-foreground">{job.company}</h3>
             </div>
             <div className="flex gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handleToggleHidden}
+                title={hidden ? "Show job" : "Hide job"}
+              >
+                {hidden ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+              </Button>
               <Button variant="ghost" size="icon" onClick={() => setEditMode(!editMode)}>
                 <Pen className="h-4 w-4" />
               </Button>
@@ -143,6 +188,41 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
               />
             </div>
           </div>
+
+          {/* Match Score Section */}
+          {(job.match_score || job.cv_match) && (
+            <div className="mb-6 p-4 bg-muted rounded-lg">
+              <div className="flex items-center justify-between">
+                <h3 className="font-medium">CV Match Score</h3>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white ${getMatchScoreColor(job.match_score || job.cv_match?.overall_match_percentage)}`}>
+                  {job.match_score || job.cv_match?.overall_match_percentage || 'N/A'}
+                </div>
+              </div>
+              
+              {job.match_summary && (
+                <p className="text-sm mt-2">{job.match_summary}</p>
+              )}
+              
+              {job.cv_match && (
+                <div className="mt-3 space-y-2">
+                  <div>
+                    <div className="flex justify-between text-xs">
+                      <span>Tech Stack</span>
+                      <span>{job.cv_match.tech_stack_match.score}%</span>
+                    </div>
+                    <Progress value={job.cv_match.tech_stack_match.score} className="h-1.5" />
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs">
+                      <span>Experience</span>
+                      <span>{job.cv_match.experience_match.score}%</span>
+                    </div>
+                    <Progress value={job.cv_match.experience_match.score} className="h-1.5" />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           <Tabs defaultValue="overview">
             <TabsList className="w-full">
@@ -259,10 +339,26 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 <div>
                   <p className="text-sm text-muted-foreground">Tech Stack</p>
                   <div className="flex flex-wrap gap-1 mt-1">
-                    {job.tech_stack.map((tech, index) => (
-                      <Badge key={index} variant="secondary">{tech}</Badge>
-                    ))}
+                    {job.tech_stack.map((tech, index) => {
+                      const isMatched = job.cv_match?.tech_stack_match?.matched_skills?.includes(tech);
+                      return (
+                        <Badge 
+                          key={index} 
+                          variant={isMatched ? "default" : "secondary"}
+                          className={isMatched ? "bg-green-600" : ""}
+                        >
+                          {tech}
+                          {isMatched && " ✓"}
+                        </Badge>
+                      );
+                    })}
                   </div>
+                  
+                  {job.cv_match?.tech_stack_match?.matched_skills && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      ✓ indicates skills matching your CV
+                    </p>
+                  )}
                 </div>
               )}
               
@@ -338,6 +434,59 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+              
+              {/* CV Match details if available */}
+              {job.cv_match && (
+                <div className="border rounded-md p-3 mt-4">
+                  <p className="text-sm font-medium mb-2">CV Match Details</p>
+                  
+                  {job.cv_match.tech_stack_match?.missing_skills?.length > 0 && (
+                    <div className="mb-2">
+                      <p className="text-xs text-muted-foreground">Missing Skills</p>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {job.cv_match.tech_stack_match.missing_skills.map((skill, i) => (
+                          <Badge key={i} variant="outline" className="text-destructive border-destructive">
+                            {skill}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {job.cv_match.tech_stack_match?.transferable_skills?.length > 0 && (
+                    <div>
+                      <p className="text-xs text-muted-foreground">Transferable Skills</p>
+                      <ul className="text-sm list-disc list-inside">
+                        {job.cv_match.tech_stack_match.transferable_skills.map((skill, i) => (
+                          <li key={i}>{skill}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {job.cv_match.experience_match?.domain_overlap?.length > 0 && (
+                    <div className="mt-2">
+                      <p className="text-xs text-muted-foreground">Experience Overlap</p>
+                      <ul className="text-sm list-disc list-inside">
+                        {job.cv_match.experience_match.domain_overlap.map((domain, i) => (
+                          <li key={i}>{domain}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {job.cv_match.project_match?.similar_projects?.length > 0 && (
+                    <div className="mt-2">
+                      <p className="text-xs text-muted-foreground">Similar Projects</p>
+                      <ul className="text-sm list-disc list-inside">
+                        {job.cv_match.project_match.similar_projects.map((project, i) => (
+                          <li key={i}>{project}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               )}
             </TabsContent>

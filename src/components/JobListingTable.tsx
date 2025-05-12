@@ -23,7 +23,10 @@ import {
   DollarSign,
   Code,
   FileCode2,
-  Trash
+  Trash,
+  Eye,
+  EyeOff,
+  Star
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -39,18 +42,35 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { JobStatus, Job, JobFilters, JobSort, SortField } from '@/types/job';
 import JobStatusSelect from './JobStatusSelect';
 import DeleteConfirmationDialog from './DeleteConfirmationDialog';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import TechStackTooltip from './TechStackTooltip';
+import CompanyInfoTooltip from './CompanyInfoTooltip';
+import MatchScoreTooltip from './MatchScoreTooltip';
+import { Switch } from './ui/switch';
 
 interface JobListingTableProps {
   jobs: Job[];
   onSelectJob: (job: Job) => void;
   onUpdateJobStatus: (job: Job, status: JobStatus) => void;
   onDeleteJob: (jobId: string) => void;
+  onToggleHidden: (job: Job, hidden: boolean) => void;
 }
 
-export default function JobListingTable({ jobs, onSelectJob, onUpdateJobStatus, onDeleteJob }: JobListingTableProps) {
+export default function JobListingTable({ 
+  jobs, 
+  onSelectJob, 
+  onUpdateJobStatus, 
+  onDeleteJob,
+  onToggleHidden
+}: JobListingTableProps) {
   // Update the supported sort fields to include all the new columns
   const [sort, setSort] = useState<JobSort>({ field: 'last_updated', direction: 'desc' });
-  const [filters, setFilters] = useState<JobFilters>({ status: 'All', priority: 'All', search: '' });
+  const [filters, setFilters] = useState<JobFilters>({ 
+    status: 'All', 
+    priority: 'All', 
+    search: '',
+    hideHidden: true
+  });
   const [expandedFilters, setExpandedFilters] = useState(false);
   const [showAllColumns, setShowAllColumns] = useState(false);
   const [jobToDelete, setJobToDelete] = useState<Job | null>(null);
@@ -102,12 +122,17 @@ export default function JobListingTable({ jobs, onSelectJob, onUpdateJobStatus, 
   };
 
   const clearFilters = () => {
-    setFilters({ status: 'All', priority: 'All', search: '' });
+    setFilters({ status: 'All', priority: 'All', search: '', hideHidden: filters.hideHidden });
   };
 
   const handleDelete = (job: Job, event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent row click event
     setJobToDelete(job);
+  };
+
+  const handleToggleHidden = (job: Job, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent row click event
+    onToggleHidden(job, !job.hidden);
   };
 
   const confirmDelete = () => {
@@ -121,7 +146,13 @@ export default function JobListingTable({ jobs, onSelectJob, onUpdateJobStatus, 
     setJobToDelete(null);
   };
 
+  // Filter jobs based on current filters
   const filteredJobs = jobs.filter(job => {
+    // First check if we should hide hidden jobs
+    if (filters.hideHidden && job.hidden) {
+      return false;
+    }
+    
     // Status filter
     if (filters.status !== 'All' && job.status !== filters.status) {
       return false;
@@ -145,6 +176,7 @@ export default function JobListingTable({ jobs, onSelectJob, onUpdateJobStatus, 
     return true;
   });
   
+  // Sort the filtered jobs
   const sortedJobs = [...filteredJobs].sort((a, b) => {
     let comparison = 0;
     
@@ -187,6 +219,11 @@ export default function JobListingTable({ jobs, onSelectJob, onUpdateJobStatus, 
           comparison = 1;
         }
         break;
+      case 'match_score':
+        const scoreA = a.match_score || a.cv_match?.overall_match_percentage || 0;
+        const scoreB = b.match_score || b.cv_match?.overall_match_percentage || 0;
+        comparison = scoreA - scoreB;
+        break;
       case 'last_updated':
         comparison = (new Date(b.last_updated).getTime() - new Date(a.last_updated).getTime());
         break;
@@ -196,6 +233,49 @@ export default function JobListingTable({ jobs, onSelectJob, onUpdateJobStatus, 
     
     return sort.direction === 'asc' ? comparison : -comparison;
   });
+
+  const handleExportExcel = async () => {
+    // This is a placeholder for Excel export functionality
+    // In a real implementation, we'd use a library like xlsx
+    // For now, we'll just download a CSV file
+    
+    const headers = [
+      'Position', 'Company', 'Location', 'Status', 'Priority', 
+      'Tech Stack', 'Project/Product', 'Remote Policy', 'Salary', 
+      'Start Date', 'Match Score', 'Last Updated'
+    ];
+    
+    const rows = sortedJobs.map(job => [
+      job.position,
+      job.company,
+      job.location || '',
+      job.status,
+      getPriorityLabel(job.priority_level),
+      (job.tech_stack || []).join(', '),
+      job.project_or_product || '',
+      job.remote_policy || '',
+      job.possible_salary || '',
+      job.start_date || '',
+      job.match_score || job.cv_match?.overall_match_percentage || 'N/A',
+      job.last_updated
+    ]);
+    
+    // Create CSV content
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+    
+    // Create a blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `job-listings-${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="space-y-4">
@@ -222,7 +302,7 @@ export default function JobListingTable({ jobs, onSelectJob, onUpdateJobStatus, 
           </div>
         </div>
         
-        <div className="flex gap-2 w-full md:w-auto">
+        <div className="flex flex-wrap gap-2 w-full md:w-auto">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="w-full md:w-auto">
@@ -280,6 +360,18 @@ export default function JobListingTable({ jobs, onSelectJob, onUpdateJobStatus, 
               
               <DropdownMenuSeparator />
               
+              <div className="p-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Show Hidden Jobs</span>
+                  <Switch 
+                    checked={!filters.hideHidden} 
+                    onCheckedChange={(checked) => handleFilterChange('hideHidden', !checked)}
+                  />
+                </div>
+              </div>
+              
+              <DropdownMenuSeparator />
+              
               <DropdownMenuItem 
                 disabled={filters.status === 'All' && filters.priority === 'All'}
                 onSelect={clearFilters}
@@ -297,223 +389,315 @@ export default function JobListingTable({ jobs, onSelectJob, onUpdateJobStatus, 
           >
             {showAllColumns ? "Show Less Columns" : "Show All Columns"}
           </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportExcel}
+          >
+            <FileCode2 className="mr-2 h-4 w-4" />
+            Export
+          </Button>
         </div>
       </div>
       
-      {sortedJobs.length === 0 ? (
-        <div className="text-center py-8 space-y-2">
-          <p className="text-lg font-medium">No jobs found</p>
-          <p className="text-muted-foreground">Try adjusting your filters or upload some job data</p>
-        </div>
-      ) : (
-        <div className="rounded-md border overflow-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[200px]">
-                  <Button 
-                    variant="ghost" 
-                    className="p-0 hover:bg-transparent font-medium" 
-                    onClick={() => handleSort('position')}
-                  >
-                    Position {getSortIcon('position')}
-                  </Button>
-                </TableHead>
-                <TableHead>
-                  <Button 
-                    variant="ghost" 
-                    className="p-0 hover:bg-transparent font-medium" 
-                    onClick={() => handleSort('company')}
-                  >
-                    Company {getSortIcon('company')}
-                  </Button>
-                </TableHead>
-                <TableHead className="hidden md:table-cell">
-                  <Button 
-                    variant="ghost" 
-                    className="p-0 hover:bg-transparent font-medium" 
-                    onClick={() => handleSort('location')}
-                  >
-                    Location {getSortIcon('location')}
-                  </Button>
-                </TableHead>
-                <TableHead className="w-[120px]">
-                  <Button 
-                    variant="ghost" 
-                    className="p-0 hover:bg-transparent font-medium" 
-                    onClick={() => handleSort('status')}
-                  >
-                    Status {getSortIcon('status')}
-                  </Button>
-                </TableHead>
-                <TableHead className="w-[100px]">
-                  <Button 
-                    variant="ghost" 
-                    className="p-0 hover:bg-transparent font-medium" 
-                    onClick={() => handleSort('priority_level')}
-                  >
-                    Priority {getSortIcon('priority_level')}
-                  </Button>
-                </TableHead>
-                
-                {showAllColumns && (
-                  <>
-                    <TableHead className="hidden lg:table-cell">
-                      <Button 
-                        variant="ghost" 
-                        className="p-0 hover:bg-transparent font-medium" 
-                        onClick={() => handleSort('tech_stack')}
-                      >
-                        <Code className="h-4 w-4 mr-1" />
-                        Tech Stack {getSortIcon('tech_stack')}
-                      </Button>
-                    </TableHead>
-                    
-                    <TableHead className="hidden xl:table-cell">
-                      <Button 
-                        variant="ghost" 
-                        className="p-0 hover:bg-transparent font-medium" 
-                        onClick={() => handleSort('project_or_product')}
-                      >
-                        <FileCode2 className="h-4 w-4 mr-1" />
-                        Project/Product {getSortIcon('project_or_product')}
-                      </Button>
-                    </TableHead>
-                    
-                    <TableHead className="hidden lg:table-cell">
-                      <Button 
-                        variant="ghost" 
-                        className="p-0 hover:bg-transparent font-medium" 
-                        onClick={() => handleSort('remote_policy')}
-                      >
-                        <Globe className="h-4 w-4 mr-1" />
-                        Remote Policy {getSortIcon('remote_policy')}
-                      </Button>
-                    </TableHead>
-                    
-                    <TableHead className="hidden lg:table-cell">
-                      <Button 
-                        variant="ghost" 
-                        className="p-0 hover:bg-transparent font-medium" 
-                        onClick={() => handleSort('possible_salary')}
-                      >
-                        <DollarSign className="h-4 w-4 mr-1" />
-                        Salary {getSortIcon('possible_salary')}
-                      </Button>
-                    </TableHead>
-                    
-                    <TableHead className="hidden lg:table-cell">
-                      <Button 
-                        variant="ghost" 
-                        className="p-0 hover:bg-transparent font-medium" 
-                        onClick={() => handleSort('start_date')}
-                      >
-                        <Calendar className="h-4 w-4 mr-1" />
-                        Start Date {getSortIcon('start_date')}
-                      </Button>
-                    </TableHead>
-                  </>
-                )}
-                
-                <TableHead className="w-[150px] text-right">
-                  <Button 
-                    variant="ghost" 
-                    className="p-0 hover:bg-transparent font-medium" 
-                    onClick={() => handleSort('last_updated')}
-                  >
-                    Last Updated {getSortIcon('last_updated')}
-                  </Button>
-                </TableHead>
-                
-                <TableHead className="w-[50px]">
-                  Actions
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sortedJobs.map((job) => (
-                <TableRow 
-                  key={job.id}
-                  className="cursor-pointer hover:bg-muted/50"
-                  onClick={() => onSelectJob(job)}
-                >
-                  <TableCell className="font-medium">{job.position}</TableCell>
-                  <TableCell>{job.company}</TableCell>
-                  <TableCell className="hidden md:table-cell">{job.location || 'N/A'}</TableCell>
-                  <TableCell>
-                    <div className="max-w-[120px]">
-                      <JobStatusSelect
-                        value={job.status}
-                        onChange={(status) => {
-                          onUpdateJobStatus(job, status);
-                          // Prevent row click when status is changed
-                          event?.stopPropagation();
-                        }}
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getPriorityClass(job.priority_level)}>
-                      {getPriorityLabel(job.priority_level)}
-                    </Badge>
-                  </TableCell>
+      <TooltipProvider>
+        {sortedJobs.length === 0 ? (
+          <div className="text-center py-8 space-y-2">
+            <p className="text-lg font-medium">No jobs found</p>
+            <p className="text-muted-foreground">Try adjusting your filters or upload some job data</p>
+          </div>
+        ) : (
+          <div className="rounded-md border overflow-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[200px]">
+                    <Button 
+                      variant="ghost" 
+                      className="p-0 hover:bg-transparent font-medium" 
+                      onClick={() => handleSort('position')}
+                    >
+                      Position {getSortIcon('position')}
+                    </Button>
+                  </TableHead>
+                  <TableHead>
+                    <Button 
+                      variant="ghost" 
+                      className="p-0 hover:bg-transparent font-medium" 
+                      onClick={() => handleSort('company')}
+                    >
+                      Company {getSortIcon('company')}
+                    </Button>
+                  </TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    <Button 
+                      variant="ghost" 
+                      className="p-0 hover:bg-transparent font-medium" 
+                      onClick={() => handleSort('location')}
+                    >
+                      Location {getSortIcon('location')}
+                    </Button>
+                  </TableHead>
+                  <TableHead className="w-[120px]">
+                    <Button 
+                      variant="ghost" 
+                      className="p-0 hover:bg-transparent font-medium" 
+                      onClick={() => handleSort('status')}
+                    >
+                      Status {getSortIcon('status')}
+                    </Button>
+                  </TableHead>
+                  <TableHead className="w-[100px]">
+                    <Button 
+                      variant="ghost" 
+                      className="p-0 hover:bg-transparent font-medium" 
+                      onClick={() => handleSort('priority_level')}
+                    >
+                      Priority {getSortIcon('priority_level')}
+                    </Button>
+                  </TableHead>
+                  
+                  {/* Match Score Column */}
+                  <TableHead className="w-[100px]">
+                    <Button 
+                      variant="ghost" 
+                      className="p-0 hover:bg-transparent font-medium" 
+                      onClick={() => handleSort('match_score')}
+                    >
+                      <Star className="h-4 w-4 mr-1" />
+                      Match {getSortIcon('match_score')}
+                    </Button>
+                  </TableHead>
                   
                   {showAllColumns && (
                     <>
-                      <TableCell className="hidden lg:table-cell">
-                        {job.tech_stack && job.tech_stack.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {job.tech_stack.slice(0, 3).map((tech, index) => (
-                              <Badge key={index} variant="outline" className="text-xs">{tech}</Badge>
-                            ))}
-                            {job.tech_stack.length > 3 && (
-                              <Badge variant="outline" className="text-xs">+{job.tech_stack.length - 3}</Badge>
-                            )}
-                          </div>
-                        ) : 'N/A'}
-                      </TableCell>
+                      <TableHead className="hidden lg:table-cell">
+                        <Button 
+                          variant="ghost" 
+                          className="p-0 hover:bg-transparent font-medium" 
+                          onClick={() => handleSort('tech_stack')}
+                        >
+                          <Code className="h-4 w-4 mr-1" />
+                          Tech Stack {getSortIcon('tech_stack')}
+                        </Button>
+                      </TableHead>
                       
-                      <TableCell className="hidden xl:table-cell">
-                        {job.project_or_product || 'N/A'}
-                      </TableCell>
+                      <TableHead className="hidden xl:table-cell">
+                        <Button 
+                          variant="ghost" 
+                          className="p-0 hover:bg-transparent font-medium" 
+                          onClick={() => handleSort('project_or_product')}
+                        >
+                          <FileCode2 className="h-4 w-4 mr-1" />
+                          Project/Product {getSortIcon('project_or_product')}
+                        </Button>
+                      </TableHead>
                       
-                      <TableCell className="hidden lg:table-cell">
-                        {job.remote_policy || 'N/A'}
-                      </TableCell>
+                      <TableHead className="hidden lg:table-cell">
+                        <Button 
+                          variant="ghost" 
+                          className="p-0 hover:bg-transparent font-medium" 
+                          onClick={() => handleSort('remote_policy')}
+                        >
+                          <Globe className="h-4 w-4 mr-1" />
+                          Remote Policy {getSortIcon('remote_policy')}
+                        </Button>
+                      </TableHead>
                       
-                      <TableCell className="hidden lg:table-cell">
-                        {job.possible_salary || 'N/A'}
-                      </TableCell>
+                      <TableHead className="hidden lg:table-cell">
+                        <Button 
+                          variant="ghost" 
+                          className="p-0 hover:bg-transparent font-medium" 
+                          onClick={() => handleSort('possible_salary')}
+                        >
+                          <DollarSign className="h-4 w-4 mr-1" />
+                          Salary {getSortIcon('possible_salary')}
+                        </Button>
+                      </TableHead>
                       
-                      <TableCell className="hidden lg:table-cell">
-                        {job.start_date ? format(new Date(job.start_date), 'MMM d, yyyy') : 'N/A'}
-                      </TableCell>
+                      <TableHead className="hidden lg:table-cell">
+                        <Button 
+                          variant="ghost" 
+                          className="p-0 hover:bg-transparent font-medium" 
+                          onClick={() => handleSort('start_date')}
+                        >
+                          <Calendar className="h-4 w-4 mr-1" />
+                          Start Date {getSortIcon('start_date')}
+                        </Button>
+                      </TableHead>
                     </>
                   )}
                   
-                  <TableCell className="text-right">
-                    <span title={format(new Date(job.last_updated), 'PPP')}>
-                      {formatDate(job.last_updated)}
-                    </span>
-                  </TableCell>
-                  
-                  <TableCell>
+                  <TableHead className="w-[150px] text-right">
                     <Button 
                       variant="ghost" 
-                      size="icon"
-                      className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                      onClick={(e) => handleDelete(job, e)}
-                      aria-label="Delete job"
+                      className="p-0 hover:bg-transparent font-medium" 
+                      onClick={() => handleSort('last_updated')}
                     >
-                      <Trash className="h-4 w-4" />
+                      Last Updated {getSortIcon('last_updated')}
                     </Button>
-                  </TableCell>
+                  </TableHead>
+                  
+                  <TableHead className="w-[80px] text-center">
+                    Actions
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+              </TableHeader>
+              <TableBody>
+                {sortedJobs.map((job) => (
+                  <TableRow 
+                    key={job.id}
+                    className={`cursor-pointer hover:bg-muted/50 ${job.hidden ? 'opacity-60' : ''}`}
+                    onClick={() => onSelectJob(job)}
+                  >
+                    <TableCell className="font-medium">{job.position}</TableCell>
+                    <TableCell>
+                      <CompanyInfoTooltip
+                        company={job.company}
+                        companyInfo={job.company_info}
+                        industry={job.industry}
+                        companySize={job.company_size}
+                        companyReputation={job.company_reputation}
+                        companyProducts={job.company_products}
+                      >
+                        {job.company}
+                      </CompanyInfoTooltip>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">{job.location || 'N/A'}</TableCell>
+                    <TableCell>
+                      <div className="max-w-[120px]">
+                        <JobStatusSelect
+                          value={job.status}
+                          onChange={(status) => {
+                            onUpdateJobStatus(job, status);
+                            // Prevent row click when status is changed
+                            event?.stopPropagation();
+                          }}
+                        />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getPriorityClass(job.priority_level)}>
+                        {getPriorityLabel(job.priority_level)}
+                      </Badge>
+                    </TableCell>
+                    
+                    {/* Match Score Cell */}
+                    <TableCell>
+                      <MatchScoreTooltip 
+                        score={job.match_score || job.cv_match?.overall_match_percentage}
+                        matchData={job.cv_match}
+                        summary={job.match_summary}
+                      />
+                    </TableCell>
+                    
+                    {showAllColumns && (
+                      <>
+                        <TableCell className="hidden lg:table-cell">
+                          {job.tech_stack && job.tech_stack.length > 0 ? (
+                            <TechStackTooltip 
+                              techStack={job.tech_stack}
+                              matchedSkills={job.cv_match?.tech_stack_match?.matched_skills}
+                            >
+                              <div className="flex flex-wrap gap-1">
+                                {job.tech_stack.slice(0, 3).map((tech, index) => {
+                                  const isMatched = job.cv_match?.tech_stack_match?.matched_skills?.includes(tech);
+                                  return (
+                                    <Badge 
+                                      key={index} 
+                                      variant="outline" 
+                                      className={`text-xs ${isMatched ? 'bg-green-100 dark:bg-green-900/30 border-green-200 dark:border-green-800' : ''}`}
+                                    >
+                                      {tech}
+                                    </Badge>
+                                  );
+                                })}
+                                {job.tech_stack.length > 3 && (
+                                  <Badge variant="outline" className="text-xs">+{job.tech_stack.length - 3}</Badge>
+                                )}
+                              </div>
+                            </TechStackTooltip>
+                          ) : 'N/A'}
+                        </TableCell>
+                        
+                        <TableCell className="hidden xl:table-cell">
+                          {job.project_or_product || 'N/A'}
+                        </TableCell>
+                        
+                        <TableCell className="hidden lg:table-cell">
+                          {job.remote_policy || 'N/A'}
+                        </TableCell>
+                        
+                        <TableCell className="hidden lg:table-cell">
+                          {job.possible_salary || 'N/A'}
+                        </TableCell>
+                        
+                        <TableCell className="hidden lg:table-cell">
+                          {job.start_date ? format(new Date(job.start_date), 'MMM d, yyyy') : 'N/A'}
+                        </TableCell>
+                      </>
+                    )}
+                    
+                    <TableCell className="text-right">
+                      <Tooltip>
+                        <TooltipTrigger className="block">
+                          <span>{formatDate(job.last_updated)}</span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {format(new Date(job.last_updated), 'PPP')}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TableCell>
+                    
+                    <TableCell>
+                      <div className="flex items-center justify-center gap-1">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              className="h-8 w-8 hover:bg-muted"
+                              onClick={(e) => handleToggleHidden(job, e)}
+                              aria-label={job.hidden ? "Show job" : "Hide job"}
+                            >
+                              {job.hidden ? (
+                                <Eye className="h-4 w-4" />
+                              ) : (
+                                <EyeOff className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {job.hidden ? "Show job" : "Hide job"}
+                          </TooltipContent>
+                        </Tooltip>
+                        
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
+                              className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                              onClick={(e) => handleDelete(job, e)}
+                              aria-label="Delete job"
+                            >
+                              <Trash className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Delete job
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </TooltipProvider>
       
       <DeleteConfirmationDialog 
         isOpen={!!jobToDelete}

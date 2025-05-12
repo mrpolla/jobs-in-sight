@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import { Save, Plus, Upload, Download } from 'lucide-react';
+import { Save, Plus, Upload, Download, FileJson } from 'lucide-react';
 import { toast } from 'sonner';
 import ThemeToggle from '@/components/ThemeToggle';
 import StatsSummary from '@/components/StatsSummary';
@@ -10,6 +10,7 @@ import JobListingTable from '@/components/JobListingTable';
 import JobDetailPanel from '@/components/JobDetailPanel';
 import FileUploader from '@/components/FileUploader';
 import AddJobForm from '@/components/AddJobForm';
+import JsonImportDialog from '@/components/JsonImportDialog';
 import { Job, JobStatus } from '@/types/job';
 import { loadJobs, saveJobs, updateJob, deleteJob } from '@/lib/storage';
 
@@ -17,6 +18,7 @@ const Index = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [jsonImportDialogOpen, setJsonImportDialogOpen] = useState(false);
   const [addJobDialogOpen, setAddJobDialogOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -75,6 +77,11 @@ const Index = () => {
     setUploadDialogOpen(false);
   };
 
+  const handleJsonImport = (importedJobs: Job[]) => {
+    handleFileUpload(importedJobs); // Reuse the same logic
+    setJsonImportDialogOpen(false);
+  };
+
   const handleAddJob = (job: Job) => {
     const updatedJobs = [...jobs, job];
     setJobs(updatedJobs);
@@ -127,6 +134,29 @@ const Index = () => {
     toast.success(`Status updated to ${status}`);
   };
 
+  const handleToggleHidden = (job: Job, hidden: boolean) => {
+    const updatedJob = {
+      ...job,
+      hidden,
+      last_updated: new Date().toISOString()
+    };
+    
+    updateJob(updatedJob);
+    
+    const updatedJobs = jobs.map(j => 
+      j.id === updatedJob.id ? updatedJob : j
+    );
+    
+    setJobs(updatedJobs);
+    
+    // Update selected job if it's the one being edited
+    if (selectedJob && selectedJob.id === updatedJob.id) {
+      setSelectedJob(updatedJob);
+    }
+    
+    toast.success(hidden ? 'Job hidden' : 'Job unhidden');
+  };
+
   const handleExportData = () => {
     if (jobs.length === 0) {
       toast.error('No jobs to export');
@@ -165,7 +195,7 @@ const Index = () => {
               <DialogTrigger asChild>
                 <Button variant="outline">
                   <Upload className="mr-2 h-4 w-4" />
-                  Import
+                  Import File
                 </Button>
               </DialogTrigger>
               {uploadDialogOpen && (
@@ -175,6 +205,14 @@ const Index = () => {
                 />
               )}
             </Dialog>
+            
+            <Button 
+              variant="outline"
+              onClick={() => setJsonImportDialogOpen(true)}
+            >
+              <FileJson className="mr-2 h-4 w-4" />
+              JSON Paste
+            </Button>
             
             <Button variant="outline" onClick={handleExportData}>
               <Download className="mr-2 h-4 w-4" />
@@ -215,6 +253,7 @@ const Index = () => {
           onSelectJob={handleJobSelect} 
           onUpdateJobStatus={handleUpdateJobStatus}
           onDeleteJob={handleDeleteJob}
+          onToggleHidden={handleToggleHidden}
         />
       </main>
       
@@ -238,6 +277,14 @@ const Index = () => {
             onJobDeleted={handleDeleteJob}
           />
         </div>
+      )}
+      
+      {/* JSON Import Dialog */}
+      {jsonImportDialogOpen && (
+        <JsonImportDialog
+          onImport={handleJsonImport}
+          onCancel={() => setJsonImportDialogOpen(false)}
+        />
       )}
     </div>
   );

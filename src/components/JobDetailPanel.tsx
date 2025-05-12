@@ -78,12 +78,12 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated }: JobDetail
       };
       updateJob(updatedJob);
       onJobUpdated(updatedJob);
-      toast.success(`Priority updated to ${newPriority}`);
+      toast.success(`Priority updated to ${newPriority === 1 ? 'High' : newPriority === 2 ? 'Medium' : 'Low'}`);
     }
   };
 
   return (
-    <div className={`side-panel w-full sm:w-[500px] side-panel-open`}>
+    <div className="side-panel w-full sm:w-[500px]">
       <div className="p-6">
         <div className="flex justify-between items-start mb-4">
           <div>

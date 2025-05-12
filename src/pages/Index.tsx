@@ -202,7 +202,7 @@ const Index = () => {
         />
       </main>
       
-      {/* Side Panel */}
+      {/* Side Panel - Overlay */}
       {selectedJob && (
         <div 
           className={`fixed inset-0 bg-black/30 z-40 transition-opacity ${
@@ -212,6 +212,7 @@ const Index = () => {
         />
       )}
       
+      {/* Side Panel - Content */}
       {selectedJob && (
         <div className={`side-panel ${sidebarOpen ? 'side-panel-open' : 'side-panel-closed'}`}>
           <JobDetailPanel 

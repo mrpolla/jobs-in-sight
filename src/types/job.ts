@@ -36,7 +36,8 @@ export interface Job {
 
 export type JobStatus = 'Applied' | 'Interview' | 'Rejected' | 'Offer';
 
-export type SortField = 'position' | 'company' | 'location' | 'status' | 'priority_level' | 'last_updated';
+export type SortField = 'position' | 'company' | 'location' | 'status' | 'priority_level' | 
+  'tech_stack' | 'project_or_product' | 'remote_policy' | 'possible_salary' | 'start_date' | 'last_updated';
 
 export interface JobFilters {
   status?: JobStatus | 'All';

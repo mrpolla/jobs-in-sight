@@ -71,10 +71,22 @@ export default function AddJobForm({ onSave, onCancel }: AddJobFormProps) {
       ? data.tech_stack.split(',').map(item => item.trim()).filter(Boolean)
       : [];
 
+    // Ensure position and company are required
     const newJob: Job = {
       id: uuidv4(),
-      ...data,
+      position: data.position, // non-optional field
+      company: data.company, // non-optional field
+      location: data.location,
+      job_description: data.job_description,
+      job_type: data.job_type,
+      remote_policy: data.remote_policy,
+      seniority_level: data.seniority_level,
+      possible_salary: data.possible_salary,
+      requirements: data.requirements,
       tech_stack: techStackArray,
+      recruiter_contact: data.recruiter_contact,
+      applied_date: data.applied_date,
+      interview_notes: data.interview_notes,
       priority_level: priority,
       status: status,
       last_updated: new Date().toISOString(),

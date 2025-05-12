@@ -27,14 +27,14 @@ export interface Job {
   company_reputation?: string;
   job_posting_clarity_score?: number;
   priority_level: number;
-  status: 'Applied' | 'Interview' | 'Rejected' | 'Offer';
+  status: 'New' | 'Applied' | 'Interview' | 'Rejected' | 'Offer';
   applied_date?: string;
   interview_notes?: string;
   rating_match?: number;
   last_updated: string;
 }
 
-export type JobStatus = 'Applied' | 'Interview' | 'Rejected' | 'Offer';
+export type JobStatus = 'New' | 'Applied' | 'Interview' | 'Rejected' | 'Offer';
 
 export type SortField = 'position' | 'company' | 'location' | 'status' | 'priority_level' | 
   'tech_stack' | 'project_or_product' | 'remote_policy' | 'possible_salary' | 'start_date' | 'last_updated';

@@ -11,7 +11,7 @@ import JobDetailPanel from '@/components/JobDetailPanel';
 import FileUploader from '@/components/FileUploader';
 import AddJobForm from '@/components/AddJobForm';
 import { Job, JobStatus } from '@/types/job';
-import { loadJobs, saveJobs, updateJob } from '@/lib/storage';
+import { loadJobs, saveJobs, updateJob, deleteJob } from '@/lib/storage';
 
 const Index = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -27,6 +27,7 @@ const Index = () => {
   }, []);
 
   const handleJobSelect = (job: Job) => {
+    console.log("Job selected:", job.id);
     setSelectedJob(job);
     setSidebarOpen(true);
   };
@@ -87,6 +88,20 @@ const Index = () => {
     );
     setJobs(updatedJobs);
     setSelectedJob(updatedJob);
+  };
+
+  const handleDeleteJob = (jobId: string) => {
+    deleteJob(jobId);
+    
+    const updatedJobs = jobs.filter(job => job.id !== jobId);
+    setJobs(updatedJobs);
+    
+    // If the deleted job is currently selected, close the sidebar
+    if (selectedJob && selectedJob.id === jobId) {
+      handleSidebarClose();
+    }
+    
+    toast.success('Job deleted successfully');
   };
 
   const handleUpdateJobStatus = (job: Job, status: JobStatus) => {
@@ -199,6 +214,7 @@ const Index = () => {
           jobs={jobs} 
           onSelectJob={handleJobSelect} 
           onUpdateJobStatus={handleUpdateJobStatus}
+          onDeleteJob={handleDeleteJob}
         />
       </main>
       
@@ -219,6 +235,7 @@ const Index = () => {
             job={selectedJob}
             onClose={handleSidebarClose}
             onJobUpdated={handleJobUpdated}
+            onJobDeleted={handleDeleteJob}
           />
         </div>
       )}

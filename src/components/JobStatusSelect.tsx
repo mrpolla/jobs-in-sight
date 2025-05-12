@@ -10,6 +10,7 @@ interface JobStatusSelectProps {
 }
 
 const statuses: { value: JobStatus; label: string; className: string }[] = [
+  { value: 'New', label: 'New', className: 'status-badge status-new' },
   { value: 'Applied', label: 'Applied', className: 'status-badge status-applied' },
   { value: 'Interview', label: 'Interview', className: 'status-badge status-interview' },
   { value: 'Rejected', label: 'Rejected', className: 'status-badge status-rejected' },

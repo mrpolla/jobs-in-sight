@@ -22,7 +22,8 @@ import {
   Globe,
   DollarSign,
   Code,
-  FileCode2
+  FileCode2,
+  Trash
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -37,19 +38,22 @@ import {
 import { format, formatDistanceToNow } from 'date-fns';
 import { JobStatus, Job, JobFilters, JobSort, SortField } from '@/types/job';
 import JobStatusSelect from './JobStatusSelect';
+import DeleteConfirmationDialog from './DeleteConfirmationDialog';
 
 interface JobListingTableProps {
   jobs: Job[];
   onSelectJob: (job: Job) => void;
   onUpdateJobStatus: (job: Job, status: JobStatus) => void;
+  onDeleteJob: (jobId: string) => void;
 }
 
-export default function JobListingTable({ jobs, onSelectJob, onUpdateJobStatus }: JobListingTableProps) {
+export default function JobListingTable({ jobs, onSelectJob, onUpdateJobStatus, onDeleteJob }: JobListingTableProps) {
   // Update the supported sort fields to include all the new columns
   const [sort, setSort] = useState<JobSort>({ field: 'last_updated', direction: 'desc' });
   const [filters, setFilters] = useState<JobFilters>({ status: 'All', priority: 'All', search: '' });
   const [expandedFilters, setExpandedFilters] = useState(false);
   const [showAllColumns, setShowAllColumns] = useState(false);
+  const [jobToDelete, setJobToDelete] = useState<Job | null>(null);
   
   const handleSort = (field: SortField) => {
     setSort(prev => ({
@@ -99,6 +103,22 @@ export default function JobListingTable({ jobs, onSelectJob, onUpdateJobStatus }
 
   const clearFilters = () => {
     setFilters({ status: 'All', priority: 'All', search: '' });
+  };
+
+  const handleDelete = (job: Job, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent row click event
+    setJobToDelete(job);
+  };
+
+  const confirmDelete = () => {
+    if (jobToDelete) {
+      onDeleteJob(jobToDelete.id);
+      setJobToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setJobToDelete(null);
   };
 
   const filteredJobs = jobs.filter(job => {
@@ -220,7 +240,7 @@ export default function JobListingTable({ jobs, onSelectJob, onUpdateJobStatus }
                 <div className="p-2">
                   <p className="text-sm font-medium mb-2">Status</p>
                   <div className="grid grid-cols-2 gap-1">
-                    {(['All', 'Applied', 'Interview', 'Rejected', 'Offer'] as const).map((status) => (
+                    {(['All', 'New', 'Applied', 'Interview', 'Rejected', 'Offer'] as const).map((status) => (
                       <Button
                         key={status}
                         variant={filters.status === status ? 'default' : 'outline'}
@@ -404,6 +424,10 @@ export default function JobListingTable({ jobs, onSelectJob, onUpdateJobStatus }
                     Last Updated {getSortIcon('last_updated')}
                   </Button>
                 </TableHead>
+                
+                <TableHead className="w-[50px]">
+                  Actions
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -472,12 +496,31 @@ export default function JobListingTable({ jobs, onSelectJob, onUpdateJobStatus }
                       {formatDate(job.last_updated)}
                     </span>
                   </TableCell>
+                  
+                  <TableCell>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                      onClick={(e) => handleDelete(job, e)}
+                      aria-label="Delete job"
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
       )}
+      
+      <DeleteConfirmationDialog 
+        isOpen={!!jobToDelete}
+        jobTitle={jobToDelete ? `${jobToDelete.position} at ${jobToDelete.company}` : ''}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </div>
   );
 }

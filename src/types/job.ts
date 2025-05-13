@@ -38,7 +38,8 @@ export interface Job {
   application_reasoning?: {
     why_apply?: string;
     key_matching_qualifications?: string[];
-    transferable_skills_details?: string[];
+    transferable_skills_details?: string[]; // Legacy field
+    requirements_assessment?: RequirementAssessment[]; // New field
     learning_needs?: string[];
     overall_fit_assessment?: string;
   };
@@ -84,6 +85,13 @@ export interface Job {
   };
   match_summary?: string;
   match_score?: number;
+}
+
+export interface RequirementAssessment {
+  requirement: string;
+  status: 'Can do well' | 'Can transfer' | 'Must learn';
+  explanation: string;
+  transferable_skills: string[];
 }
 
 export type JobStatus = 'New' | 'Applied' | 'Interview' | 'Rejected' | 'Offer';

@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from 'react';
-import { Job, JobStatus } from '@/types/job';
+import { Job, JobStatus, RequirementAssessment } from '@/types/job';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { X, Pen, Trash, EyeOff, Eye, ExternalLink } from 'lucide-react';
+import { X, Pen, Trash, EyeOff, Eye, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
@@ -13,6 +13,7 @@ import { updateJob, deleteJob } from '@/lib/storage';
 import { toast } from 'sonner';
 import DeleteConfirmationDialog from './DeleteConfirmationDialog';
 import { Progress } from './ui/progress';
+import RequirementsAssessment from './RequirementsAssessment';
 
 interface JobDetailPanelProps {
   job: Job | null;
@@ -28,6 +29,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
   const [priority, setPriority] = useState<number>(job?.priority_level || 3);
   const [hidden, setHidden] = useState<boolean>(job?.hidden || false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [selectedReqStatus, setSelectedReqStatus] = useState<string | null>(null);
 
   // Update state when job changes
   useEffect(() => {
@@ -146,6 +148,15 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
     if (score >= 60) return 'bg-amber-500';
     return 'bg-red-500';
   };
+
+  // Get requirements assessment from the job, or empty array if none
+  const requirementsAssessment: RequirementAssessment[] = 
+    job.application_reasoning?.requirements_assessment || [];
+
+  // Filter requirements by selected status
+  const filteredRequirements = selectedReqStatus
+    ? requirementsAssessment.filter(req => req.status === selectedReqStatus)
+    : requirementsAssessment;
 
   return (
     <>
@@ -405,6 +416,51 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                   </div>
                 </div>
               )}
+              
+              {/* Requirements Assessment Section */}
+              {requirementsAssessment.length > 0 && (
+                <div className="border rounded-md p-4 mt-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-medium">Requirements Assessment</h4>
+                    <div className="flex gap-1">
+                      <Button 
+                        variant={selectedReqStatus === null ? "default" : "outline"} 
+                        size="sm"
+                        className="h-7 text-xs"
+                        onClick={() => setSelectedReqStatus(null)}
+                      >
+                        All
+                      </Button>
+                      <Button 
+                        variant={selectedReqStatus === "Can do well" ? "default" : "outline"} 
+                        size="sm"
+                        className={`h-7 text-xs ${selectedReqStatus === "Can do well" ? "bg-green-600 hover:bg-green-700" : "text-green-600 border-green-600"}`}
+                        onClick={() => setSelectedReqStatus(selectedReqStatus === "Can do well" ? null : "Can do well")}
+                      >
+                        Can Do
+                      </Button>
+                      <Button 
+                        variant={selectedReqStatus === "Can transfer" ? "default" : "outline"} 
+                        size="sm"
+                        className={`h-7 text-xs ${selectedReqStatus === "Can transfer" ? "bg-amber-600 hover:bg-amber-700" : "text-amber-600 border-amber-600"}`}
+                        onClick={() => setSelectedReqStatus(selectedReqStatus === "Can transfer" ? null : "Can transfer")}
+                      >
+                        Transfer
+                      </Button>
+                      <Button 
+                        variant={selectedReqStatus === "Must learn" ? "default" : "outline"} 
+                        size="sm"
+                        className={`h-7 text-xs ${selectedReqStatus === "Must learn" ? "bg-red-600 hover:bg-red-700" : "text-red-600 border-red-600"}`}
+                        onClick={() => setSelectedReqStatus(selectedReqStatus === "Must learn" ? null : "Must learn")}
+                      >
+                        Learn
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <RequirementsAssessment requirements={filteredRequirements} />
+                </div>
+              )}
             </TabsContent>
             
             <TabsContent value="application" className="space-y-4 mt-4">
@@ -452,7 +508,8 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                     </div>
                   )}
                   
-                  {job.application_reasoning.transferable_skills_details?.length > 0 && (
+                  {/* Legacy transferable skills display */}
+                  {!requirementsAssessment.length && job.application_reasoning.transferable_skills_details?.length > 0 && (
                     <div className="mb-2">
                       <p className="text-xs text-muted-foreground">Transferable Skills</p>
                       <ul className="text-sm list-disc list-inside">

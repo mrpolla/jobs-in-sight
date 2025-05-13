@@ -2,6 +2,7 @@
 import React from 'react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Progress } from '@/components/ui/progress';
+import { Job } from '@/types/job';
 
 interface MatchScoreProps {
   score?: number;

@@ -104,6 +104,10 @@ export default function ProjectTooltip({ job, children }: ProjectTooltipProps) {
                 <h4 className="font-semibold">{job.position} at {job.company}</h4>
                 {job.project && <p className="text-sm text-muted-foreground">Project: {job.project}</p>}
                 {job.product && <p className="text-sm text-muted-foreground">Product: {job.product}</p>}
+                
+                {/* Add new fields for hours and vacation */}
+                {job.hours_per_week && <p className="text-sm text-muted-foreground">Hours: {job.hours_per_week} per week</p>}
+                {job.vacation_days && <p className="text-sm text-muted-foreground">Vacation: {job.vacation_days} days</p>}
               </div>
 
               {/* Display overall match percentage if available */}

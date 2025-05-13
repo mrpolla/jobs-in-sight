@@ -22,7 +22,7 @@ export default function TechStackTooltip({ techStack, matchedSkills = [], childr
         <h4 className="text-sm font-medium mb-2">Tech Stack</h4>
         <div className="flex flex-wrap gap-1">
           {techStack.map((tech) => {
-            const isMatched = matchedSkills.includes(tech);
+            const isMatched = matchedSkills?.includes(tech) || false;
             return (
               <Badge 
                 key={tech} 
@@ -35,7 +35,7 @@ export default function TechStackTooltip({ techStack, matchedSkills = [], childr
             );
           })}
         </div>
-        {matchedSkills.length > 0 && (
+        {(matchedSkills && matchedSkills.length > 0) && (
           <p className="text-xs text-muted-foreground mt-2">
             ✓ indicates skills matching your CV
           </p>

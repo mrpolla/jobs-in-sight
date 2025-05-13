@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Table, 
@@ -247,6 +246,41 @@ export default function JobListingTable({
     
     return sort.direction === 'asc' ? comparison : -comparison;
   });
+
+  // Helper function to derive matched skills from the new requirements_match structure
+  const getMatchedSkills = (job: Job): string[] => {
+    if (!job.cv_match?.requirements_match) {
+      // Fallback to the original structure for backward compatibility
+      return job.cv_match?.tech_stack_match?.matched_skills || [];
+    }
+    
+    // Derive matched skills from requirements that are tech-related and "Can do well"
+    const techRequirements = job.cv_match.requirements_match.filter(req => 
+      req.status === "Can do well" && isTechRequirement(req.requirement)
+    );
+    
+    // Extract skill names from the requirement text (simplified approach)
+    return techRequirements.map(req => extractSkillName(req.requirement));
+  };
+  
+  // Helper function to determine if a requirement is tech-related
+  const isTechRequirement = (text: string): boolean => {
+    const techTerms = ["javascript", "typescript", "react", "node", "java", "python", 
+                      "c#", ".net", "angular", "vue", "aws", "azure", "cloud", "api", 
+                      "frontend", "backend", "fullstack", "database", "sql", "nosql", 
+                      "docker", "kubernetes", "devops", "ci/cd", "testing", "agile", 
+                      "scrum", "git"];
+    
+    const lowercaseText = text.toLowerCase();
+    return techTerms.some(term => lowercaseText.includes(term));
+  };
+  
+  // Helper function to extract a skill name from requirement text
+  const extractSkillName = (text: string): string => {
+    // A very simplified approach - in reality, you would want more sophisticated extraction
+    const match = text.match(/\b(javascript|typescript|react|node|java|python|c#|\.net|angular|vue|aws|azure|sql)\b/i);
+    return match ? match[0] : "Tech skill";
+  };
 
   const handleExportExcel = async () => {
     // This is a placeholder for Excel export functionality
@@ -646,11 +680,11 @@ export default function JobListingTable({
                           {job.tech_stack && job.tech_stack.length > 0 ? (
                             <TechStackTooltip 
                               techStack={job.tech_stack}
-                              matchedSkills={job.cv_match?.tech_stack_match?.matched_skills}
+                              matchedSkills={getMatchedSkills(job)}
                             >
                               <div className="flex flex-wrap gap-1">
                                 {job.tech_stack.slice(0, 3).map((tech, index) => {
-                                  const isMatched = job.cv_match?.tech_stack_match?.matched_skills?.includes(tech);
+                                  const isMatched = getMatchedSkills(job).includes(tech);
                                   return (
                                     <Badge 
                                       key={index} 

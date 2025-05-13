@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Job, JobStatus } from '@/types/job';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { X, Pen, Trash, EyeOff, Eye } from 'lucide-react';
+import { X, Pen, Trash, EyeOff, Eye, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
@@ -132,6 +132,13 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
     setShowDeleteConfirm(false);
   };
 
+  // Open URL in a new tab
+  const openJobUrl = () => {
+    if (job.url) {
+      window.open(job.url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   // Get match color based on score
   const getMatchScoreColor = (score?: number) => {
     if (!score) return '';
@@ -148,6 +155,18 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
             <div>
               <h2 className="text-2xl font-bold">{job.position}</h2>
               <h3 className="text-xl text-muted-foreground">{job.company}</h3>
+              {job.url && (
+                <a 
+                  href={job.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:text-blue-700 flex items-center text-sm mt-1"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <ExternalLink className="h-3 w-3 mr-1" /> 
+                  View job listing
+                </a>
+              )}
             </div>
             <div className="flex gap-2">
               <Button 
@@ -233,6 +252,20 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
             </TabsList>
             
             <TabsContent value="overview" className="space-y-4 mt-4">
+              {job.project && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Project</p>
+                  <p>{job.project}</p>
+                </div>
+              )}
+              
+              {job.product && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Product</p>
+                  <p>{job.product}</p>
+                </div>
+              )}
+              
               {job.location && (
                 <div>
                   <p className="text-sm text-muted-foreground">Location</p>
@@ -284,6 +317,13 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
             </TabsContent>
             
             <TabsContent value="company" className="space-y-4 mt-4">
+              {job.industry && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Industry</p>
+                  <p>{job.industry}</p>
+                </div>
+              )}
+              
               {job.company_info && (
                 <div>
                   <p className="text-sm text-muted-foreground">About Company</p>
@@ -302,13 +342,6 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 <div>
                   <p className="text-sm text-muted-foreground">Company Size</p>
                   <p>{job.company_size}</p>
-                </div>
-              )}
-              
-              {job.industry && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Industry</p>
-                  <p>{job.industry}</p>
                 </div>
               )}
               
@@ -372,13 +405,6 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                   </div>
                 </div>
               )}
-              
-              {job.project_or_product && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Project/Product</p>
-                  <p>{job.project_or_product}</p>
-                </div>
-              )}
             </TabsContent>
             
             <TabsContent value="application" className="space-y-4 mt-4">
@@ -400,6 +426,60 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 <div>
                   <p className="text-sm text-muted-foreground">Recruiter Contact</p>
                   <p>{job.recruiter_contact}</p>
+                </div>
+              )}
+              
+              {/* Application Reasoning Section */}
+              {job.application_reasoning && (
+                <div className="border rounded-md p-3 mt-4">
+                  <p className="text-sm font-medium mb-2">Application Reasoning</p>
+                  
+                  {job.application_reasoning.why_apply && (
+                    <div className="mb-2">
+                      <p className="text-xs text-muted-foreground">Why Apply</p>
+                      <p className="text-sm whitespace-pre-wrap">{job.application_reasoning.why_apply}</p>
+                    </div>
+                  )}
+                  
+                  {job.application_reasoning.key_matching_qualifications?.length > 0 && (
+                    <div className="mb-2">
+                      <p className="text-xs text-muted-foreground">Key Matching Qualifications</p>
+                      <ul className="text-sm list-disc list-inside">
+                        {job.application_reasoning.key_matching_qualifications.map((qual, i) => (
+                          <li key={i}>{qual}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {job.application_reasoning.transferable_skills_details?.length > 0 && (
+                    <div className="mb-2">
+                      <p className="text-xs text-muted-foreground">Transferable Skills</p>
+                      <ul className="text-sm list-disc list-inside">
+                        {job.application_reasoning.transferable_skills_details.map((skill, i) => (
+                          <li key={i}>{skill}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {job.application_reasoning.learning_needs?.length > 0 && (
+                    <div className="mb-2">
+                      <p className="text-xs text-muted-foreground">Learning Needs</p>
+                      <ul className="text-sm list-disc list-inside">
+                        {job.application_reasoning.learning_needs.map((need, i) => (
+                          <li key={i}>{need}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {job.application_reasoning.overall_fit_assessment && (
+                    <div>
+                      <p className="text-xs text-muted-foreground">Overall Fit Assessment</p>
+                      <p className="text-sm">{job.application_reasoning.overall_fit_assessment}</p>
+                    </div>
+                  )}
                 </div>
               )}
               

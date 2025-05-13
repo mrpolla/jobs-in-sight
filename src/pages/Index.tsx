@@ -75,6 +75,7 @@ const Index = () => {
     }
     
     setUploadDialogOpen(false);
+    toast.success(`Imported ${importedJobs.length} jobs successfully`);
   };
 
   const handleJsonImport = (importedJobs: Job[]) => {
@@ -87,6 +88,7 @@ const Index = () => {
     setJobs(updatedJobs);
     saveJobs(updatedJobs);
     setAddJobDialogOpen(false);
+    toast.success('Job added successfully');
   };
 
   const handleJobUpdated = (updatedJob: Job) => {

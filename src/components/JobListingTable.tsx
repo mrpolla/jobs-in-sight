@@ -26,7 +26,9 @@ import {
   Trash,
   Eye,
   EyeOff,
-  Star
+  Star,
+  ExternalLink,
+  Building
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -46,6 +48,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/t
 import TechStackTooltip from './TechStackTooltip';
 import CompanyInfoTooltip from './CompanyInfoTooltip';
 import MatchScoreTooltip from './MatchScoreTooltip';
+import ProjectTooltip from './ProjectTooltip';
 import { Switch } from './ui/switch';
 
 interface JobListingTableProps {
@@ -146,6 +149,14 @@ export default function JobListingTable({
     setJobToDelete(null);
   };
 
+  // Open URL in a new tab
+  const openJobUrl = (job: Job, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent row click event
+    if (job.url) {
+      window.open(job.url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   // Filter jobs based on current filters
   const filteredJobs = jobs.filter(job => {
     // First check if we should hide hidden jobs
@@ -201,8 +212,11 @@ export default function JobListingTable({
         const techB = (b.tech_stack || []).join(', ');
         comparison = techA.localeCompare(techB);
         break;
-      case 'project_or_product':
-        comparison = (a.project_or_product || '').localeCompare(b.project_or_product || '');
+      case 'project':
+        comparison = (a.project || '').localeCompare(b.project || '');
+        break;
+      case 'industry':
+        comparison = (a.industry || '').localeCompare(b.industry || '');
         break;
       case 'remote_policy':
         comparison = (a.remote_policy || '').localeCompare(b.remote_policy || '');
@@ -240,24 +254,26 @@ export default function JobListingTable({
     // For now, we'll just download a CSV file
     
     const headers = [
-      'Position', 'Company', 'Location', 'Status', 'Priority', 
-      'Tech Stack', 'Project/Product', 'Remote Policy', 'Salary', 
-      'Start Date', 'Match Score', 'Last Updated'
+      'Position', 'Project', 'Company', 'Industry', 'Location', 'Status', 'Priority', 
+      'Tech Stack', 'Remote Policy', 'Salary', 
+      'Start Date', 'Match Score', 'Last Updated', 'URL'
     ];
     
     const rows = sortedJobs.map(job => [
       job.position,
+      job.project || '',
       job.company,
+      job.industry || '',
       job.location || '',
       job.status,
       getPriorityLabel(job.priority_level),
       (job.tech_stack || []).join(', '),
-      job.project_or_product || '',
       job.remote_policy || '',
       job.possible_salary || '',
       job.start_date || '',
       job.match_score || job.cv_match?.overall_match_percentage || 'N/A',
-      job.last_updated
+      job.last_updated,
+      job.url || ''
     ]);
     
     // Create CSV content
@@ -421,6 +437,18 @@ export default function JobListingTable({
                       Position {getSortIcon('position')}
                     </Button>
                   </TableHead>
+                  
+                  {/* Project Column (NEW) */}
+                  <TableHead>
+                    <Button 
+                      variant="ghost" 
+                      className="p-0 hover:bg-transparent font-medium" 
+                      onClick={() => handleSort('project')}
+                    >
+                      Project {getSortIcon('project')}
+                    </Button>
+                  </TableHead>
+                  
                   <TableHead>
                     <Button 
                       variant="ghost" 
@@ -430,6 +458,19 @@ export default function JobListingTable({
                       Company {getSortIcon('company')}
                     </Button>
                   </TableHead>
+                  
+                  {/* Industry Column (NEW) */}
+                  <TableHead className="hidden md:table-cell">
+                    <Button 
+                      variant="ghost" 
+                      className="p-0 hover:bg-transparent font-medium" 
+                      onClick={() => handleSort('industry')}
+                    >
+                      <Building className="h-4 w-4 mr-1" />
+                      Industry {getSortIcon('industry')}
+                    </Button>
+                  </TableHead>
+                  
                   <TableHead className="hidden md:table-cell">
                     <Button 
                       variant="ghost" 
@@ -439,6 +480,7 @@ export default function JobListingTable({
                       Location {getSortIcon('location')}
                     </Button>
                   </TableHead>
+                  
                   <TableHead className="w-[120px]">
                     <Button 
                       variant="ghost" 
@@ -448,6 +490,7 @@ export default function JobListingTable({
                       Status {getSortIcon('status')}
                     </Button>
                   </TableHead>
+                  
                   <TableHead className="w-[100px]">
                     <Button 
                       variant="ghost" 
@@ -480,17 +523,6 @@ export default function JobListingTable({
                         >
                           <Code className="h-4 w-4 mr-1" />
                           Tech Stack {getSortIcon('tech_stack')}
-                        </Button>
-                      </TableHead>
-                      
-                      <TableHead className="hidden xl:table-cell">
-                        <Button 
-                          variant="ghost" 
-                          className="p-0 hover:bg-transparent font-medium" 
-                          onClick={() => handleSort('project_or_product')}
-                        >
-                          <FileCode2 className="h-4 w-4 mr-1" />
-                          Project/Product {getSortIcon('project_or_product')}
                         </Button>
                       </TableHead>
                       
@@ -539,7 +571,7 @@ export default function JobListingTable({
                     </Button>
                   </TableHead>
                   
-                  <TableHead className="w-[80px] text-center">
+                  <TableHead className="w-[100px] text-center">
                     Actions
                   </TableHead>
                 </TableRow>
@@ -552,6 +584,16 @@ export default function JobListingTable({
                     onClick={() => onSelectJob(job)}
                   >
                     <TableCell className="font-medium">{job.position}</TableCell>
+                    
+                    {/* Project Cell */}
+                    <TableCell>
+                      {job.project ? (
+                        <ProjectTooltip job={job}>
+                          {job.project}
+                        </ProjectTooltip>
+                      ) : 'N/A'}
+                    </TableCell>
+                    
                     <TableCell>
                       <CompanyInfoTooltip
                         company={job.company}
@@ -564,7 +606,12 @@ export default function JobListingTable({
                         {job.company}
                       </CompanyInfoTooltip>
                     </TableCell>
+                    
+                    {/* Industry Cell */}
+                    <TableCell className="hidden md:table-cell">{job.industry || 'N/A'}</TableCell>
+                    
                     <TableCell className="hidden md:table-cell">{job.location || 'N/A'}</TableCell>
+                    
                     <TableCell>
                       <div className="max-w-[120px]">
                         <JobStatusSelect
@@ -577,6 +624,7 @@ export default function JobListingTable({
                         />
                       </div>
                     </TableCell>
+                    
                     <TableCell>
                       <Badge className={getPriorityClass(job.priority_level)}>
                         {getPriorityLabel(job.priority_level)}
@@ -621,10 +669,6 @@ export default function JobListingTable({
                           ) : 'N/A'}
                         </TableCell>
                         
-                        <TableCell className="hidden xl:table-cell">
-                          {job.project_or_product || 'N/A'}
-                        </TableCell>
-                        
                         <TableCell className="hidden lg:table-cell">
                           {job.remote_policy || 'N/A'}
                         </TableCell>
@@ -652,6 +696,25 @@ export default function JobListingTable({
                     
                     <TableCell>
                       <div className="flex items-center justify-center gap-1">
+                        {job.url && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                className="h-8 w-8 hover:bg-muted"
+                                onClick={(e) => openJobUrl(job, e)}
+                                aria-label="Open job URL"
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Open job listing
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                        
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button 

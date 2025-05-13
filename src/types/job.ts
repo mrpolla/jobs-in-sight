@@ -6,7 +6,8 @@ export interface Job {
   job_description?: string;
   tech_stack?: string[];
   requirements?: string;
-  project_or_product?: string;
+  project?: string;
+  product?: string;
   job_type?: string;
   location?: string;
   remote_policy?: string;
@@ -33,6 +34,14 @@ export interface Job {
   rating_match?: number;
   last_updated: string;
   hidden?: boolean;
+  url?: string; // New field for job listing URL
+  application_reasoning?: {
+    why_apply?: string;
+    key_matching_qualifications?: string[];
+    transferable_skills_details?: string[];
+    learning_needs?: string[];
+    overall_fit_assessment?: string;
+  };
   cv_match?: {
     overall_match_percentage: number;
     tech_stack_match: {
@@ -80,7 +89,7 @@ export interface Job {
 export type JobStatus = 'New' | 'Applied' | 'Interview' | 'Rejected' | 'Offer';
 
 export type SortField = 'position' | 'company' | 'location' | 'status' | 'priority_level' | 
-  'tech_stack' | 'project_or_product' | 'remote_policy' | 'possible_salary' | 'start_date' | 'last_updated' | 'match_score';
+  'tech_stack' | 'project' | 'product' | 'remote_policy' | 'possible_salary' | 'start_date' | 'last_updated' | 'match_score' | 'industry';
 
 export interface JobFilters {
   status?: JobStatus | 'All';

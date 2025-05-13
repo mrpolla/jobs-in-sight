@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from 'react';
-import { Job, JobStatus, RequirementAssessment } from '@/types/job';
+import { Job, JobStatus, RequirementAssessment, RequirementMatch } from '@/types/job';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { X, Pen, Trash, EyeOff, Eye, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, Pen, Trash, EyeOff, Eye, ExternalLink, ChevronDown, ChevronUp, Clock, Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import DeleteConfirmationDialog from './DeleteConfirmationDialog';
 import { Progress } from './ui/progress';
 import RequirementsAssessment from './RequirementsAssessment';
+import RequirementsMatchDisplay from './RequirementsMatchDisplay';
 
 interface JobDetailPanelProps {
   job: Job | null;
@@ -40,8 +41,6 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
       setHidden(job.hidden || false);
     }
   }, [job]);
-
-  console.log("Side panel rendered with job:", job);
 
   if (!job) {
     return null;
@@ -149,12 +148,17 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
     return 'bg-red-500';
   };
 
-  // Get requirements assessment from the job, or empty array if none
+  // Check for new requirements assessment structure or fall back to legacy
+  const requirementsMatch: RequirementMatch[] = job.cv_match?.requirements_match || [];
   const requirementsAssessment: RequirementAssessment[] = 
     job.application_reasoning?.requirements_assessment || [];
 
   // Filter requirements by selected status
-  const filteredRequirements = selectedReqStatus
+  const filteredRequirementsMatch = selectedReqStatus
+    ? requirementsMatch.filter(req => req.status === selectedReqStatus)
+    : requirementsMatch;
+    
+  const filteredRequirementsAssessment = selectedReqStatus
     ? requirementsAssessment.filter(req => req.status === selectedReqStatus)
     : requirementsAssessment;
 
@@ -220,12 +224,12 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
           </div>
 
           {/* Match Score Section */}
-          {(job.match_score || job.cv_match) && (
+          {(job.match_score || job.cv_match?.overall_match_percentage) && (
             <div className="mb-6 p-4 bg-muted rounded-lg">
               <div className="flex items-center justify-between">
                 <h3 className="font-medium">CV Match Score</h3>
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white ${getMatchScoreColor(job.match_score || job.cv_match?.overall_match_percentage)}`}>
-                  {job.match_score || job.cv_match?.overall_match_percentage || 'N/A'}
+                  {job.cv_match?.overall_match_percentage || job.match_score || 'N/A'}
                 </div>
               </div>
               
@@ -295,6 +299,27 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 <div>
                   <p className="text-sm text-muted-foreground">Remote Policy</p>
                   <p>{job.remote_policy}</p>
+                </div>
+              )}
+              
+              {/* New fields for hours and vacation */}
+              {job.hours_per_week && (
+                <div className="flex items-start gap-1">
+                  <Clock className="h-4 w-4 mt-0.5 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Hours per Week</p>
+                    <p>{job.hours_per_week}</p>
+                  </div>
+                </div>
+              )}
+              
+              {job.vacation_days && (
+                <div className="flex items-start gap-1">
+                  <Calendar className="h-4 w-4 mt-0.5 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Vacation Days</p>
+                    <p>{job.vacation_days}</p>
+                  </div>
                 </div>
               )}
               
@@ -417,8 +442,53 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 </div>
               )}
               
-              {/* Requirements Assessment Section */}
-              {requirementsAssessment.length > 0 && (
+              {/* New Requirements Match Section */}
+              {requirementsMatch.length > 0 && (
+                <div className="border rounded-md p-4 mt-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-medium">Requirements Match</h4>
+                    <div className="flex gap-1">
+                      <Button 
+                        variant={selectedReqStatus === null ? "default" : "outline"} 
+                        size="sm"
+                        className="h-7 text-xs"
+                        onClick={() => setSelectedReqStatus(null)}
+                      >
+                        All
+                      </Button>
+                      <Button 
+                        variant={selectedReqStatus === "Can do well" ? "default" : "outline"} 
+                        size="sm"
+                        className={`h-7 text-xs ${selectedReqStatus === "Can do well" ? "bg-green-600 hover:bg-green-700" : "text-green-600 border-green-600"}`}
+                        onClick={() => setSelectedReqStatus(selectedReqStatus === "Can do well" ? null : "Can do well")}
+                      >
+                        Can Do
+                      </Button>
+                      <Button 
+                        variant={selectedReqStatus === "Can transfer" ? "default" : "outline"} 
+                        size="sm"
+                        className={`h-7 text-xs ${selectedReqStatus === "Can transfer" ? "bg-amber-600 hover:bg-amber-700" : "text-amber-600 border-amber-600"}`}
+                        onClick={() => setSelectedReqStatus(selectedReqStatus === "Can transfer" ? null : "Can transfer")}
+                      >
+                        Transfer
+                      </Button>
+                      <Button 
+                        variant={selectedReqStatus === "Must learn" ? "default" : "outline"} 
+                        size="sm"
+                        className={`h-7 text-xs ${selectedReqStatus === "Must learn" ? "bg-red-600 hover:bg-red-700" : "text-red-600 border-red-600"}`}
+                        onClick={() => setSelectedReqStatus(selectedReqStatus === "Must learn" ? null : "Must learn")}
+                      >
+                        Learn
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <RequirementsMatchDisplay requirements={filteredRequirementsMatch} />
+                </div>
+              )}
+              
+              {/* Legacy Requirements Assessment Section - only show if the new format isn't available */}
+              {!requirementsMatch.length && requirementsAssessment.length > 0 && (
                 <div className="border rounded-md p-4 mt-4">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium">Requirements Assessment</h4>
@@ -458,7 +528,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                     </div>
                   </div>
                   
-                  <RequirementsAssessment requirements={filteredRequirements} />
+                  <RequirementsAssessment requirements={filteredRequirementsAssessment} />
                 </div>
               )}
             </TabsContent>
@@ -508,8 +578,8 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                     </div>
                   )}
                   
-                  {/* Legacy transferable skills display */}
-                  {!requirementsAssessment.length && job.application_reasoning.transferable_skills_details?.length > 0 && (
+                  {/* Legacy transferable skills display - only show if neither new nor old requirements assessment exists */}
+                  {!requirementsMatch.length && !requirementsAssessment.length && job.application_reasoning.transferable_skills_details?.length > 0 && (
                     <div className="mb-2">
                       <p className="text-xs text-muted-foreground">Transferable Skills</p>
                       <ul className="text-sm list-disc list-inside">
@@ -555,24 +625,6 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                   </p>
                 )}
               </div>
-              
-              {job.rating_match && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Match Rating</p>
-                  <div className="flex items-center mt-1">
-                    {Array.from({length: 5}).map((_, i) => (
-                      <div 
-                        key={i} 
-                        className={`w-6 h-6 rounded-full flex items-center justify-center mr-1 ${
-                          i < job.rating_match! ? 'bg-primary text-primary-foreground' : 'bg-muted'
-                        }`}
-                      >
-                        {i < job.rating_match! ? i + 1 : ''}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
               
               {/* CV Match details if available */}
               {job.cv_match && (

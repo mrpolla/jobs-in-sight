@@ -34,17 +34,20 @@ export interface Job {
   rating_match?: number;
   last_updated: string;
   hidden?: boolean;
-  url?: string; // New field for job listing URL
+  url?: string;
+  hours_per_week?: string; // New field for working hours
+  vacation_days?: string; // New field for vacation days
   application_reasoning?: {
     why_apply?: string;
     key_matching_qualifications?: string[];
     transferable_skills_details?: string[]; // Legacy field
-    requirements_assessment?: RequirementAssessment[]; // New field
+    requirements_assessment?: RequirementAssessment[]; // Legacy field
     learning_needs?: string[];
     overall_fit_assessment?: string;
   };
   cv_match?: {
     overall_match_percentage: number;
+    requirements_match?: RequirementMatch[]; // New field for integrated requirements assessment
     tech_stack_match: {
       score: number;
       matched_skills: string[];
@@ -92,6 +95,14 @@ export interface RequirementAssessment {
   status: 'Can do well' | 'Can transfer' | 'Must learn';
   explanation: string;
   transferable_skills: string[];
+}
+
+export interface RequirementMatch {
+  requirement: string;
+  status: 'Can do well' | 'Can transfer' | 'Must learn';
+  explanation: string;
+  transferable_skills: string[];
+  match_score: number;
 }
 
 export type JobStatus = 'New' | 'Applied' | 'Interview' | 'Rejected' | 'Offer';

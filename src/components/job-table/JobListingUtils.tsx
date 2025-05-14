@@ -77,9 +77,9 @@ export const renderRequirementsBar = (job: Job) => {
   const mustLearnCount = requirementsMatch.filter(req => req.status === 'Must learn').length;
   
   // Calculate percentages with explicit number types
-  const wellPercentage = totalCount > 0 ? (canDoWellCount / totalCount) * 100 : 0;
-  const transferPercentage = totalCount > 0 ? (canTransferCount / totalCount) * 100 : 0;
-  const learnPercentage = totalCount > 0 ? (mustLearnCount / totalCount) * 100 : 0;
+  const wellPercentage: number = totalCount > 0 ? (Number(canDoWellCount) / Number(totalCount)) * 100 : 0;
+  const transferPercentage: number = totalCount > 0 ? (Number(canTransferCount) / Number(totalCount)) * 100 : 0;
+  const learnPercentage: number = totalCount > 0 ? (Number(mustLearnCount) / Number(totalCount)) * 100 : 0;
   
   return (
     <div className="w-full">

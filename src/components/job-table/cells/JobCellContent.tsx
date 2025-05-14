@@ -34,7 +34,7 @@ const JobCellContent = {
     industry?: string,
     companySize?: string,
     companyReputation?: string,
-    companyProducts?: string[]
+    companyProducts?: string[] | string
   }) => {
     return (
       <CompanyInfoTooltip
@@ -43,7 +43,7 @@ const JobCellContent = {
         industry={industry}
         companySize={companySize}
         companyReputation={companyReputation}
-        companyProducts={companyProducts}
+        companyProducts={typeof companyProducts === 'string' ? companyProducts : companyProducts}
       >
         {company}
       </CompanyInfoTooltip>
@@ -62,11 +62,11 @@ const JobCellContent = {
     return <>{policy || 'N/A'}</>;
   },
   
-  Hours: ({ hours }: { hours?: number }) => {
+  Hours: ({ hours }: { hours?: number | string }) => {
     return <>{hours ? `${hours}h` : 'N/A'}</>;
   },
   
-  Vacation: ({ days }: { days?: number }) => {
+  Vacation: ({ days }: { days?: number | string }) => {
     return <>{days ? `${days} days` : 'N/A'}</>;
   },
   

@@ -19,26 +19,6 @@ export default function MatchScoreTooltip({ score, matchData, summary }: MatchSc
     if (score >= 60) return 'bg-amber-500';
     return 'bg-red-500';
   };
-  
-  // Helper function to calculate tech stack score from requirements_match
-  const getTechStackScore = (matchData: Job['cv_match']) => {
-    // Calculate from requirements_match if available
-    if (matchData?.requirements_match && matchData.requirements_match.length > 0) {
-      // Find tech-related requirements
-      const techRequirements = matchData.requirements_match.filter(req => 
-        /tech|software|system|code|program|develop|api|framework|language|SAP/i.test(req.requirement)
-      );
-      
-      if (techRequirements.length > 0) {
-        return Math.round(
-          techRequirements.reduce((sum, req) => sum + req.match_score, 0) / techRequirements.length
-        );
-      }
-    }
-    
-    // Default fallback
-    return 0;
-  };
 
   return (
     <HoverCard>
@@ -53,15 +33,7 @@ export default function MatchScoreTooltip({ score, matchData, summary }: MatchSc
         {summary && <p className="text-sm font-medium mb-2">{summary}</p>}
         
         {matchData ? (
-          <div className="space-y-3">
-            <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span>Tech Stack Match</span>
-                <span className="font-medium">{getTechStackScore(matchData)}%</span>
-              </div>
-              <Progress value={getTechStackScore(matchData)} className="h-2" />
-            </div>
-            
+          <div className="space-y-3">            
             <div>
               <div className="flex justify-between text-xs mb-1">
                 <span>Experience Match</span>

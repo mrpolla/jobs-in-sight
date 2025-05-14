@@ -27,7 +27,10 @@ import {
   EyeOff,
   Star,
   ExternalLink,
-  Building
+  Building,
+  Clock,
+  PalmtreeIcon,
+  CheckSquare
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -49,11 +52,14 @@ import CompanyInfoTooltip from './CompanyInfoTooltip';
 import MatchScoreTooltip from './MatchScoreTooltip';
 import ProjectTooltip from './ProjectTooltip';
 import { Switch } from './ui/switch';
+import RequirementsAssessmentTooltip from './RequirementsAssessmentTooltip';
+import PrioritySelect from './PrioritySelect';
 
 interface JobListingTableProps {
   jobs: Job[];
   onSelectJob: (job: Job) => void;
   onUpdateJobStatus: (job: Job, status: JobStatus) => void;
+  onUpdateJobPriority: (job: Job, priority: number) => void;
   onDeleteJob: (jobId: string) => void;
   onToggleHidden: (job: Job, hidden: boolean) => void;
 }
@@ -61,11 +67,11 @@ interface JobListingTableProps {
 export default function JobListingTable({ 
   jobs, 
   onSelectJob, 
-  onUpdateJobStatus, 
+  onUpdateJobStatus,
+  onUpdateJobPriority,
   onDeleteJob,
   onToggleHidden
 }: JobListingTableProps) {
-  // Update the supported sort fields to include all the new columns
   const [sort, setSort] = useState<JobSort>({ field: 'last_updated', direction: 'desc' });
   const [filters, setFilters] = useState<JobFilters>({ 
     status: 'All', 
@@ -136,6 +142,13 @@ export default function JobListingTable({
     event.stopPropagation(); // Prevent row click event
     onToggleHidden(job, !job.hidden);
   };
+  
+  const handlePriorityChange = (job: Job, priority: number, event?: React.SyntheticEvent) => {
+    if (event) {
+      event.stopPropagation(); // Prevent row click event
+    }
+    onUpdateJobPriority(job, priority);
+  };
 
   const confirmDelete = () => {
     if (jobToDelete) {
@@ -148,7 +161,6 @@ export default function JobListingTable({
     setJobToDelete(null);
   };
 
-  // Open URL in a new tab
   const openJobUrl = (job: Job, event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent row click event
     if (job.url) {
@@ -156,24 +168,19 @@ export default function JobListingTable({
     }
   };
 
-  // Filter jobs based on current filters
   const filteredJobs = jobs.filter(job => {
-    // First check if we should hide hidden jobs
     if (filters.hideHidden && job.hidden) {
       return false;
     }
     
-    // Status filter
     if (filters.status !== 'All' && job.status !== filters.status) {
       return false;
     }
     
-    // Priority filter
     if (filters.priority !== 'All' && job.priority_level !== filters.priority) {
       return false;
     }
     
-    // Search filter
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
       return (
@@ -186,7 +193,6 @@ export default function JobListingTable({
     return true;
   });
   
-  // Sort the filtered jobs
   const sortedJobs = [...filteredJobs].sort((a, b) => {
     let comparison = 0;
     
@@ -240,6 +246,12 @@ export default function JobListingTable({
       case 'last_updated':
         comparison = (new Date(b.last_updated).getTime() - new Date(a.last_updated).getTime());
         break;
+      case 'hours_per_week':
+        comparison = (a.hours_per_week || 0) - (b.hours_per_week || 0);
+        break;
+      case 'vacation_days':
+        comparison = (a.vacation_days || 0) - (b.vacation_days || 0);
+        break;
       default:
         comparison = 0;
     }
@@ -247,22 +259,18 @@ export default function JobListingTable({
     return sort.direction === 'asc' ? comparison : -comparison;
   });
 
-  // Helper function to derive matched skills from the requirements_match structure
   const getMatchedSkills = (job: Job): string[] => {
     if (!job.cv_match?.requirements_match) {
       return [];
     }
     
-    // Extract skills from requirements that are "Can do well"
     const wellMatchedRequirements = job.cv_match.requirements_match.filter(req => 
       req.status === "Can do well"
     );
     
-    // Extract skill names from the requirement text (simplified approach)
     return wellMatchedRequirements.map(req => extractSkillName(req.requirement));
   };
   
-  // Helper function to determine if a requirement is tech-related
   const isTechRequirement = (text: string): boolean => {
     const techTerms = ["javascript", "typescript", "react", "node", "java", "python", 
                       "c#", ".net", "angular", "vue", "aws", "azure", "cloud", "api", 
@@ -274,22 +282,15 @@ export default function JobListingTable({
     return techTerms.some(term => lowercaseText.includes(term));
   };
   
-  // Helper function to extract a skill name from requirement text
   const extractSkillName = (text: string): string => {
-    // Simple approach - extract key technologies or first few meaningful words
     const match = text.match(/\b(javascript|typescript|react|node|java|python|c#|\.net|angular|vue|aws|azure|sql|sap)\b/i);
     if (match) return match[0];
     
-    // If no direct tech match, take first part of the requirement
     const simplifiedMatch = text.match(/^(.*?)(experience|knowledge|understanding|proficiency|skills)/i);
     return simplifiedMatch ? simplifiedMatch[1].trim() : text.split(' ').slice(0, 3).join(' ');
   };
 
   const handleExportExcel = async () => {
-    // This is a placeholder for Excel export functionality
-    // In a real implementation, we'd use a library like xlsx
-    // For now, we'll just download a CSV file
-    
     const headers = [
       'Position', 'Project', 'Company', 'Industry', 'Location', 'Status', 'Priority', 
       'Tech Stack', 'Remote Policy', 'Salary', 
@@ -313,13 +314,11 @@ export default function JobListingTable({
       job.url || ''
     ]);
     
-    // Create CSV content
     const csvContent = [
       headers.join(','),
       ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
     ].join('\n');
     
-    // Create a blob and download
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -328,6 +327,47 @@ export default function JobListingTable({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const renderRequirementsBar = (job: Job) => {
+    if (!job.cv_match?.requirements_match || job.cv_match.requirements_match.length === 0) {
+      return <div>N/A</div>;
+    }
+    
+    const requirementsMatch = job.cv_match.requirements_match;
+    const total = requirementsMatch.length;
+    
+    const canDoWell = requirementsMatch.filter(req => req.status === 'Can do well').length;
+    const canTransfer = requirementsMatch.filter(req => req.status === 'Can transfer').length;
+    const mustLearn = requirementsMatch.filter(req => req.status === 'Must learn').length;
+    
+    const wellPercentage = (canDoWell / total) * 100;
+    const transferPercentage = (canTransfer / total) * 100;
+    const learnPercentage = (mustLearn / total) * 100;
+    
+    return (
+      <div className="w-full">
+        <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
+          <div 
+            className="bg-green-500" 
+            style={{ width: `${wellPercentage}%` }}
+          />
+          <div 
+            className="bg-amber-500" 
+            style={{ width: `${transferPercentage}%` }}
+          />
+          <div 
+            className="bg-red-500" 
+            style={{ width: `${learnPercentage}%` }}
+          />
+        </div>
+        <div className="flex justify-between text-xs mt-1">
+          <span>{canDoWell}</span>
+          <span>{canTransfer}</span>
+          <span>{mustLearn}</span>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -475,7 +515,6 @@ export default function JobListingTable({
                     </Button>
                   </TableHead>
                   
-                  {/* Project Column (NEW) */}
                   <TableHead>
                     <Button 
                       variant="ghost" 
@@ -496,7 +535,6 @@ export default function JobListingTable({
                     </Button>
                   </TableHead>
                   
-                  {/* Industry Column (NEW) */}
                   <TableHead className="hidden md:table-cell">
                     <Button 
                       variant="ghost" 
@@ -515,6 +553,39 @@ export default function JobListingTable({
                       onClick={() => handleSort('location')}
                     >
                       Location {getSortIcon('location')}
+                    </Button>
+                  </TableHead>
+                  
+                  <TableHead className="hidden md:table-cell">
+                    <Button 
+                      variant="ghost" 
+                      className="p-0 hover:bg-transparent font-medium" 
+                      onClick={() => handleSort('remote_policy')}
+                    >
+                      <Globe className="h-4 w-4 mr-1" />
+                      Remote {getSortIcon('remote_policy')}
+                    </Button>
+                  </TableHead>
+                  
+                  <TableHead className="hidden lg:table-cell">
+                    <Button 
+                      variant="ghost" 
+                      className="p-0 hover:bg-transparent font-medium" 
+                      onClick={() => handleSort('hours_per_week')}
+                    >
+                      <Clock className="h-4 w-4 mr-1" />
+                      Hours {getSortIcon('hours_per_week')}
+                    </Button>
+                  </TableHead>
+                  
+                  <TableHead className="hidden lg:table-cell">
+                    <Button 
+                      variant="ghost" 
+                      className="p-0 hover:bg-transparent font-medium" 
+                      onClick={() => handleSort('vacation_days')}
+                    >
+                      <PalmtreeIcon className="h-4 w-4 mr-1" />
+                      Vacation {getSortIcon('vacation_days')}
                     </Button>
                   </TableHead>
                   
@@ -538,8 +609,17 @@ export default function JobListingTable({
                     </Button>
                   </TableHead>
                   
-                  {/* Match Score Column */}
-                  <TableHead className="w-[100px]">
+                  <TableHead className="w-[130px]">
+                    <Button 
+                      variant="ghost" 
+                      className="p-0 hover:bg-transparent font-medium" 
+                    >
+                      <CheckSquare className="h-4 w-4 mr-1" />
+                      Requirements
+                    </Button>
+                  </TableHead>
+                  
+                  <TableHead className="w-[80px]">
                     <Button 
                       variant="ghost" 
                       className="p-0 hover:bg-transparent font-medium" 
@@ -560,17 +640,6 @@ export default function JobListingTable({
                         >
                           <Code className="h-4 w-4 mr-1" />
                           Tech Stack {getSortIcon('tech_stack')}
-                        </Button>
-                      </TableHead>
-                      
-                      <TableHead className="hidden lg:table-cell">
-                        <Button 
-                          variant="ghost" 
-                          className="p-0 hover:bg-transparent font-medium" 
-                          onClick={() => handleSort('remote_policy')}
-                        >
-                          <Globe className="h-4 w-4 mr-1" />
-                          Remote Policy {getSortIcon('remote_policy')}
                         </Button>
                       </TableHead>
                       
@@ -622,7 +691,6 @@ export default function JobListingTable({
                   >
                     <TableCell className="font-medium">{job.position}</TableCell>
                     
-                    {/* Project Cell */}
                     <TableCell>
                       {job.project ? (
                         <ProjectTooltip job={job}>
@@ -644,10 +712,19 @@ export default function JobListingTable({
                       </CompanyInfoTooltip>
                     </TableCell>
                     
-                    {/* Industry Cell */}
                     <TableCell className="hidden md:table-cell">{job.industry || 'N/A'}</TableCell>
                     
                     <TableCell className="hidden md:table-cell">{job.location || 'N/A'}</TableCell>
+                    
+                    <TableCell className="hidden md:table-cell">{job.remote_policy || 'N/A'}</TableCell>
+                    
+                    <TableCell className="hidden lg:table-cell">
+                      {job.hours_per_week ? `${job.hours_per_week}h` : 'N/A'}
+                    </TableCell>
+                    
+                    <TableCell className="hidden lg:table-cell">
+                      {job.vacation_days ? `${job.vacation_days} days` : 'N/A'}
+                    </TableCell>
                     
                     <TableCell>
                       <div className="max-w-[120px]">
@@ -655,26 +732,44 @@ export default function JobListingTable({
                           value={job.status}
                           onChange={(status) => {
                             onUpdateJobStatus(job, status);
-                            // Prevent row click when status is changed
-                            event?.stopPropagation();
                           }}
                         />
                       </div>
                     </TableCell>
                     
                     <TableCell>
-                      <Badge className={getPriorityClass(job.priority_level)}>
-                        {getPriorityLabel(job.priority_level)}
-                      </Badge>
+                      <PrioritySelect 
+                        value={job.priority_level || 3} 
+                        onChange={(priority) => handlePriorityChange(job, priority)}
+                      />
                     </TableCell>
                     
-                    {/* Match Score Cell */}
                     <TableCell>
-                      <MatchScoreTooltip 
-                        score={job.match_score || job.cv_match?.overall_match_percentage}
-                        matchData={job.cv_match}
-                        summary={job.match_summary}
-                      />
+                      <RequirementsAssessmentTooltip requirementsMatch={job.cv_match?.requirements_match}>
+                        {renderRequirementsBar(job)}
+                      </RequirementsAssessmentTooltip>
+                    </TableCell>
+                    
+                    <TableCell>
+                      <div className="flex justify-center">
+                        {(job.match_score || job.cv_match?.overall_match_percentage) ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white 
+                                ${(job.match_score || job.cv_match?.overall_match_percentage) >= 80 ? 'bg-green-500' : 
+                                  (job.match_score || job.cv_match?.overall_match_percentage) >= 60 ? 'bg-amber-500' : 'bg-red-500'}`}
+                              >
+                                {job.match_score || job.cv_match?.overall_match_percentage}
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Overall match score</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        ) : (
+                          <span>N/A</span>
+                        )}
+                      </div>
                     </TableCell>
                     
                     {showAllColumns && (
@@ -704,10 +799,6 @@ export default function JobListingTable({
                               </div>
                             </TechStackTooltip>
                           ) : 'N/A'}
-                        </TableCell>
-                        
-                        <TableCell className="hidden lg:table-cell">
-                          {job.remote_policy || 'N/A'}
                         </TableCell>
                         
                         <TableCell className="hidden lg:table-cell">

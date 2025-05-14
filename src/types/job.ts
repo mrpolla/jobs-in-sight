@@ -1,4 +1,3 @@
-
 export interface Job {
   id: string;
   position: string;
@@ -101,8 +100,22 @@ export interface RequirementMatch {
 
 export type JobStatus = 'New' | 'Applied' | 'Interview' | 'Rejected' | 'Offer';
 
-export type SortField = 'position' | 'company' | 'location' | 'status' | 'priority_level' | 
-  'tech_stack' | 'project' | 'product' | 'remote_policy' | 'possible_salary' | 'start_date' | 'last_updated' | 'match_score' | 'industry';
+export type SortField = 
+  | 'position' 
+  | 'company' 
+  | 'location' 
+  | 'status' 
+  | 'priority_level' 
+  | 'tech_stack' 
+  | 'remote_policy' 
+  | 'possible_salary' 
+  | 'start_date' 
+  | 'match_score' 
+  | 'last_updated' 
+  | 'project'
+  | 'industry'
+  | 'hours_per_week'  // Added
+  | 'vacation_days';  // Added
 
 export interface JobFilters {
   status?: JobStatus | 'All';

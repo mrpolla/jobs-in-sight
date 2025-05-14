@@ -341,10 +341,10 @@ export default function JobListingTable({
     const canTransfer = requirementsMatch.filter(req => req.status === 'Can transfer').length;
     const mustLearn = requirementsMatch.filter(req => req.status === 'Must learn').length;
     
-    // Fix: Ensure we're using numbers for the percentage calculations
-    const wellPercentage = total > 0 ? (canDoWell / total) * 100 : 0;
-    const transferPercentage = total > 0 ? (canTransfer / total) * 100 : 0;
-    const learnPercentage = total > 0 ? (mustLearn / total) * 100 : 0;
+    // Fix: Explicitly convert all values to numbers before arithmetic operations
+    const wellPercentage = total > 0 ? (Number(canDoWell) / Number(total)) * 100 : 0;
+    const transferPercentage = total > 0 ? (Number(canTransfer) / Number(total)) * 100 : 0;
+    const learnPercentage = total > 0 ? (Number(mustLearn) / Number(total)) * 100 : 0;
     
     return (
       <div className="w-full">

@@ -247,20 +247,19 @@ export default function JobListingTable({
     return sort.direction === 'asc' ? comparison : -comparison;
   });
 
-  // Helper function to derive matched skills from the new requirements_match structure
+  // Helper function to derive matched skills from the requirements_match structure
   const getMatchedSkills = (job: Job): string[] => {
     if (!job.cv_match?.requirements_match) {
-      // Fallback to the original structure for backward compatibility
-      return job.cv_match?.tech_stack_match?.matched_skills || [];
+      return [];
     }
     
-    // Derive matched skills from requirements that are tech-related and "Can do well"
-    const techRequirements = job.cv_match.requirements_match.filter(req => 
-      req.status === "Can do well" && isTechRequirement(req.requirement)
+    // Extract skills from requirements that are "Can do well"
+    const wellMatchedRequirements = job.cv_match.requirements_match.filter(req => 
+      req.status === "Can do well"
     );
     
     // Extract skill names from the requirement text (simplified approach)
-    return techRequirements.map(req => extractSkillName(req.requirement));
+    return wellMatchedRequirements.map(req => extractSkillName(req.requirement));
   };
   
   // Helper function to determine if a requirement is tech-related
@@ -269,7 +268,7 @@ export default function JobListingTable({
                       "c#", ".net", "angular", "vue", "aws", "azure", "cloud", "api", 
                       "frontend", "backend", "fullstack", "database", "sql", "nosql", 
                       "docker", "kubernetes", "devops", "ci/cd", "testing", "agile", 
-                      "scrum", "git"];
+                      "scrum", "git", "sap"];
     
     const lowercaseText = text.toLowerCase();
     return techTerms.some(term => lowercaseText.includes(term));
@@ -277,9 +276,13 @@ export default function JobListingTable({
   
   // Helper function to extract a skill name from requirement text
   const extractSkillName = (text: string): string => {
-    // A very simplified approach - in reality, you would want more sophisticated extraction
-    const match = text.match(/\b(javascript|typescript|react|node|java|python|c#|\.net|angular|vue|aws|azure|sql)\b/i);
-    return match ? match[0] : "Tech skill";
+    // Simple approach - extract key technologies or first few meaningful words
+    const match = text.match(/\b(javascript|typescript|react|node|java|python|c#|\.net|angular|vue|aws|azure|sql|sap)\b/i);
+    if (match) return match[0];
+    
+    // If no direct tech match, take first part of the requirement
+    const simplifiedMatch = text.match(/^(.*?)(experience|knowledge|understanding|proficiency|skills)/i);
+    return simplifiedMatch ? simplifiedMatch[1].trim() : text.split(' ').slice(0, 3).join(' ');
   };
 
   const handleExportExcel = async () => {

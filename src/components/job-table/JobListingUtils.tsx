@@ -69,17 +69,17 @@ export const renderRequirementsBar = (job: Job) => {
   const requirementsMatch = job.cv_match.requirements_match;
   
   // Ensure we're working with number type
-  const totalCount: number = requirementsMatch.length;
+  const totalCount = requirementsMatch.length;
   
   // Count each category and ensure they're numbers
-  const canDoWellCount: number = requirementsMatch.filter(req => req.status === 'Can do well').length;
-  const canTransferCount: number = requirementsMatch.filter(req => req.status === 'Can transfer').length;
-  const mustLearnCount: number = requirementsMatch.filter(req => req.status === 'Must learn').length;
+  const canDoWellCount = requirementsMatch.filter(req => req.status === 'Can do well').length;
+  const canTransferCount = requirementsMatch.filter(req => req.status === 'Can transfer').length;
+  const mustLearnCount = requirementsMatch.filter(req => req.status === 'Must learn').length;
   
   // Calculate percentages with explicit number types
-  const wellPercentage: number = totalCount > 0 ? (canDoWellCount / totalCount) * 100 : 0;
-  const transferPercentage: number = totalCount > 0 ? (canTransferCount / totalCount) * 100 : 0;
-  const learnPercentage: number = totalCount > 0 ? (mustLearnCount / totalCount) * 100 : 0;
+  const wellPercentage = totalCount > 0 ? (canDoWellCount / totalCount) * 100 : 0;
+  const transferPercentage = totalCount > 0 ? (canTransferCount / totalCount) * 100 : 0;
+  const learnPercentage = totalCount > 0 ? (mustLearnCount / totalCount) * 100 : 0;
   
   return (
     <div className="w-full">

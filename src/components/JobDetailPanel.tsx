@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, Clock, PalmtreeIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -19,6 +18,8 @@ interface JobDetailPanelProps {
   onUpdateJobStatus: (job: Job, status: JobStatus) => void;
   onUpdateJobPriority: (job: Job, priority: number) => void;
   onClose: () => void;
+  onJobUpdated?: (updatedJob: Job) => void;
+  onJobDeleted?: (jobId: string) => void;
 }
 
 export default function JobDetailPanel({
@@ -26,6 +27,8 @@ export default function JobDetailPanel({
   onUpdateJobStatus,
   onUpdateJobPriority,
   onClose,
+  onJobUpdated,
+  onJobDeleted,
 }: JobDetailPanelProps) {
   const [isOpen, setIsOpen] = useState(true);
 
@@ -246,9 +249,8 @@ export default function JobDetailPanel({
           <>
             <div>
               <h3 className="text-md font-medium mb-2">Match Summary</h3>
-              <StatsSummary
-                overall={job.cv_match.overall_match_percentage}
-                summary={job.match_summary}
+              <StatsSummary 
+                jobs={[job]} 
               />
             </div>
 
@@ -258,9 +260,13 @@ export default function JobDetailPanel({
               <>
                 <div>
                   <h3 className="text-md font-medium mb-2">Requirements Match</h3>
-                  <RequirementsMatchStats requirementsMatch={job.cv_match.requirements_match} />
+                  <RequirementsMatchStats 
+                    requirements={job.cv_match.requirements_match} 
+                  />
                   <div className="mt-4">
-                    <RequirementsMatchDisplay requirementsMatch={job.cv_match.requirements_match} />
+                    <RequirementsMatchDisplay 
+                      requirements={job.cv_match.requirements_match} 
+                    />
                   </div>
                 </div>
                 <Separator />

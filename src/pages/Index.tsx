@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
@@ -136,6 +135,29 @@ const Index = () => {
     toast.success(`Status updated to ${status}`);
   };
 
+  const handleUpdateJobPriority = (job: Job, priority: number) => {
+    const updatedJob = {
+      ...job,
+      priority_level: priority,
+      last_updated: new Date().toISOString()
+    };
+    
+    updateJob(updatedJob);
+    
+    const updatedJobs = jobs.map(j => 
+      j.id === updatedJob.id ? updatedJob : j
+    );
+    
+    setJobs(updatedJobs);
+    
+    // Update selected job if it's the one being edited
+    if (selectedJob && selectedJob.id === updatedJob.id) {
+      setSelectedJob(updatedJob);
+    }
+    
+    toast.success(`Priority updated to ${priority === 1 ? 'High' : priority === 2 ? 'Medium' : 'Low'}`);
+  };
+
   const handleToggleHidden = (job: Job, hidden: boolean) => {
     const updatedJob = {
       ...job,
@@ -254,6 +276,7 @@ const Index = () => {
           jobs={jobs} 
           onSelectJob={handleJobSelect} 
           onUpdateJobStatus={handleUpdateJobStatus}
+          onUpdateJobPriority={handleUpdateJobPriority}
           onDeleteJob={handleDeleteJob}
           onToggleHidden={handleToggleHidden}
         />
@@ -275,6 +298,8 @@ const Index = () => {
           <JobDetailPanel 
             job={selectedJob}
             onClose={handleSidebarClose}
+            onUpdateJobStatus={handleUpdateJobStatus}
+            onUpdateJobPriority={handleUpdateJobPriority}
             onJobUpdated={handleJobUpdated}
             onJobDeleted={handleDeleteJob}
           />

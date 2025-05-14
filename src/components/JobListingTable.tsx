@@ -341,9 +341,9 @@ export default function JobListingTable({
     const canTransfer = requirementsMatch.filter(req => req.status === 'Can transfer').length;
     const mustLearn = requirementsMatch.filter(req => req.status === 'Must learn').length;
     
-    const wellPercentage = (canDoWell / total) * 100;
-    const transferPercentage = (canTransfer / total) * 100;
-    const learnPercentage = (mustLearn / total) * 100;
+    const wellPercentage = total > 0 ? (canDoWell / total) * 100 : 0;
+    const transferPercentage = total > 0 ? (canTransfer / total) * 100 : 0;
+    const learnPercentage = total > 0 ? (mustLearn / total) * 100 : 0;
     
     return (
       <div className="w-full">

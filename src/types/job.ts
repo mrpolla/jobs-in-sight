@@ -92,7 +92,7 @@ export interface RequirementAssessment {
 
 export interface RequirementMatch {
   requirement: string;
-  status: 'Can do well' | 'Can transfer' | 'Must learn';
+  status: "Can do well" | "Can transfer" | "Must learn";
   explanation: string;
   transferable_skills: string[];
   match_score: number;

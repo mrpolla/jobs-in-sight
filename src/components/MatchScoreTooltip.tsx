@@ -20,18 +20,13 @@ export default function MatchScoreTooltip({ score, matchData, summary }: MatchSc
     return 'bg-red-500';
   };
   
-  // Helper functions to calculate scores from requirements_match
+  // Helper function to calculate tech stack score from requirements_match
   const getTechStackScore = (matchData: Job['cv_match']) => {
-    // Fallback to original structure if available
-    if (matchData?.tech_stack_match?.score !== undefined) {
-      return matchData.tech_stack_match.score;
-    }
-    
     // Calculate from requirements_match if available
     if (matchData?.requirements_match && matchData.requirements_match.length > 0) {
-      // Simplified approach: average score of tech-related requirements
+      // Find tech-related requirements
       const techRequirements = matchData.requirements_match.filter(req => 
-        /tech|software|system|code|program|develop|api|framework|language/i.test(req.requirement)
+        /tech|software|system|code|program|develop|api|framework|language|SAP/i.test(req.requirement)
       );
       
       if (techRequirements.length > 0) {

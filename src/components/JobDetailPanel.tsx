@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { Job, JobStatus, RequirementAssessment, RequirementMatch } from '@/types/job';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { X, Pen, Trash, EyeOff, Eye, ExternalLink, ChevronDown, ChevronUp, Clock, Calendar } from 'lucide-react';
+import { X, Pen, Trash, EyeOff, Eye, ExternalLink, Clock, Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
@@ -148,7 +147,25 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
     return 'bg-red-500';
   };
 
-  // Check for new requirements assessment structure or fall back to legacy
+  // Get matched skills from requirements_match
+  const getMatchedSkills = (job: Job): string[] => {
+    if (job.cv_match?.requirements_match) {
+      // Extract skills from "Can do well" requirements
+      const wellSkills = job.cv_match.requirements_match
+        .filter(req => req.status === "Can do well")
+        .map(req => {
+          // Extract skill keywords from requirement text
+          const skill = req.requirement.split(' ').slice(0, 3).join(' ');
+          return skill;
+        });
+      
+      return wellSkills;
+    }
+    
+    return [];
+  };
+
+  // Check for requirements assessment structure
   const requirementsMatch: RequirementMatch[] = job.cv_match?.requirements_match || [];
   const requirementsAssessment: RequirementAssessment[] = 
     job.application_reasoning?.requirements_assessment || [];
@@ -161,6 +178,9 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
   const filteredRequirementsAssessment = selectedReqStatus
     ? requirementsAssessment.filter(req => req.status === selectedReqStatus)
     : requirementsAssessment;
+  
+  // Get matched skills for tech stack display
+  const matchedSkills = getMatchedSkills(job);
 
   return (
     <>
@@ -239,13 +259,6 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
               
               {job.cv_match && (
                 <div className="mt-3 space-y-2">
-                  <div>
-                    <div className="flex justify-between text-xs">
-                      <span>Tech Stack</span>
-                      <span>{job.cv_match.tech_stack_match.score}%</span>
-                    </div>
-                    <Progress value={job.cv_match.tech_stack_match.score} className="h-1.5" />
-                  </div>
                   <div>
                     <div className="flex justify-between text-xs">
                       <span>Experience</span>
@@ -409,7 +422,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                   <p className="text-sm text-muted-foreground">Tech Stack</p>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {job.tech_stack.map((tech, index) => {
-                      const isMatched = job.cv_match?.tech_stack_match?.matched_skills?.includes(tech);
+                      const isMatched = matchedSkills.includes(tech);
                       return (
                         <Badge 
                           key={index} 
@@ -423,7 +436,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                     })}
                   </div>
                   
-                  {job.cv_match?.tech_stack_match?.matched_skills && (
+                  {matchedSkills.length > 0 && (
                     <p className="text-xs text-muted-foreground mt-2">
                       ✓ indicates skills matching your CV
                     </p>
@@ -442,7 +455,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 </div>
               )}
               
-              {/* New Requirements Match Section */}
+              {/* Requirements Match Section */}
               {requirementsMatch.length > 0 && (
                 <div className="border rounded-md p-4 mt-4">
                   <div className="flex items-center justify-between mb-3">
@@ -578,18 +591,6 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                     </div>
                   )}
                   
-                  {/* Legacy transferable skills display - only show if neither new nor old requirements assessment exists */}
-                  {!requirementsMatch.length && !requirementsAssessment.length && job.application_reasoning.transferable_skills_details?.length > 0 && (
-                    <div className="mb-2">
-                      <p className="text-xs text-muted-foreground">Transferable Skills</p>
-                      <ul className="text-sm list-disc list-inside">
-                        {job.application_reasoning.transferable_skills_details.map((skill, i) => (
-                          <li key={i}>{skill}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
                   {job.application_reasoning.learning_needs?.length > 0 && (
                     <div className="mb-2">
                       <p className="text-xs text-muted-foreground">Learning Needs</p>
@@ -627,30 +628,39 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
               </div>
               
               {/* CV Match details if available */}
-              {job.cv_match && (
+              {job.cv_match && job.cv_match.requirements_match && (
                 <div className="border rounded-md p-3 mt-4">
                   <p className="text-sm font-medium mb-2">CV Match Details</p>
                   
-                  {job.cv_match.tech_stack_match?.missing_skills?.length > 0 && (
+                  {/* Missing Skills */}
+                  {job.cv_match.requirements_match.filter(r => r.status === "Must learn").length > 0 && (
                     <div className="mb-2">
-                      <p className="text-xs text-muted-foreground">Missing Skills</p>
+                      <p className="text-xs text-muted-foreground">Skills to Learn</p>
                       <div className="flex flex-wrap gap-1 mt-1">
-                        {job.cv_match.tech_stack_match.missing_skills.map((skill, i) => (
-                          <Badge key={i} variant="outline" className="text-destructive border-destructive">
-                            {skill}
-                          </Badge>
-                        ))}
+                        {job.cv_match.requirements_match
+                          .filter(r => r.status === "Must learn")
+                          .map((req, i) => (
+                            <Badge key={i} variant="outline" className="text-destructive border-destructive">
+                              {req.requirement.split(' ').slice(0, 3).join(' ')}
+                            </Badge>
+                          ))
+                        }
                       </div>
                     </div>
                   )}
                   
-                  {job.cv_match.tech_stack_match?.transferable_skills?.length > 0 && (
+                  {/* Transferable Skills Section */}
+                  {job.cv_match.requirements_match.filter(r => r.status === "Can transfer").length > 0 && (
                     <div>
-                      <p className="text-xs text-muted-foreground">Transferable Skills</p>
+                      <p className="text-xs text-muted-foreground">Transferable Skills Areas</p>
                       <ul className="text-sm list-disc list-inside">
-                        {job.cv_match.tech_stack_match.transferable_skills.map((skill, i) => (
-                          <li key={i}>{skill}</li>
-                        ))}
+                        {job.cv_match.requirements_match
+                          .filter(r => r.status === "Can transfer")
+                          .flatMap(r => r.transferable_skills)
+                          .map((skill, i) => (
+                            <li key={i}>{skill}</li>
+                          ))
+                        }
                       </ul>
                     </div>
                   )}

@@ -35,8 +35,8 @@ export interface Job {
   last_updated: string;
   hidden?: boolean;
   url?: string;
-  hours_per_week?: string; // New field for working hours
-  vacation_days?: string; // New field for vacation days
+  hours_per_week?: string; // Field for working hours
+  vacation_days?: string; // Field for vacation days
   application_reasoning?: {
     why_apply?: string;
     key_matching_qualifications?: string[];
@@ -48,12 +48,6 @@ export interface Job {
   cv_match?: {
     overall_match_percentage: number;
     requirements_match?: RequirementMatch[]; // New field for integrated requirements assessment
-    tech_stack_match: {
-      score: number;
-      matched_skills: string[];
-      missing_skills: string[];
-      transferable_skills: string[];
-    };
     experience_match: {
       score: number;
       years_required: number;

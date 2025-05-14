@@ -336,21 +336,19 @@ export default function JobListingTable({
     }
     
     const requirementsMatch = job.cv_match.requirements_match;
-    const total = requirementsMatch.length;
     
-    const canDoWell = requirementsMatch.filter(req => req.status === 'Can do well').length;
-    const canTransfer = requirementsMatch.filter(req => req.status === 'Can transfer').length;
-    const mustLearn = requirementsMatch.filter(req => req.status === 'Must learn').length;
+    // Ensure we're working with number type
+    const total: number = requirementsMatch.length;
     
-    // Fix: Convert all values to numbers and ensure they're treated as numbers
-    const totalNum = Number(total);
-    const canDoWellNum = Number(canDoWell);
-    const canTransferNum = Number(canTransfer);
-    const mustLearnNum = Number(mustLearn);
+    // Count each category and ensure they're numbers
+    const canDoWell: number = requirementsMatch.filter(req => req.status === 'Can do well').length;
+    const canTransfer: number = requirementsMatch.filter(req => req.status === 'Can transfer').length;
+    const mustLearn: number = requirementsMatch.filter(req => req.status === 'Must learn').length;
     
-    const wellPercentage = totalNum > 0 ? (canDoWellNum / totalNum) * 100 : 0;
-    const transferPercentage = totalNum > 0 ? (canTransferNum / totalNum) * 100 : 0;
-    const learnPercentage = totalNum > 0 ? (mustLearnNum / totalNum) * 100 : 0;
+    // Calculate percentages with explicit number types
+    const wellPercentage: number = total > 0 ? (canDoWell / total) * 100 : 0;
+    const transferPercentage: number = total > 0 ? (canTransfer / total) * 100 : 0;
+    const learnPercentage: number = total > 0 ? (mustLearn / total) * 100 : 0;
     
     return (
       <div className="w-full">

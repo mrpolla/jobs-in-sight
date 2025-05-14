@@ -329,6 +329,7 @@ export default function JobListingTable({
     document.body.removeChild(link);
   };
 
+  // Fix the renderRequirementsBar function
   const renderRequirementsBar = (job: Job) => {
     if (!job.cv_match?.requirements_match || job.cv_match.requirements_match.length === 0) {
       return <div>N/A</div>;
@@ -341,10 +342,15 @@ export default function JobListingTable({
     const canTransfer = requirementsMatch.filter(req => req.status === 'Can transfer').length;
     const mustLearn = requirementsMatch.filter(req => req.status === 'Must learn').length;
     
-    // Fix: Explicitly convert all values to numbers before arithmetic operations
-    const wellPercentage = total > 0 ? (Number(canDoWell) / Number(total)) * 100 : 0;
-    const transferPercentage = total > 0 ? (Number(canTransfer) / Number(total)) * 100 : 0;
-    const learnPercentage = total > 0 ? (Number(mustLearn) / Number(total)) * 100 : 0;
+    // Fix: Convert all values to numbers and ensure they're treated as numbers
+    const totalNum = Number(total);
+    const canDoWellNum = Number(canDoWell);
+    const canTransferNum = Number(canTransfer);
+    const mustLearnNum = Number(mustLearn);
+    
+    const wellPercentage = totalNum > 0 ? (canDoWellNum / totalNum) * 100 : 0;
+    const transferPercentage = totalNum > 0 ? (canTransferNum / totalNum) * 100 : 0;
+    const learnPercentage = totalNum > 0 ? (mustLearnNum / totalNum) * 100 : 0;
     
     return (
       <div className="w-full">

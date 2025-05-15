@@ -175,3 +175,32 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Card hover effects */
+.card {
+  @apply transition-all duration-200 hover:shadow-md;
+}
+
+/* Animated buttons */
+button {
+  @apply transition-all duration-200;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}

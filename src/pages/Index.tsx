@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Download, HelpCircle } from 'lucide-react';
@@ -142,44 +143,52 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="border-b py-4 px-6 bg-background sticky top-0 z-10">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
+      {/* Enhanced Header */}
+      <header className="border-b py-4 px-6 bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-10">
         <div className="container flex items-center justify-between">
-          <h1 className="text-xl font-bold">Job Tracker</h1>
           <div className="flex items-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="outline"
-                  onClick={() => setHelpModalOpen(true)}
-                >
-                  <HelpCircle className="mr-2 h-4 w-4" />
-                  Help
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                View application help and instructions
-              </TooltipContent>
-            </Tooltip>
+            <img src="/lovable-uploads/95293b47-8e27-4488-b0b8-e0c71581ace7.png" alt="Jobs In-Sight Logo" className="h-10" />
+          </div>
+          <div className="flex items-center gap-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="outline"
+                    onClick={() => setHelpModalOpen(true)}
+                    className="border-blue-200 hover:bg-blue-50 dark:border-blue-800 dark:hover:bg-blue-900/30"
+                  >
+                    <HelpCircle className="mr-2 h-4 w-4" />
+                    Help
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  View application help and instructions
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             
             <ThemeToggle />
           </div>
         </div>
       </header>
 
-      <main className="flex-1 container py-8 space-y-8">
-        {/* Stats Summary */}
-        <StatsSummary jobs={jobs} />
+      <main className="flex-1 container py-8 space-y-6">
+        {/* Stats Summary Card */}
+        <div className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-sm">
+          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">Application Status</h3>
+          <StatsSummary jobs={jobs} />
+        </div>
         
         {/* Action Bar */}
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Job Applications</h2>
+        <div className="flex items-center justify-between bg-white dark:bg-gray-900 p-4 rounded-lg shadow-sm">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Job Applications</h2>
           <div className="flex items-center gap-2">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button onClick={() => setAddJobDialogOpen(true)}>
+                  <Button onClick={() => setAddJobDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
                     <Plus className="mr-2 h-4 w-4" />
                     Add Job
                   </Button>
@@ -207,19 +216,21 @@ const Index = () => {
         </div>
         
         {/* Job Listings Table */}
-        <JobListingTable 
-          jobs={jobs} 
-          onSelectJob={handleJobSelect} 
-          onUpdateJobStatus={handleUpdateJobStatus}
-          onDeleteJob={handleDeleteJob}
-          onToggleHidden={handleToggleHidden}
-        />
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm overflow-hidden">
+          <JobListingTable 
+            jobs={jobs} 
+            onSelectJob={handleJobSelect} 
+            onUpdateJobStatus={handleUpdateJobStatus}
+            onDeleteJob={handleDeleteJob}
+            onToggleHidden={handleToggleHidden}
+          />
+        </div>
       </main>
       
       {/* Side Panel - Overlay */}
       {selectedJob && (
         <div 
-          className={`fixed inset-0 bg-black/30 z-40 transition-opacity ${
+          className={`fixed inset-0 bg-black/30 backdrop-blur-sm z-40 transition-opacity ${
             sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
           }`}
           onClick={handleSidebarClose}

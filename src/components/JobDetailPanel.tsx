@@ -9,7 +9,7 @@ import { format } from 'date-fns';
 import JobStatusSelect from './JobStatusSelect';
 import PrioritySelect from './PrioritySelect';
 import { updateJob, deleteJob } from '@/lib/storage';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/use-toast';
 import DeleteConfirmationDialog from './DeleteConfirmationDialog';
 import { Progress } from './ui/progress';
 import RequirementsAssessment from './RequirementsAssessment';
@@ -83,7 +83,10 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
     updateJob(updatedJob);
     onJobUpdated(updatedJob);
     setEditMode(false);
-    toast.success('Job details updated');
+    toast({
+      title: "Success",
+      description: "Job details updated"
+    });
   };
 
   const handleStatusChange = (newStatus: JobStatus) => {
@@ -96,7 +99,10 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
       };
       updateJob(updatedJob);
       onJobUpdated(updatedJob);
-      toast.success(`Status updated to ${newStatus}`);
+      toast({
+        title: "Status Updated",
+        description: `Status changed to ${newStatus}`
+      });
     }
   };
 
@@ -110,7 +116,10 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
       };
       updateJob(updatedJob);
       onJobUpdated(updatedJob);
-      toast.success(`Priority updated to ${newPriority === 1 ? 'High' : newPriority === 2 ? 'Medium' : 'Low'}`);
+      toast({
+        title: "Priority Updated",
+        description: `Priority changed to ${newPriority === 1 ? 'High' : newPriority === 2 ? 'Medium' : 'Low'}`
+      });
     }
   };
 
@@ -125,7 +134,10 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
       };
       updateJob(updatedJob);
       onJobUpdated(updatedJob);
-      toast.success(newHidden ? 'Job hidden' : 'Job unhidden');
+      toast({
+        title: newHidden ? "Job Hidden" : "Job Unhidden",
+        description: newHidden ? "Job hidden" : "Job unhidden"
+      });
     }
   };
 
@@ -244,7 +256,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
               <JobStatusSelect 
                 value={status}
                 onChange={handleStatusChange}
-                disabled={!editMode && status === job.status}
+                disabled={false}
               />
             </div>
             <div className="flex-1">
@@ -252,7 +264,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
               <PrioritySelect 
                 value={priority}
                 onChange={handlePriorityChange}
-                disabled={!editMode && priority === job.priority_level}
+                disabled={false}
               />
             </div>
           </div>

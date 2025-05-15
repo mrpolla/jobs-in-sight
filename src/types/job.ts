@@ -35,8 +35,8 @@ export interface Job {
   last_updated: string;
   hidden?: boolean;
   url?: string;
-  hours_per_week?: string | number; // Changed to allow both string and number
-  vacation_days?: string | number; // Changed to allow both string and number
+  hours_per_week?: string; // Field for working hours
+  vacation_days?: string; // Field for vacation days
   application_reasoning?: {
     why_apply?: string;
     key_matching_qualifications?: string[];
@@ -93,7 +93,7 @@ export interface RequirementAssessment {
 
 export interface RequirementMatch {
   requirement: string;
-  status: "Can do well" | "Can transfer" | "Must learn";
+  status: 'Can do well' | 'Can transfer' | 'Must learn';
   explanation: string;
   transferable_skills: string[];
   match_score: number;
@@ -101,22 +101,8 @@ export interface RequirementMatch {
 
 export type JobStatus = 'New' | 'Applied' | 'Interview' | 'Rejected' | 'Offer';
 
-export type SortField = 
-  | 'position' 
-  | 'company' 
-  | 'location' 
-  | 'status' 
-  | 'priority_level' 
-  | 'tech_stack' 
-  | 'remote_policy' 
-  | 'possible_salary' 
-  | 'start_date' 
-  | 'match_score' 
-  | 'last_updated' 
-  | 'project'
-  | 'industry'
-  | 'hours_per_week'  // Added
-  | 'vacation_days';  // Added
+export type SortField = 'position' | 'company' | 'location' | 'status' | 'priority_level' | 
+  'tech_stack' | 'project' | 'product' | 'remote_policy' | 'possible_salary' | 'start_date' | 'last_updated' | 'match_score' | 'industry';
 
 export interface JobFilters {
   status?: JobStatus | 'All';

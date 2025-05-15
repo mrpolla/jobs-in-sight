@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Download, HelpCircle } from 'lucide-react';
@@ -187,9 +188,12 @@ const Index = () => {
         {/* Integrated Stats Summary and Action Bar */}
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm overflow-hidden">
           <div className="p-4 border-b border-gray-100 dark:border-gray-800">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Job Applications</h2>
-              <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Job Applications</h2>
+            
+            <div className="flex flex-wrap justify-between items-center">
+              <StatsSummary jobs={jobs} />
+              
+              <div className="flex items-center gap-2 mt-4 md:mt-0">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -219,8 +223,6 @@ const Index = () => {
                 </TooltipProvider>
               </div>
             </div>
-            
-            <StatsSummary jobs={jobs} />
           </div>
         </div>
         

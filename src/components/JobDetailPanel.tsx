@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Job, JobStatus, RequirementAssessment, RequirementMatch } from '@/types/job';
 import { Button } from '@/components/ui/button';
@@ -315,7 +316,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 </div>
               )}
               
-              {/* New fields for hours and vacation */}
+              {/* Hours per Week field */}
               {job.hours_per_week && (
                 <div className="flex items-start gap-1">
                   <Clock className="h-4 w-4 mt-0.5 text-muted-foreground" />
@@ -326,6 +327,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 </div>
               )}
               
+              {/* Vacation Days field */}
               {job.vacation_days && (
                 <div className="flex items-start gap-1">
                   <Calendar className="h-4 w-4 mt-0.5 text-muted-foreground" />
@@ -350,6 +352,21 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 </div>
               )}
               
+              {/* Additional salary fields */}
+              {job.salary_estimate_from_context && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Estimated Salary</p>
+                  <p>{job.salary_estimate_from_context}</p>
+                </div>
+              )}
+              
+              {job.salary_from_external_sources && (
+                <div>
+                  <p className="text-sm text-muted-foreground">External Salary Data</p>
+                  <p>{job.salary_from_external_sources}</p>
+                </div>
+              )}
+              
               {job.job_description && (
                 <div>
                   <p className="text-sm text-muted-foreground">Job Description</p>
@@ -361,6 +378,20 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 <div>
                   <p className="text-sm text-muted-foreground">Benefits</p>
                   <p>{job.benefits}</p>
+                </div>
+              )}
+              
+              {job.contract_duration && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Contract Duration</p>
+                  <p>{job.contract_duration}</p>
+                </div>
+              )}
+              
+              {job.start_date && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Start Date</p>
+                  <p>{formatDate(job.start_date)}</p>
                 </div>
               )}
             </TabsContent>
@@ -405,6 +436,19 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 <div>
                   <p className="text-sm text-muted-foreground">Team</p>
                   <p>{job.team_description}</p>
+                </div>
+              )}
+              
+              {job.job_posting_clarity_score !== null && job.job_posting_clarity_score !== undefined && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Job Posting Clarity Score</p>
+                  <div className="flex items-center gap-2">
+                    <Progress 
+                      value={(job.job_posting_clarity_score / 5) * 100} 
+                      className="h-2 w-40" 
+                    />
+                    <span>{job.job_posting_clarity_score}/5</span>
+                  </div>
                 </div>
               )}
             </TabsContent>
@@ -628,12 +672,152 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
               </div>
               
               {/* CV Match details if available */}
-              {job.cv_match && job.cv_match.requirements_match && (
+              {job.cv_match && (
                 <div className="border rounded-md p-3 mt-4">
                   <p className="text-sm font-medium mb-2">CV Match Details</p>
                   
+                  {/* Experience Match */}
+                  {job.cv_match.experience_match && (
+                    <div className="mb-3">
+                      <p className="text-xs text-muted-foreground">Experience Match</p>
+                      <div className="flex justify-between items-center">
+                        <span>Score: {job.cv_match.experience_match.score}%</span>
+                      </div>
+                      <Progress 
+                        value={job.cv_match.experience_match.score || 0} 
+                        className="h-1.5 my-1" 
+                      />
+                      {job.cv_match.experience_match.years_required && (
+                        <p className="text-xs">Required: {job.cv_match.experience_match.years_required} years</p>
+                      )}
+                      {job.cv_match.experience_match.years_experience && (
+                        <p className="text-xs">Your experience: {job.cv_match.experience_match.years_experience} years</p>
+                      )}
+                      {job.cv_match.experience_match.domain_match && (
+                        <p className="text-xs">Domain match: {job.cv_match.experience_match.domain_match}</p>
+                      )}
+                      
+                      {job.cv_match.experience_match.domain_overlap?.length > 0 && (
+                        <div className="mt-1">
+                          <p className="text-xs">Domain overlap:</p>
+                          <ul className="list-disc list-inside text-xs pl-2">
+                            {job.cv_match.experience_match.domain_overlap.map((domain, i) => (
+                              <li key={i}>{domain}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      
+                      {job.cv_match.experience_match.role_similarity && (
+                        <p className="text-xs">Role similarity: {job.cv_match.experience_match.role_similarity}</p>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Seniority Match */}
+                  {job.cv_match.seniority_match && (
+                    <div className="mb-3">
+                      <p className="text-xs text-muted-foreground">Seniority Match</p>
+                      <div className="flex justify-between items-center">
+                        <span>Score: {job.cv_match.seniority_match.score}%</span>
+                      </div>
+                      <Progress 
+                        value={job.cv_match.seniority_match.score || 0} 
+                        className="h-1.5 my-1" 
+                      />
+                      {job.cv_match.seniority_match.alignment && (
+                        <p className="text-xs">Alignment: {job.cv_match.seniority_match.alignment}</p>
+                      )}
+                      {job.cv_match.seniority_match.notes && (
+                        <p className="text-xs">{job.cv_match.seniority_match.notes}</p>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Industry Match */}
+                  {job.cv_match.industry_match && (
+                    <div className="mb-3">
+                      <p className="text-xs text-muted-foreground">Industry Match</p>
+                      <div className="flex justify-between items-center">
+                        <span>Score: {job.cv_match.industry_match.score}%</span>
+                      </div>
+                      <Progress 
+                        value={job.cv_match.industry_match.score || 0} 
+                        className="h-1.5 my-1" 
+                      />
+                      {job.cv_match.industry_match.familiarity && (
+                        <p className="text-xs">Familiarity: {job.cv_match.industry_match.familiarity}</p>
+                      )}
+                      {job.cv_match.industry_match.transferable_experience && (
+                        <p className="text-xs">{job.cv_match.industry_match.transferable_experience}</p>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Project Match */}
+                  {job.cv_match.project_match && (
+                    <div className="mb-3">
+                      <p className="text-xs text-muted-foreground">Project Match</p>
+                      <div className="flex justify-between items-center">
+                        <span>Score: {job.cv_match.project_match.score}%</span>
+                      </div>
+                      <Progress 
+                        value={job.cv_match.project_match.score || 0} 
+                        className="h-1.5 my-1" 
+                      />
+                      {job.cv_match.project_match.environment_similarity && (
+                        <p className="text-xs">Environment similarity: {job.cv_match.project_match.environment_similarity}</p>
+                      )}
+                      
+                      {job.cv_match.project_match.similar_projects?.length > 0 && (
+                        <div className="mt-1">
+                          <p className="text-xs">Similar projects:</p>
+                          <ul className="list-disc list-inside text-xs pl-2">
+                            {job.cv_match.project_match.similar_projects.map((project, i) => (
+                              <li key={i}>{project}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Compensation */}
+                  {job.cv_match.compensation_alignment && job.cv_match.compensation_alignment.score !== null && (
+                    <div className="mb-3">
+                      <p className="text-xs text-muted-foreground">Compensation Alignment</p>
+                      <div className="flex justify-between items-center">
+                        <span>Score: {job.cv_match.compensation_alignment.score}%</span>
+                      </div>
+                      <Progress 
+                        value={job.cv_match.compensation_alignment.score || 0} 
+                        className="h-1.5 my-1" 
+                      />
+                      {job.cv_match.compensation_alignment.notes && (
+                        <p className="text-xs">{job.cv_match.compensation_alignment.notes}</p>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Location */}
+                  {job.cv_match.location_compatibility && (
+                    <div className="mb-3">
+                      <p className="text-xs text-muted-foreground">Location Compatibility</p>
+                      <div className="flex justify-between items-center">
+                        <span>Score: {job.cv_match.location_compatibility.score}%</span>
+                      </div>
+                      <Progress 
+                        value={job.cv_match.location_compatibility.score || 0} 
+                        className="h-1.5 my-1" 
+                      />
+                      {job.cv_match.location_compatibility.notes && (
+                        <p className="text-xs">{job.cv_match.location_compatibility.notes}</p>
+                      )}
+                    </div>
+                  )}
+                  
                   {/* Missing Skills */}
-                  {job.cv_match.requirements_match.filter(r => r.status === "Must learn").length > 0 && (
+                  {job.cv_match.requirements_match?.filter(r => r.status === "Must learn").length > 0 && (
                     <div className="mb-2">
                       <p className="text-xs text-muted-foreground">Skills to Learn</p>
                       <div className="flex flex-wrap gap-1 mt-1">
@@ -650,7 +834,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                   )}
                   
                   {/* Transferable Skills Section */}
-                  {job.cv_match.requirements_match.filter(r => r.status === "Can transfer").length > 0 && (
+                  {job.cv_match.requirements_match?.filter(r => r.status === "Can transfer").length > 0 && (
                     <div>
                       <p className="text-xs text-muted-foreground">Transferable Skills Areas</p>
                       <ul className="text-sm list-disc list-inside">
@@ -661,28 +845,6 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                             <li key={i}>{skill}</li>
                           ))
                         }
-                      </ul>
-                    </div>
-                  )}
-                  
-                  {job.cv_match.experience_match?.domain_overlap?.length > 0 && (
-                    <div className="mt-2">
-                      <p className="text-xs text-muted-foreground">Experience Overlap</p>
-                      <ul className="text-sm list-disc list-inside">
-                        {job.cv_match.experience_match.domain_overlap.map((domain, i) => (
-                          <li key={i}>{domain}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
-                  {job.cv_match.project_match?.similar_projects?.length > 0 && (
-                    <div className="mt-2">
-                      <p className="text-xs text-muted-foreground">Similar Projects</p>
-                      <ul className="text-sm list-disc list-inside">
-                        {job.cv_match.project_match.similar_projects.map((project, i) => (
-                          <li key={i}>{project}</li>
-                        ))}
                       </ul>
                     </div>
                   )}

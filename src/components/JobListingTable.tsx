@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { 
   Table, 
@@ -247,33 +248,6 @@ export default function JobListingTable({
     return sort.direction === 'asc' ? comparison : -comparison;
   });
 
-  // Helper function to derive matched skills from the requirements_match structure
-  const getMatchedSkills = (job: Job): string[] => {
-    if (!job.cv_match?.requirements_match) {
-      return [];
-    }
-    
-    // Extract skills from requirements that are "Can do well"
-    const wellMatchedRequirements = job.cv_match.requirements_match.filter(req => 
-      req.status === "Can do well"
-    );
-    
-    // Extract skill names from the requirement text (simplified approach)
-    return wellMatchedRequirements.map(req => extractSkillName(req.requirement));
-  };
-  
-  // Helper function to determine if a requirement is tech-related
-  const isTechRequirement = (text: string): boolean => {
-    const techTerms = ["javascript", "typescript", "react", "node", "java", "python", 
-                      "c#", ".net", "angular", "vue", "aws", "azure", "cloud", "api", 
-                      "frontend", "backend", "fullstack", "database", "sql", "nosql", 
-                      "docker", "kubernetes", "devops", "ci/cd", "testing", "agile", 
-                      "scrum", "git", "sap"];
-    
-    const lowercaseText = text.toLowerCase();
-    return techTerms.some(term => lowercaseText.includes(term));
-  };
-  
   // Helper function to extract a skill name from requirement text
   const extractSkillName = (text: string): string => {
     // Simple approach - extract key technologies or first few meaningful words
@@ -475,7 +449,7 @@ export default function JobListingTable({
                     </Button>
                   </TableHead>
                   
-                  {/* Project Column (NEW) */}
+                  {/* Project Column */}
                   <TableHead>
                     <Button 
                       variant="ghost" 
@@ -496,7 +470,7 @@ export default function JobListingTable({
                     </Button>
                   </TableHead>
                   
-                  {/* Industry Column (NEW) */}
+                  {/* Industry Column */}
                   <TableHead className="hidden md:table-cell">
                     <Button 
                       variant="ghost" 
@@ -539,7 +513,7 @@ export default function JobListingTable({
                   </TableHead>
                   
                   {/* Match Score Column */}
-                  <TableHead className="w-[100px]">
+                  <TableHead className="w-[120px]">
                     <Button 
                       variant="ghost" 
                       className="p-0 hover:bg-transparent font-medium" 
@@ -622,7 +596,7 @@ export default function JobListingTable({
                   >
                     <TableCell className="font-medium">{job.position}</TableCell>
                     
-                    {/* Project Cell */}
+                    {/* Project Cell - No longer shows requirements match */}
                     <TableCell>
                       {job.project ? (
                         <ProjectTooltip job={job}>
@@ -668,12 +642,13 @@ export default function JobListingTable({
                       </Badge>
                     </TableCell>
                     
-                    {/* Match Score Cell */}
+                    {/* Match Score Cell - Enhanced with requirements match display */}
                     <TableCell>
                       <MatchScoreTooltip 
                         score={job.match_score || job.cv_match?.overall_match_percentage}
                         matchData={job.cv_match}
                         summary={job.match_summary}
+                        requirements={job.cv_match?.requirements_match}
                       />
                     </TableCell>
                     
@@ -681,23 +656,17 @@ export default function JobListingTable({
                       <>
                         <TableCell className="hidden lg:table-cell">
                           {job.tech_stack && job.tech_stack.length > 0 ? (
-                            <TechStackTooltip 
-                              techStack={job.tech_stack}
-                              matchedSkills={getMatchedSkills(job)}
-                            >
+                            <TechStackTooltip techStack={job.tech_stack}>
                               <div className="flex flex-wrap gap-1">
-                                {job.tech_stack.slice(0, 3).map((tech, index) => {
-                                  const isMatched = getMatchedSkills(job).includes(tech);
-                                  return (
-                                    <Badge 
-                                      key={index} 
-                                      variant="outline" 
-                                      className={`text-xs ${isMatched ? 'bg-green-100 dark:bg-green-900/30 border-green-200 dark:border-green-800' : ''}`}
-                                    >
-                                      {tech}
-                                    </Badge>
-                                  );
-                                })}
+                                {job.tech_stack.slice(0, 3).map((tech, index) => (
+                                  <Badge 
+                                    key={index} 
+                                    variant="outline" 
+                                    className="text-xs"
+                                  >
+                                    {tech}
+                                  </Badge>
+                                ))}
                                 {job.tech_stack.length > 3 && (
                                   <Badge variant="outline" className="text-xs">+{job.tech_stack.length - 3}</Badge>
                                 )}

@@ -3,14 +3,16 @@ import React from 'react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Progress } from '@/components/ui/progress';
 import { Job } from '@/types/job';
+import { Badge } from './ui/badge';
 
 interface MatchScoreProps {
   score?: number;
   matchData?: Job['cv_match'];
   summary?: string;
+  requirements?: Job['cv_match']['requirements_match'];
 }
 
-export default function MatchScoreTooltip({ score, matchData, summary }: MatchScoreProps) {
+export default function MatchScoreTooltip({ score, matchData, summary, requirements }: MatchScoreProps) {
   if (!score) return <span>N/A</span>;
 
   // Function to get color based on score
@@ -40,6 +42,23 @@ export default function MatchScoreTooltip({ score, matchData, summary }: MatchSc
     return 0;
   };
 
+  // Function to count requirements by status
+  const getStatusCounts = (requirements?: Job['cv_match']['requirements_match']) => {
+    if (!requirements || requirements.length === 0) return null;
+    
+    return requirements.reduce(
+      (acc, req) => {
+        if (req.status === "Can do well") acc.canDo++;
+        else if (req.status === "Can transfer") acc.canTransfer++;
+        else if (req.status === "Must learn") acc.mustLearn++;
+        return acc;
+      },
+      { canDo: 0, canTransfer: 0, mustLearn: 0 }
+    );
+  };
+  
+  const statusCounts = getStatusCounts(requirements);
+
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
@@ -47,6 +66,26 @@ export default function MatchScoreTooltip({ score, matchData, summary }: MatchSc
           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white ${getScoreColor(score)}`}>
             {score}
           </div>
+          
+          {statusCounts && (
+            <div className="flex gap-1 items-center">
+              {statusCounts.canDo > 0 && (
+                <Badge variant="outline" className="bg-green-100 border-green-500 text-green-800 text-xs">
+                  {statusCounts.canDo} ✓
+                </Badge>
+              )}
+              {statusCounts.canTransfer > 0 && (
+                <Badge variant="outline" className="bg-amber-100 border-amber-500 text-amber-800 text-xs">
+                  {statusCounts.canTransfer} ≈
+                </Badge>
+              )}
+              {statusCounts.mustLearn > 0 && (
+                <Badge variant="outline" className="bg-red-100 border-red-500 text-red-800 text-xs">
+                  {statusCounts.mustLearn} ✕
+                </Badge>
+              )}
+            </div>
+          )}
         </div>
       </HoverCardTrigger>
       <HoverCardContent className="w-80">
@@ -109,6 +148,27 @@ export default function MatchScoreTooltip({ score, matchData, summary }: MatchSc
               </div>
               <Progress value={matchData.location_compatibility?.score || 0} className="h-2" />
             </div>
+            
+            {requirements && requirements.length > 0 && (
+              <div className="mt-2 pt-2 border-t">
+                <p className="text-xs font-medium mb-1">Requirements Match</p>
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {requirements.map((req, idx) => (
+                    <div key={idx} className="text-xs">
+                      <div className="flex items-center gap-1">
+                        <div className={`w-2 h-2 rounded-full ${
+                          req.status === "Can do well" ? "bg-green-500" : 
+                          req.status === "Can transfer" ? "bg-amber-500" : 
+                          "bg-red-500"
+                        }`}></div>
+                        <span className="font-medium">{req.requirement}</span>
+                        <span className="ml-auto">{req.match_score}%</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <p className="text-sm text-muted-foreground">No detailed match data available</p>

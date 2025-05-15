@@ -18,6 +18,7 @@ interface HelpModalProps {
 const HelpModal: React.FC<HelpModalProps> = ({ open, onOpenChange }) => {
   const handleDownloadPrompt = () => {
     const promptText = `
+
 # Job Analysis Prompt
 
 You are a career advisor and job application specialist. I want you to analyze job listings for me and compare them with my CV to help me understand if I'm a good fit.

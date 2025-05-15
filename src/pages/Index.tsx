@@ -147,8 +147,17 @@ const Index = () => {
       {/* Enhanced Header */}
       <header className="border-b py-4 px-6 bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-10">
         <div className="container flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src="/lovable-uploads/95293b47-8e27-4488-b0b8-e0c71581ace7.png" alt="Jobs In-Sight Logo" className="h-10" />
+          <div className="flex items-center gap-3">
+            <img 
+              src="/lovable-uploads/8e6d4109-d8c0-47bd-a937-050e31842942.png" 
+              alt="Jobs In-Sight Logo" 
+              className="h-14 w-14" 
+            />
+            <img 
+              src="/lovable-uploads/008b7164-22c6-43ed-abdb-3798ecd8dacc.png" 
+              alt="Jobs In-Sight Text Logo" 
+              className="h-10" 
+            />
           </div>
           <div className="flex items-center gap-2">
             <TooltipProvider>

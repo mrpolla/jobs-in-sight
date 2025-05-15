@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Table, 
@@ -43,6 +42,7 @@ import {
 import { format, formatDistanceToNow } from 'date-fns';
 import { JobStatus, Job, JobFilters, JobSort, SortField } from '@/types/job';
 import JobStatusSelect from './JobStatusSelect';
+import PrioritySelect from './PrioritySelect';
 import DeleteConfirmationDialog from './DeleteConfirmationDialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import TechStackTooltip from './TechStackTooltip';
@@ -58,6 +58,7 @@ interface JobListingTableProps {
   onUpdateJobStatus: (job: Job, status: JobStatus) => void;
   onDeleteJob: (jobId: string) => void;
   onToggleHidden: (job: Job, hidden: boolean) => void;
+  onUpdateJobPriority?: (job: Job, priority: number) => void;
 }
 
 export default function JobListingTable({ 
@@ -65,7 +66,8 @@ export default function JobListingTable({
   onSelectJob, 
   onUpdateJobStatus, 
   onDeleteJob,
-  onToggleHidden
+  onToggleHidden,
+  onUpdateJobPriority = () => {}
 }: JobListingTableProps) {
   // Update the supported sort fields to include all the new columns
   const [sort, setSort] = useState<JobSort>({ field: 'last_updated', direction: 'desc' });
@@ -137,6 +139,18 @@ export default function JobListingTable({
   const handleToggleHidden = (job: Job, event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent row click event
     onToggleHidden(job, !job.hidden);
+  };
+
+  const handleStatusChange = (job: Job, status: JobStatus, event?: React.MouseEvent) => {
+    // Prevent row click when status is changed
+    event?.stopPropagation();
+    onUpdateJobStatus(job, status);
+  };
+
+  const handlePriorityChange = (job: Job, priority: number, event?: React.MouseEvent) => {
+    // Prevent row click when priority is changed
+    event?.stopPropagation();
+    onUpdateJobPriority(job, priority);
   };
 
   const confirmDelete = () => {
@@ -642,19 +656,18 @@ export default function JobListingTable({
                       <div className="max-w-[120px]">
                         <JobStatusSelect
                           value={job.status}
-                          onChange={(status) => {
-                            onUpdateJobStatus(job, status);
-                            // Prevent row click when status is changed
-                            event?.stopPropagation();
-                          }}
+                          onChange={(status) => handleStatusChange(job, status, event)}
                         />
                       </div>
                     </TableCell>
                     
                     <TableCell>
-                      <Badge className={getPriorityClass(job.priority_level)}>
-                        {getPriorityLabel(job.priority_level)}
-                      </Badge>
+                      <div className="max-w-[120px]">
+                        <PrioritySelect
+                          value={job.priority_level || 3}
+                          onChange={(priority) => handlePriorityChange(job, priority, event)}
+                        />
+                      </div>
                     </TableCell>
                     
                     {/* Match Score Cell - Enhanced with requirements match display */}

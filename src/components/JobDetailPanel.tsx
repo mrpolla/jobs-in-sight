@@ -91,7 +91,9 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
 
   const handleStatusChange = (newStatus: JobStatus) => {
     setStatus(newStatus);
-    if (!editMode) {
+    
+    // Always save the change immediately regardless of editMode
+    if (job) {
       const updatedJob: Job = {
         ...job,
         status: newStatus,
@@ -108,7 +110,9 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
 
   const handlePriorityChange = (newPriority: number) => {
     setPriority(newPriority);
-    if (!editMode) {
+    
+    // Always save the change immediately regardless of editMode
+    if (job) {
       const updatedJob: Job = {
         ...job,
         priority_level: newPriority,
@@ -126,7 +130,8 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
   const handleToggleHidden = () => {
     const newHidden = !hidden;
     setHidden(newHidden);
-    if (!editMode) {
+    
+    if (job) {
       const updatedJob: Job = {
         ...job,
         hidden: newHidden,

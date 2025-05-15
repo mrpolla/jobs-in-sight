@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Download, HelpCircle } from 'lucide-react';
@@ -192,26 +191,24 @@ const Index = () => {
             
             <div className="flex flex-wrap justify-between items-center">
               <StatsSummary jobs={jobs} />
-              
-              <div className="flex items-center gap-2 mt-4 md:mt-0">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button onClick={() => setAddJobDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Job
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      Add a new job application
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
             </div>
             
-            {/* Export JSON button - anchored to bottom right */}
-            <div className="flex justify-end mt-4">
+            {/* Action buttons - anchored to bottom right */}
+            <div className="flex justify-end mt-4 gap-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button onClick={() => setAddJobDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Job
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Add a new job application
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>

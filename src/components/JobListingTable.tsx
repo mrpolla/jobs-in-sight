@@ -141,15 +141,13 @@ export default function JobListingTable({
     onToggleHidden(job, !job.hidden);
   };
 
-  const handleStatusChange = (job: Job, status: JobStatus, event?: React.MouseEvent) => {
-    // Prevent row click when status is changed
-    event?.stopPropagation();
+  const handleStatusChange = (job: Job, status: JobStatus) => {
+    // Only use event.stopPropagation if event exists (from direct button clicks)
     onUpdateJobStatus(job, status);
   };
 
-  const handlePriorityChange = (job: Job, priority: number, event?: React.MouseEvent) => {
-    // Prevent row click when priority is changed
-    event?.stopPropagation();
+  const handlePriorityChange = (job: Job, priority: number) => {
+    // Only use event.stopPropagation if event exists (from direct button clicks)
     onUpdateJobPriority(job, priority);
   };
 
@@ -656,7 +654,7 @@ export default function JobListingTable({
                       <div className="max-w-[120px]">
                         <JobStatusSelect
                           value={job.status}
-                          onChange={(status) => handleStatusChange(job, status, event)}
+                          onChange={(status) => handleStatusChange(job, status)}
                         />
                       </div>
                     </TableCell>
@@ -665,7 +663,7 @@ export default function JobListingTable({
                       <div className="max-w-[120px]">
                         <PrioritySelect
                           value={job.priority_level || 3}
-                          onChange={(priority) => handlePriorityChange(job, priority, event)}
+                          onChange={(priority) => handlePriorityChange(job, priority)}
                         />
                       </div>
                     </TableCell>

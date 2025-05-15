@@ -9,7 +9,7 @@ import { format } from 'date-fns';
 import JobStatusSelect from './JobStatusSelect';
 import PrioritySelect from './PrioritySelect';
 import { updateJob, deleteJob } from '@/lib/storage';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from "sonner";
 import DeleteConfirmationDialog from './DeleteConfirmationDialog';
 import { Progress } from './ui/progress';
 import RequirementsAssessment from './RequirementsAssessment';
@@ -84,10 +84,8 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
     onJobUpdated(updatedJob);
     setEditMode(false);
     
-    // Fixed toast call
-    toast({
-      description: "Job details updated"
-    });
+    // Fixed toast call - use direct sonner toast
+    toast("Job details updated");
   };
 
   const handleStatusChange = (newStatus: JobStatus) => {
@@ -103,10 +101,8 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
       updateJob(updatedJob);
       onJobUpdated(updatedJob);
       
-      // Fixed toast call
-      toast({
-        description: `Status changed to ${newStatus}`
-      });
+      // Fixed toast call - use direct sonner toast
+      toast(`Status changed to ${newStatus}`);
     }
   };
 
@@ -123,10 +119,8 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
       updateJob(updatedJob);
       onJobUpdated(updatedJob);
       
-      // Fixed toast call
-      toast({
-        description: `Priority changed to ${newPriority === 1 ? 'High' : newPriority === 2 ? 'Medium' : 'Low'}`
-      });
+      // Fixed toast call - use direct sonner toast
+      toast(`Priority changed to ${newPriority === 1 ? 'High' : newPriority === 2 ? 'Medium' : 'Low'}`);
     }
   };
 
@@ -143,10 +137,8 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
       updateJob(updatedJob);
       onJobUpdated(updatedJob);
       
-      // Fixed toast call
-      toast({
-        description: newHidden ? "Job hidden" : "Job unhidden"
-      });
+      // Fixed toast call - use direct sonner toast
+      toast(newHidden ? "Job hidden" : "Job unhidden");
     }
   };
 
@@ -161,10 +153,8 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
     onJobDeleted(job.id);
     setShowDeleteConfirm(false);
     
-    // Fixed toast call
-    toast({
-      description: "Job deleted successfully"
-    });
+    // Fixed toast call - use direct sonner toast
+    toast("Job deleted successfully");
   };
 
   const cancelDelete = () => {

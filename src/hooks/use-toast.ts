@@ -1,16 +1,14 @@
 
-import { toast as sonnerToast, type ToastT } from "sonner";
-import * as React from "react";
+import { toast as sonnerToast, type Toast } from "sonner";
 
-export type ToasterToast = ToastT;
+// Re-export the toast function directly
+export { sonnerToast as toast };
 
-const useToast = () => {
+// Provide the hook for compatibility with existing components
+export const useToast = () => {
   return {
     toast: sonnerToast,
-    // This is needed for the ui/toaster.tsx component but won't be used
-    toasts: [] as ToasterToast[],
+    toasts: [],
     dismiss: sonnerToast.dismiss,
   };
 };
-
-export { useToast, sonnerToast as toast };

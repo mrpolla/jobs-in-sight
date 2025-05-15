@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { 
   Table, 
@@ -54,7 +55,7 @@ import { Switch } from './ui/switch';
 import RequirementsAssessmentTooltip from './RequirementsAssessmentTooltip';
 import PrioritySelect from './PrioritySelect';
 import { renderRequirementsBar, getMatchedSkills } from './JobListingUtils';
-import { formatRelative, formatDate } from '@/utils/dateUtils';
+import { formatRelative, formatDate, isValidDate } from '@/utils/dateUtils';
 import { parseJobData } from '@/utils/jobUtils';
 import { toast } from '@/components/ui/use-toast';
 

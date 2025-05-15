@@ -569,18 +569,19 @@ export default function JobListingTable({
                           Start Date {getSortIcon('start_date')}
                         </Button>
                       </TableHead>
+                      
+                      <TableHead className="hidden lg:table-cell">
+                        <Button 
+                          variant="ghost" 
+                          className="p-0 hover:bg-transparent font-medium" 
+                          onClick={() => handleSort('last_updated')}
+                        >
+                          Last Updated {getSortIcon('last_updated')}
+                        </Button>
+                      </TableHead>
                     </>
                   )}
                   
-                  <TableHead className="w-[150px] text-right">
-                    <Button 
-                      variant="ghost" 
-                      className="p-0 hover:bg-transparent font-medium" 
-                      onClick={() => handleSort('last_updated')}
-                    >
-                      Last Updated {getSortIcon('last_updated')}
-                    </Button>
-                  </TableHead>
                   
                   <TableHead className="w-[100px] text-center">
                     Actions
@@ -686,19 +687,21 @@ export default function JobListingTable({
                         <TableCell className="hidden lg:table-cell">
                           {job.start_date ? format(new Date(job.start_date), 'MMM d, yyyy') : 'N/A'}
                         </TableCell>
+
+                        <TableCell className="hidden lg:table-cell">
+                          <Tooltip>
+                            <TooltipTrigger className="block">
+                              <span>{formatDate(job.last_updated)}</span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              {format(new Date(job.last_updated), 'PPP')}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TableCell>
+                       
                       </>
                     )}
                     
-                    <TableCell className="text-right">
-                      <Tooltip>
-                        <TooltipTrigger className="block">
-                          <span>{formatDate(job.last_updated)}</span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          {format(new Date(job.last_updated), 'PPP')}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TableCell>
                     
                     <TableCell>
                       <div className="flex items-center justify-center gap-1">

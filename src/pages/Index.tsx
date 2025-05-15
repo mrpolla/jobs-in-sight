@@ -152,12 +152,12 @@ const Index = () => {
             <img 
               src="/lovable-uploads/8e6d4109-d8c0-47bd-a937-050e31842942.png" 
               alt="Jobs In-Sight Logo" 
-              className="h-14 w-14" 
+              className="h-10 w-10 md:h-14 md:w-14" 
             />
             <img 
               src="/lovable-uploads/008b7164-22c6-43ed-abdb-3798ecd8dacc.png" 
               alt="Jobs In-Sight Text Logo" 
-              className="h-10" 
+              className="h-8 md:h-10" 
             />
           </div>
           <div className="flex items-center gap-2">
@@ -169,8 +169,8 @@ const Index = () => {
                     onClick={() => setHelpModalOpen(true)}
                     className="border-blue-200 hover:bg-blue-50 dark:border-blue-800 dark:hover:bg-blue-900/30"
                   >
-                    <HelpCircle className="mr-2 h-4 w-4" />
-                    Help
+                    <HelpCircle className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">Help</span>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -184,45 +184,50 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="flex-1 container py-8 space-y-6">
-        {/* Integrated Stats Summary and Action Bar */}
+      <main className="flex-1 container py-4 md:py-8 space-y-4 md:space-y-6">
+        {/* Title and Action Bar */}
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm overflow-hidden">
           <div className="p-4 border-b border-gray-100 dark:border-gray-800">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Job Applications</h2>
-            
-            <div className="flex flex-wrap justify-between items-center">
-              <StatsSummary jobs={jobs} />
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100">Job Applications</h2>
+              
+              {/* Action buttons */}
+              <div className="flex justify-start gap-2">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button onClick={() => setAddJobDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
+                        <Plus className="mr-1 md:mr-2 h-4 w-4" />
+                        <span className="hidden md:inline">Add Job</span>
+                        <span className="inline md:hidden">Add</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Add a new job application
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="default" onClick={handleExportData} className="bg-purple-600 hover:bg-purple-700">
+                        <Download className="mr-1 md:mr-2 h-4 w-4" />
+                        <span className="hidden md:inline">Export JSON</span>
+                        <span className="inline md:hidden">Export</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Export all job data as JSON
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
             </div>
             
-            {/* Action buttons - anchored to left */}
-            <div className="flex justify-start mt-4 gap-2">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button onClick={() => setAddJobDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
-                      <Plus className="mr-2 h-4 w-4" />
-                      Add Job
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    Add a new job application
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="default" onClick={handleExportData} className="bg-purple-600 hover:bg-purple-700">
-                      <Download className="mr-2 h-4 w-4" />
-                      Export JSON
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    Export all job data as JSON
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            {/* Stats Summary - only show on medium screens and up */}
+            <div className="hidden md:block mt-4">
+              <StatsSummary jobs={jobs} />
             </div>
           </div>
         </div>

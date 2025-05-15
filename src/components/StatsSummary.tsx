@@ -25,9 +25,9 @@ export default function StatsSummary({ jobs }: StatsSummaryProps) {
   ];
 
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex flex-wrap gap-3 overflow-x-auto pb-2">
       {stats.map((stat) => (
-        <Card key={stat.label} className={`${stat.className} rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 w-[120px]`}>
+        <Card key={stat.label} className={`${stat.className} rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 w-[120px] shrink-0`}>
           <CardContent className="flex flex-col items-center justify-center py-3 px-2">
             <stat.icon className="h-5 w-5 mb-1" />
             <div className="text-2xl font-bold">{stat.value}</div>

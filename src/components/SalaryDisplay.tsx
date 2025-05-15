@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Job } from '@/types/job';
-import { getSalaryInfo, renderSalary } from '@/lib/salary-utils';
+import { getSalaryInfo } from '@/lib/salary-utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 interface SalaryDisplayProps {
@@ -39,5 +39,21 @@ export default function SalaryDisplay({ job, showTooltip = true }: SalaryDisplay
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
+  );
+}
+
+// Helper function to render salary with appropriate source indicator
+function renderSalary(salaryInfo: { value: string; source: string; icon: React.ElementType | null }) {
+  const { value, source, icon: Icon } = salaryInfo;
+  
+  if (source === 'none') {
+    return <span className="text-muted-foreground text-sm">{value}</span>;
+  }
+  
+  return (
+    <div className="flex items-center gap-1">
+      <span>{value}</span>
+      {Icon && <Icon className="h-3 w-3 text-muted-foreground" />}
+    </div>
   );
 }

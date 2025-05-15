@@ -60,20 +60,5 @@ export function getSalaryInfo(
   };
 }
 
-/**
- * JSX component to render the salary with appropriate source indicator
- */
-export function renderSalary(salaryInfo: SalaryInfo) {
-  const { value, source, icon: Icon } = salaryInfo;
-  
-  if (source === 'none') {
-    return <span className="text-muted-foreground text-sm">{value}</span>;
-  }
-  
-  return (
-    <div className="flex items-center gap-1">
-      <span>{value}</span>
-      {Icon && <Icon className="h-3 w-3 text-muted-foreground" />}
-    </div>
-  );
-}
+// Remove JSX code from this file
+// The renderSalary function is now moved to SalaryDisplay component

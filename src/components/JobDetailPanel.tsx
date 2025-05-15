@@ -14,7 +14,7 @@ import DeleteConfirmationDialog from './DeleteConfirmationDialog';
 import { Progress } from './ui/progress';
 import RequirementsAssessment from './RequirementsAssessment';
 import RequirementsMatchDisplay from './RequirementsMatchDisplay';
-import { getSalaryInfo, renderSalary, SalaryInfo } from '@/lib/salary-utils';
+import { getSalaryInfo, SalaryInfo } from '@/lib/salary-utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 interface JobDetailPanelProps {

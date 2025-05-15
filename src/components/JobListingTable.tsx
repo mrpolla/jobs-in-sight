@@ -491,6 +491,18 @@ export default function JobListingTable({
                       Location {getSortIcon('location')}
                     </Button>
                   </TableHead>
+
+                  <TableHead className="hidden md:table-cell">
+                    <Button 
+                      variant="ghost" 
+                      className="p-0 hover:bg-transparent font-medium" 
+                      onClick={() => handleSort('remote_policy')}
+                    >
+                      <Globe className="h-4 w-4 mr-1" />
+                      Remote Policy {getSortIcon('remote_policy')}
+                    </Button>
+                  </TableHead>
+
                   
                   <TableHead className="w-[120px]">
                     <Button 
@@ -534,17 +546,6 @@ export default function JobListingTable({
                         >
                           <Code className="h-4 w-4 mr-1" />
                           Tech Stack {getSortIcon('tech_stack')}
-                        </Button>
-                      </TableHead>
-                      
-                      <TableHead className="hidden lg:table-cell">
-                        <Button 
-                          variant="ghost" 
-                          className="p-0 hover:bg-transparent font-medium" 
-                          onClick={() => handleSort('remote_policy')}
-                        >
-                          <Globe className="h-4 w-4 mr-1" />
-                          Remote Policy {getSortIcon('remote_policy')}
                         </Button>
                       </TableHead>
                       
@@ -623,7 +624,9 @@ export default function JobListingTable({
                     <TableCell className="hidden md:table-cell">{job.industry || 'N/A'}</TableCell>
                     
                     <TableCell className="hidden md:table-cell">{job.location || 'N/A'}</TableCell>
-                    
+
+                    <TableCell className="hidden md:table-cell">{job.remote_policy || 'N/A'}</TableCell>
+
                     <TableCell>
                       <div className="max-w-[120px]">
                         <JobStatusSelect
@@ -675,11 +678,7 @@ export default function JobListingTable({
                             </TechStackTooltip>
                           ) : 'N/A'}
                         </TableCell>
-                        
-                        <TableCell className="hidden lg:table-cell">
-                          {job.remote_policy || 'N/A'}
-                        </TableCell>
-                        
+                                                
                         <TableCell className="hidden lg:table-cell">
                           {job.possible_salary || 'N/A'}
                         </TableCell>

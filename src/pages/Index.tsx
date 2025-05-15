@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import { Save, Plus, Upload, Download, FileJson } from 'lucide-react';
+import { Save, Plus, Upload, Download, FileJson, HelpCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import ThemeToggle from '@/components/ThemeToggle';
 import StatsSummary from '@/components/StatsSummary';
@@ -11,6 +11,7 @@ import JobDetailPanel from '@/components/JobDetailPanel';
 import FileUploader from '@/components/FileUploader';
 import AddJobForm from '@/components/AddJobForm';
 import JsonImportDialog from '@/components/JsonImportDialog';
+import HelpModal from '@/components/HelpModal';
 import { Job, JobStatus } from '@/types/job';
 import { loadJobs, saveJobs, updateJob, deleteJob } from '@/lib/storage';
 
@@ -20,6 +21,7 @@ const Index = () => {
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [jsonImportDialogOpen, setJsonImportDialogOpen] = useState(false);
   const [addJobDialogOpen, setAddJobDialogOpen] = useState(false);
+  const [helpModalOpen, setHelpModalOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Load jobs from localStorage on component mount
@@ -220,6 +222,14 @@ const Index = () => {
               <Download className="mr-2 h-4 w-4" />
               Export
             </Button>
+
+            <Button 
+              variant="outline"
+              onClick={() => setHelpModalOpen(true)}
+            >
+              <HelpCircle className="mr-2 h-4 w-4" />
+              Help
+            </Button>
             
             <ThemeToggle />
           </div>
@@ -288,6 +298,12 @@ const Index = () => {
           onCancel={() => setJsonImportDialogOpen(false)}
         />
       )}
+
+      {/* Help Modal */}
+      <HelpModal 
+        open={helpModalOpen}
+        onOpenChange={setHelpModalOpen}
+      />
     </div>
   );
 };

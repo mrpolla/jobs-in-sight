@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Table, 
@@ -54,7 +53,7 @@ import ProjectTooltip from './ProjectTooltip';
 import { Switch } from './ui/switch';
 import RequirementsAssessmentTooltip from './RequirementsAssessmentTooltip';
 import PrioritySelect from './PrioritySelect';
-import { renderRequirementsBar, getMatchedSkills } from './JobListingUtils';
+import { renderRequirementsBar, getMatchedSkills } from './job-table/JobListingUtils';
 import { formatRelative, formatDate, isValidDate } from '@/utils/dateUtils';
 import { parseJobData } from '@/utils/jobUtils';
 import { toast } from '@/components/ui/use-toast';
@@ -286,7 +285,7 @@ export default function JobListingTable({
       job.industry || '',
       job.location || '',
       job.status,
-      getPriorityLabel(job.priority_level),
+      job.priority_level === 1 ? 'High' : job.priority_level === 2 ? 'Medium' : 'Low',
       (job.tech_stack || []).join(', '),
       job.remote_policy || '',
       job.possible_salary || '',
@@ -317,52 +316,6 @@ export default function JobListingTable({
       description: `${sortedJobs.length} jobs exported to CSV.`,
       duration: 3000,
     });
-  };
-
-  // Fix the renderRequirementsBar function to ensure proper type handling
-  const renderRequirementsBar = (job: Job) => {
-    if (!job.cv_match?.requirements_match || job.cv_match.requirements_match.length === 0) {
-      return <div>N/A</div>;
-    }
-    
-    const requirementsMatch = job.cv_match.requirements_match;
-    
-    // Ensure we're working with number type
-    const total = requirementsMatch.length;
-    
-    // Count each category and ensure they're numbers
-    const canDoWell = requirementsMatch.filter(req => req.status === 'Can do well').length;
-    const canTransfer = requirementsMatch.filter(req => req.status === 'Can transfer').length;
-    const mustLearn = requirementsMatch.filter(req => req.status === 'Must learn').length;
-    
-    // Calculate percentages with explicit number types - ensure all operands are numbers
-    const wellPercentage = total > 0 ? (Number(canDoWell) / Number(total)) * 100 : 0;
-    const transferPercentage = total > 0 ? (Number(canTransfer) / Number(total)) * 100 : 0;
-    const learnPercentage = total > 0 ? (Number(mustLearn) / Number(total)) * 100 : 0;
-    
-    return (
-      <div className="w-full">
-        <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
-          <div 
-            className="bg-green-500" 
-            style={{ width: `${wellPercentage}%` }}
-          />
-          <div 
-            className="bg-amber-500" 
-            style={{ width: `${transferPercentage}%` }}
-          />
-          <div 
-            className="bg-red-500" 
-            style={{ width: `${learnPercentage}%` }}
-          />
-        </div>
-        <div className="flex justify-between text-xs mt-1">
-          <span>{canDoWell}</span>
-          <span>{canTransfer}</span>
-          <span>{mustLearn}</span>
-        </div>
-      </div>
-    );
   };
 
   return (

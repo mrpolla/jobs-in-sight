@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { format } from 'date-fns';
 import { Job } from '@/types/job';
 import ProjectTooltip from '@/components/ProjectTooltip';
 import CompanyInfoTooltip from '@/components/CompanyInfoTooltip';
+import { formatDate } from '@/utils/dateUtils';
 
 // Factory pattern for all cell content types
 const JobCellContent = {
@@ -36,6 +36,11 @@ const JobCellContent = {
     companyReputation?: string,
     companyProducts?: string[] | string
   }) => {
+    // Safely handle companyProducts whether it's a string or string[]
+    const processedCompanyProducts = Array.isArray(companyProducts) 
+      ? companyProducts.join(', ') 
+      : companyProducts;
+      
     return (
       <CompanyInfoTooltip
         company={company}
@@ -43,7 +48,7 @@ const JobCellContent = {
         industry={industry}
         companySize={companySize}
         companyReputation={companyReputation}
-        companyProducts={typeof companyProducts === 'string' ? companyProducts : companyProducts}
+        companyProducts={processedCompanyProducts}
       >
         {company}
       </CompanyInfoTooltip>
@@ -63,10 +68,12 @@ const JobCellContent = {
   },
   
   Hours: ({ hours }: { hours?: number | string }) => {
+    // Handle both string and number types
     return <>{hours ? `${hours}h` : 'N/A'}</>;
   },
   
   Vacation: ({ days }: { days?: number | string }) => {
+    // Handle both string and number types
     return <>{days ? `${days} days` : 'N/A'}</>;
   },
   
@@ -75,7 +82,8 @@ const JobCellContent = {
   },
   
   StartDate: ({ date }: { date?: string }) => {
-    return <>{date ? format(new Date(date), 'MMM d, yyyy') : 'N/A'}</>;
+    // Use our safe date formatter
+    return <>{formatDate(date)}</>;
   }
 };
 

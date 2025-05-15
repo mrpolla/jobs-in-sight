@@ -1,7 +1,6 @@
 
 import { useState } from 'react';
 import { Table, TableBody } from '@/components/ui/table';
-import { format, formatDistanceToNow } from 'date-fns';
 import { Job, JobStatus } from '@/types/job';
 import DeleteConfirmationDialog from '@/components/DeleteConfirmationDialog';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -12,6 +11,8 @@ import NoJobsFound from './NoJobsFound';
 import { useJobFilters } from '@/hooks/use-job-filters';
 import { useJobSorting } from '@/hooks/use-job-sorting';
 import { renderRequirementsBar, getMatchedSkills } from './JobListingUtils';
+import { formatRelative, formatDate } from '@/utils/dateUtils';
+import { parseJobData } from '@/utils/jobUtils';
 import { toast } from '@/components/ui/use-toast';
 
 interface JobListingTableProps {
@@ -34,16 +35,15 @@ export default function JobListingTable({
   const [showAllColumns, setShowAllColumns] = useState(false);
   const [jobToDelete, setJobToDelete] = useState<Job | null>(null);
   
-  const { filters, filteredJobs, handleFilterChange, clearFilters } = useJobFilters(jobs);
+  // Process jobs data to ensure correct types
+  const processedJobs = jobs.map(job => parseJobData(job));
+  
+  const { filters, filteredJobs, handleFilterChange, clearFilters } = useJobFilters(processedJobs);
   const { sort, sortedJobs, handleSort } = useJobSorting(filteredJobs);
 
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return formatDistanceToNow(date, { addSuffix: true });
-    } catch (error) {
-      return dateString;
-    }
+  // Use our new utility function for date formatting
+  const formatDateForDisplay = (dateString: string) => {
+    return formatRelative(dateString);
   };
 
   const handleDelete = (job: Job, event: React.MouseEvent) => {
@@ -171,7 +171,7 @@ export default function JobListingTable({
                     onDeleteJob={onDeleteJob}
                     onToggleHidden={onToggleHidden}
                     getMatchedSkills={getMatchedSkills}
-                    formatDate={formatDate}
+                    formatDate={formatDateForDisplay}
                     handleDelete={handleDelete}
                     handleToggleHidden={handleToggleHidden}
                     handlePriorityChange={handlePriorityChange}

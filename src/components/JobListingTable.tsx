@@ -50,6 +50,7 @@ import CompanyInfoTooltip from './CompanyInfoTooltip';
 import MatchScoreTooltip from './MatchScoreTooltip';
 import ProjectTooltip from './ProjectTooltip';
 import { Switch } from './ui/switch';
+import SalaryDisplay from "./SalaryDisplay";
 
 interface JobListingTableProps {
   jobs: Job[];
@@ -222,7 +223,17 @@ export default function JobListingTable({
         comparison = (a.remote_policy || '').localeCompare(b.remote_policy || '');
         break;
       case 'possible_salary':
-        comparison = (a.possible_salary || '').localeCompare(b.possible_salary || '');
+        const salaryA =
+          a.possible_salary ||
+          a.salary_from_external_sources ||
+          a.salary_estimate_from_context ||
+          "";
+        const salaryB =
+          b.possible_salary ||
+          b.salary_from_external_sources ||
+          b.salary_estimate_from_context ||
+          "";
+        comparison = salaryA.localeCompare(salaryB);
         break;
       case 'start_date':
         if (a.start_date && b.start_date) {
@@ -680,7 +691,7 @@ export default function JobListingTable({
                         </TableCell>
                                                 
                         <TableCell className="hidden lg:table-cell">
-                          {job.possible_salary || 'N/A'}
+                          <SalaryDisplay job={job} showTooltip={true} />
                         </TableCell>
                         
                         <TableCell className="hidden lg:table-cell">

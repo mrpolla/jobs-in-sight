@@ -207,21 +207,24 @@ const Index = () => {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="default" onClick={handleExportData} className="bg-purple-600 hover:bg-purple-700">
-                        <Download className="mr-2 h-4 w-4" />
-                        Export CSV
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      Export all job data as CSV
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
               </div>
+            </div>
+            
+            {/* Export JSON button - anchored to bottom right */}
+            <div className="flex justify-end mt-4">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="default" onClick={handleExportData} className="bg-purple-600 hover:bg-purple-700">
+                      <Download className="mr-2 h-4 w-4" />
+                      Export JSON
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Export all job data as JSON
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
         </div>

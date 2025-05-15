@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Download, HelpCircle } from 'lucide-react';
@@ -193,8 +194,8 @@ const Index = () => {
               <StatsSummary jobs={jobs} />
             </div>
             
-            {/* Action buttons - anchored to bottom right */}
-            <div className="flex justify-end mt-4 gap-2">
+            {/* Action buttons - anchored to left */}
+            <div className="flex justify-start mt-4 gap-2">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>

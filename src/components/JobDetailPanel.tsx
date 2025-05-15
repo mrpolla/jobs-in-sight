@@ -16,6 +16,7 @@ import RequirementsAssessment from './RequirementsAssessment';
 import RequirementsMatchDisplay from './RequirementsMatchDisplay';
 import { getSalaryInfo, SalaryInfo } from '@/lib/salary-utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import SalaryDisplay from './SalaryDisplay';
 
 interface JobDetailPanelProps {
   job: Job | null;
@@ -44,7 +45,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
     if (job) {
       setNotes(job.interview_notes || '');
       setStatus(job.status);
-      setPriority(job.priority_level);
+      setPriority(job.priority_level || 3);
       setHidden(job.hidden || false);
       setSalaryInfo(getSalaryInfo(
         job.possible_salary, 
@@ -357,25 +358,11 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 </div>
               )}
               
-              {/* Salary Information Section - Updated */}
-              {salaryInfo.source !== 'none' && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Salary Range</p>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="flex items-center gap-1">
-                          <p>{salaryInfo.value}</p>
-                          {salaryInfo.icon && <salaryInfo.icon className="h-3.5 w-3.5 text-muted-foreground" />}
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="right">
-                        <p>{salaryInfo.tooltip}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              )}
+              {/* Salary Information Section - Using SalaryDisplay component */}
+              <div>
+                <p className="text-sm text-muted-foreground">Salary Range</p>
+                <SalaryDisplay job={job} />
+              </div>
               
               {/* Display raw values for debugging/reference if needed */}
               {job.possible_salary && salaryInfo.source !== 'direct' && (

@@ -21,10 +21,15 @@ export function getSalaryInfo(
   externalSourcesSalary?: string | null,
   estimatedSalary?: string | null
 ): SalaryInfo {
+  // Check for empty strings and convert them to null
+  const cleanPossibleSalary = possibleSalary && possibleSalary.trim() !== '' ? possibleSalary : null;
+  const cleanExternalSalary = externalSourcesSalary && externalSourcesSalary.trim() !== '' ? externalSourcesSalary : null;
+  const cleanEstimatedSalary = estimatedSalary && estimatedSalary.trim() !== '' ? estimatedSalary : null;
+  
   // Case 1: Direct salary from job posting
-  if (possibleSalary) {
+  if (cleanPossibleSalary) {
     return {
-      value: possibleSalary,
+      value: cleanPossibleSalary,
       source: 'direct',
       icon: null,
       tooltip: 'Salary mentioned in job posting'
@@ -32,19 +37,21 @@ export function getSalaryInfo(
   }
   
   // Case 2: Salary from external sources
-  if (externalSourcesSalary) {
+  if (cleanExternalSalary) {
+    // For external sources, extract just the salary range if it's a long text
+    const extractedSalary = extractSalaryFromText(cleanExternalSalary);
     return {
-      value: externalSourcesSalary,
+      value: extractedSalary,
       source: 'external',
       icon: ExternalLink,
-      tooltip: 'Salary from external sources like Glassdoor, Levels.fyi'
+      tooltip: cleanExternalSalary
     };
   }
   
   // Case 3: Estimated salary from context
-  if (estimatedSalary) {
+  if (cleanEstimatedSalary) {
     return {
-      value: estimatedSalary,
+      value: cleanEstimatedSalary,
       source: 'estimate',
       icon: Info,
       tooltip: 'Estimated salary based on job context'
@@ -60,5 +67,22 @@ export function getSalaryInfo(
   };
 }
 
-// Remove JSX code from this file
-// The renderSalary function is now moved to SalaryDisplay component
+/**
+ * Helper function to extract just the salary range from a longer text
+ */
+function extractSalaryFromText(text: string): string {
+  // Look for patterns like €260K–€281K, $100,000-$150,000, etc.
+  const currencyRangeRegex = /([€$£¥][\d,.]+K?)\s*[-–]\s*([€$£¥][\d,.]+K?)/i;
+  const match = text.match(currencyRangeRegex);
+  
+  if (match) {
+    return `${match[1]}-${match[2]}`;
+  }
+  
+  // If we can't extract a clean range, use the first 60 chars or so
+  if (text.length > 60) {
+    return text.substring(0, 60) + '...';
+  }
+  
+  return text;
+}

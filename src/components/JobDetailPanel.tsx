@@ -151,7 +151,10 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
     deleteJob(job.id);
     onJobDeleted(job.id);
     setShowDeleteConfirm(false);
-    toast.success('Job deleted successfully');
+    toast({
+      title: "Success",
+      description: "Job deleted successfully"
+    });
   };
 
   const cancelDelete = () => {

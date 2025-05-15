@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Download, HelpCircle } from "lucide-react";
@@ -100,6 +99,33 @@ const Index = () => {
     toast.success(`Status updated to ${status}`);
   };
 
+  const handleUpdateJobPriority = (job: Job, priority: number) => {
+    const updatedJob = {
+      ...job,
+      priority_level: priority,
+      last_updated: new Date().toISOString(),
+    };
+
+    updateJob(updatedJob);
+
+    const updatedJobs = jobs.map((j) =>
+      j.id === updatedJob.id ? updatedJob : j
+    );
+
+    setJobs(updatedJobs);
+
+    // Update selected job if it's the one being edited
+    if (selectedJob && selectedJob.id === updatedJob.id) {
+      setSelectedJob(updatedJob);
+    }
+
+    toast.success(
+      `Priority updated to ${
+        priority === 1 ? "High" : priority === 2 ? "Medium" : "Low"
+      }`
+    );
+  };
+
   const handleToggleHidden = (job: Job, hidden: boolean) => {
     const updatedJob = {
       ...job,
@@ -159,7 +185,11 @@ const Index = () => {
         <div className="container flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img
-              src={isDarkMode ? "/lovable-uploads/logo_inverted.png" : "/lovable-uploads/logo.png"}
+              src={
+                isDarkMode
+                  ? "/lovable-uploads/logo_inverted.png"
+                  : "/lovable-uploads/logo.png"
+              }
               alt="Jobs In-Sight Logo"
               className="h-10 w-10 md:h-14 md:w-14"
             />
@@ -250,6 +280,7 @@ const Index = () => {
             onUpdateJobStatus={handleUpdateJobStatus}
             onDeleteJob={handleDeleteJob}
             onToggleHidden={handleToggleHidden}
+            onUpdateJobPriority={handleUpdateJobPriority}
           />
         </div>
       </main>

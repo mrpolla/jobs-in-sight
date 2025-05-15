@@ -24,6 +24,7 @@ export interface Job {
   recruiter_contact?: string;
   possible_salary?: string;
   salary_estimate_from_context?: string;
+  salary_from_external_sources?: string; // Added this field
   benefits?: string;
   company_reputation?: string;
   job_posting_clarity_score?: number;

@@ -353,101 +353,122 @@ export default function JobListingTable({
         </div>
         
         <div className="flex flex-wrap gap-2 w-full md:w-auto">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="w-full md:w-auto">
-                <Filter className="mr-2 h-4 w-4" />
-                Filter
-                {(filters.status !== 'All' || filters.priority !== 'All') && (
-                  <Badge variant="secondary" className="ml-2 px-1">
-                    {(filters.status !== 'All' ? 1 : 0) + (filters.priority !== 'All' ? 1 : 0)}
-                  </Badge>
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[200px]">
-              <DropdownMenuGroup>
-                <div className="p-2">
-                  <p className="text-sm font-medium mb-2">Status</p>
-                  <div className="grid grid-cols-2 gap-1">
-                    {(['All', 'New', 'Applied', 'Interview', 'Rejected', 'Offer'] as const).map((status) => (
-                      <Button
-                        key={status}
-                        variant={filters.status === status ? 'default' : 'outline'}
-                        size="sm"
-                        className="w-full"
-                        onClick={() => handleFilterChange('status', status)}
-                      >
-                        {status}
-                      </Button>
-                    ))}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="w-full md:w-auto">
+                    <Filter className="mr-2 h-4 w-4" />
+                    Filter
+                    {(filters.status !== 'All' || filters.priority !== 'All') && (
+                      <Badge variant="secondary" className="ml-2 px-1">
+                        {(filters.status !== 'All' ? 1 : 0) + (filters.priority !== 'All' ? 1 : 0)}
+                      </Badge>
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[200px]">
+                  <DropdownMenuGroup>
+                    <div className="p-2">
+                      <p className="text-sm font-medium mb-2">Status</p>
+                      <div className="grid grid-cols-2 gap-1">
+                        {(['All', 'New', 'Applied', 'Interview', 'Rejected', 'Offer'] as const).map((status) => (
+                          <Button
+                            key={status}
+                            variant={filters.status === status ? 'default' : 'outline'}
+                            size="sm"
+                            className="w-full"
+                            onClick={() => handleFilterChange('status', status)}
+                          >
+                            {status}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </DropdownMenuGroup>
+                  
+                  <DropdownMenuSeparator />
+                  
+                  <DropdownMenuGroup>
+                    <div className="p-2">
+                      <p className="text-sm font-medium mb-2">Priority</p>
+                      <div className="grid grid-cols-2 gap-1">
+                        {(['All', 1, 2, 3] as const).map((priority) => (
+                          <Button
+                            key={priority === 'All' ? 'all' : priority}
+                            variant={filters.priority === priority ? 'default' : 'outline'}
+                            size="sm"
+                            className="w-full"
+                            onClick={() => handleFilterChange('priority', priority)}
+                          >
+                            {priority === 'All' ? 'All' : (
+                              priority === 1 ? 'High' : priority === 2 ? 'Medium' : 'Low'
+                            )}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </DropdownMenuGroup>
+                  
+                  <DropdownMenuSeparator />
+                  
+                  <div className="p-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Show Hidden Jobs</span>
+                      <Switch 
+                        checked={!filters.hideHidden} 
+                        onCheckedChange={(checked) => handleFilterChange('hideHidden', !checked)}
+                      />
+                    </div>
                   </div>
-                </div>
-              </DropdownMenuGroup>
-              
-              <DropdownMenuSeparator />
-              
-              <DropdownMenuGroup>
-                <div className="p-2">
-                  <p className="text-sm font-medium mb-2">Priority</p>
-                  <div className="grid grid-cols-2 gap-1">
-                    {(['All', 1, 2, 3] as const).map((priority) => (
-                      <Button
-                        key={priority === 'All' ? 'all' : priority}
-                        variant={filters.priority === priority ? 'default' : 'outline'}
-                        size="sm"
-                        className="w-full"
-                        onClick={() => handleFilterChange('priority', priority)}
-                      >
-                        {priority === 'All' ? 'All' : (
-                          priority === 1 ? 'High' : priority === 2 ? 'Medium' : 'Low'
-                        )}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </DropdownMenuGroup>
-              
-              <DropdownMenuSeparator />
-              
-              <div className="p-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Show Hidden Jobs</span>
-                  <Switch 
-                    checked={!filters.hideHidden} 
-                    onCheckedChange={(checked) => handleFilterChange('hideHidden', !checked)}
-                  />
-                </div>
-              </div>
-              
-              <DropdownMenuSeparator />
-              
-              <DropdownMenuItem 
-                disabled={filters.status === 'All' && filters.priority === 'All'}
-                onSelect={clearFilters}
-                className="justify-center"
-              >
-                Clear Filters
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  
+                  <DropdownMenuSeparator />
+                  
+                  <DropdownMenuItem 
+                    disabled={filters.status === 'All' && filters.priority === 'All'}
+                    onSelect={clearFilters}
+                    className="justify-center"
+                  >
+                    Clear Filters
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </TooltipTrigger>
+            <TooltipContent>
+              Filter jobs by status and priority
+            </TooltipContent>
+          </Tooltip>
 
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setShowAllColumns(prev => !prev)}
-          >
-            {showAllColumns ? "Show Less Columns" : "Show All Columns"}
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowAllColumns(prev => !prev)}
+              >
+                {showAllColumns ? "Show Less Columns" : "Show All Columns"}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {showAllColumns ? "Hide additional columns" : "Show additional details columns"}
+            </TooltipContent>
+          </Tooltip>
           
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExportExcel}
-          >
-            <FileCode2 className="mr-2 h-4 w-4" />
-            Export
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportExcel}
+              >
+                <FileCode2 className="mr-2 h-4 w-4" />
+                Export CSV
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              Export job data to CSV file
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
       

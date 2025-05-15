@@ -12,85 +12,219 @@ interface HelpModalProps {
 const HelpModal: React.FC<HelpModalProps> = ({ open, onOpenChange }) => {
   const handleDownloadPrompt = () => {
     const promptText = `
-# Job Analysis Prompt
+# Prompt for ChatGPT: Job Listing Information Extraction with CV Match Analysis
 
-You are a career advisor and job application specialist. I want you to analyze job listings for me and compare them with my CV to help me understand if I'm a good fit.
+I need you to extract detailed information from a job listing URL I'll provide and compare it against my CV that I've uploaded as a file in this ChatGPT project. Please analyze the job posting, research the company, look up relevant salary information, and evaluate how well my CV matches the job requirements. 
 
-When I provide you with a job listing URL or text, please:
+Beyond the basic analysis, I also need you to:
+1. Create a compelling reasoning for why I should apply for this position based on my background and the job requirements
+2. Identify specific examples from my CV that directly match what they're asking for
+3. Assess EACH specific job requirement and categorize my ability to meet it as:
+   - "Can do well" (direct experience/skills with the technology/tool/methodology)
+   - "Can transfer" (have transferable skills/experience but limited direct experience)
+   - "Must learn" (need to acquire this skill/experience)
+4. For requirements in the "Can transfer" category, explain specifically which of my existing skills/experiences could be applied and why
+5. Calculate a match score for each individual requirement and an overall match percentage using this scoring system:
+   - "Can do well" = 70-100%
+   - "Can transfer" = 40-70%
+   - "Must learn" = 0-40%
 
-1. Extract all relevant job details (position, company, location, etc.)
-2. Identify the technical requirements and skills needed
-3. Research the company background if not explicitly stated
-4. Estimate salary range if not provided
-5. Compare the requirements with my CV
-6. Provide a match score as a percentage
-7. Categorize each requirement as "Can do well", "Can transfer", or "Must learn"
-8. Analyze if my experience level matches the position
-9. Suggest if this is a good opportunity based on my career path
-10. Provide 3 reasons why I should apply based on my qualifications
+EVALUATION GUIDELINES:
+- Be fair but realistic in your evaluation of my CV against the job requirements
+- For tech stack matches, consider both explicit mentions in my CV and closely related technologies
+- For years of experience, count relevant experience in the field
+- For domain knowledge, consider both explicit and implied understanding based on my work history
+- For seniority match, consider a downward move very good (80-100%), lateral move good (60-80%), and upward move moderate (40-60%)
+- Provide balanced feedback on my qualifications
 
-Return your analysis in the following JSON format (very important):
+Return all data in English in a clean JSON object that follows the schema below. If a field isn't available, include it with null or a reasonable default value.
 
-\`\`\`json
+## Instructions:
+1. First, read my CV file attached in this ChatGPT project to understand my background
+2. Process the URL I provide
+3. Extract information available directly from the job listing (translate to English if necessary)
+3. Research the company's website or reliable sources to fill in missing company information
+4. Search for salary information on sites like Levels.fyi, Glassdoor, PayScale, or similar platforms for the position and company/location
+5. Research company reputation on sites like Glassdoor, Indeed, or Comparably
+6. Compare the job requirements against my CV to determine compatibility, analyzing tech stack match, experience match, seniority alignment, etc.
+7. Format your response as a valid JSON object
+8. For subjective fields (like job posting clarity), provide your best assessment
+9. Do not include markdown formatting, additional explanations, or any text outside the JSON object
+10. Ensure the JSON is properly formatted and valid
+11. All text fields must be in English regardless of the original job posting language
+
+## JSON Schema:
+\`\`\`
 {
-  "position": "Job title",
-  "company": "Company name",
-  "location": "Job location",
-  "remote": true/false/partial,
-  "job_type": "Full-time/Contract/etc",
-  "job_url": "URL of the job listing",
-  "description": "Brief job description",
-  "date_added": "YYYY-MM-DD",
-  "date_found": "YYYY-MM-DD",
-  "date_applied": "",
-  "status": "Not Applied",
+  "url": "",
+  "position": "",
+  "project": "",
+  "company": "",
+  "job_description": "",
+  "tech_stack": [],
+  "requirements": "",
+  "product": "",
+  "job_type": "",
+  "location": "",
+  "remote_policy": "",
+  "contract_duration": "",
+  "hours_per_week": "",
+  "vacation_days": "",
+  "seniority_level": "",
+  "start_date": "",
+  "application_deadline": "",
+  "languages_required": [],
+  "industry": "",
+  "company_info": "",
+  "company_products": "",
+  "company_size": "",
+  "team_description": "",
+  "recruiter_contact": "",
+  "possible_salary": "",
+  "salary_estimate_from_context": "",
+  "salary_from_external_sources": "",
+  "benefits": "",
+  "company_reputation": "",
+  "job_posting_clarity_score": null,
+  "priority_level": null,
+  "status": "New",
+  "applied_date": null,
+  "interview_notes": "",
+  "rating_match": null,
   "hidden": false,
-  "priority_level": 1-5,
-  "tech_stack": ["Tech1", "Tech2"],
-  "company_info": {
-    "industry": "Industry type",
-    "size": "Company size",
-    "reputation": "Known reputation"
-  },
-  "salary": {
-    "min": number,
-    "max": number,
-    "currency": "USD",
-    "period": "yearly/monthly/hourly"
-  },
-  "requirements": {
-    "skills": ["Skill1", "Skill2"],
-    "experience_years": number,
-    "education": "Required education",
-    "seniority": "Junior/Mid/Senior"
-  },
-  "match_analysis": {
-    "overall_score": number (0-100),
-    "requirements_assessment": [
+  
+  "cv_match": {
+    "overall_match_percentage": null,
+    "requirements_match": [
       {
-        "requirement": "Specific requirement",
-        "status": "Can do well/Can transfer/Must learn",
-        "explanation": "Brief explanation"
+        "requirement": "",
+        "status": "",
+        "explanation": "",
+        "transferable_skills": [],
+        "match_score": null
       }
     ],
     "experience_match": {
-      "years_match": "Below/Meet/Exceed",
-      "domain_overlap": "Low/Medium/High",
-      "explanation": "Brief explanation"
+      "score": null,
+      "years_required": null,
+      "years_experience": null,
+      "domain_match": "",
+      "domain_overlap": [],
+      "role_similarity": ""
     },
-    "seniority_alignment": "Below/At level/Above",
-    "application_reasoning": [
-      "Reason 1",
-      "Reason 2",
-      "Reason 3"
-    ]
+    "seniority_match": {
+      "score": null,
+      "alignment": "",
+      "notes": ""
+    },
+    "industry_match": {
+      "score": null,
+      "familiarity": "",
+      "transferable_experience": ""
+    },
+    "project_match": {
+      "score": null,
+      "similar_projects": [],
+      "environment_similarity": ""
+    },
+    "compensation_alignment": {
+      "score": null,
+      "notes": ""
+    },
+    "location_compatibility": {
+      "score": null,
+      "notes": ""
+    }
   },
-  "notes": "",
-  "contacts": []
+  "match_summary": "",
+  "match_score": null,
+  "application_reasoning": {
+    "why_apply": "",
+    "key_matching_qualifications": [],
+    "overall_fit_assessment": ""
+  }
 }
 \`\`\`
 
-Important: Ensure all JSON fields are properly formatted, as this output will be imported directly into my job tracking tool.
+## Field Guidelines:
+- \`url\`: The original job listing URL provided
+- \`position\`: Job title as listed
+- \`project\`: The main 1-2 tasks/responsibilities of the position
+- \`company\`: Company name
+- \`job_description\`: Concise summary of the role
+- \`tech_stack\`: Array of technologies mentioned
+- \`requirements\`: Key qualifications needed
+- \`product\`: The specific product being worked on (only set if there is a definite product mentioned in the description)
+- \`job_type\`: Full-time, part-time, contract, etc.
+- \`location\`: Office location
+- \`remote_policy\`: Remote, hybrid, on-site
+- \`contract_duration\`: Permanent, fixed term, etc.
+- \`hours_per_week\`: Expected working hours per week
+- \`vacation_days\`: Number of vacation days provided annually
+- \`seniority_level\`: Junior, mid, senior
+- \`start_date\`: Expected start date if mentioned
+- \`application_deadline\`: Last date to apply if mentioned
+- \`languages_required\`: Array of required languages
+- \`industry\`: Company's industry
+- \`company_info\`: Brief company description
+- \`company_products\`: Main products/services
+- \`company_size\`: Number of employees if available
+- \`team_description\`: Information about the team
+- \`recruiter_contact\`: Contact information if available
+- \`possible_salary\`: Salary range if mentioned in the posting
+- \`salary_estimate_from_context\`: Estimated salary based on role/location
+- \`salary_from_external_sources\`: Salary information from Levels.fyi, Glassdoor, etc. Include source and range
+- \`benefits\`: Perks and benefits listed
+- \`company_reputation\`: Include ratings from sites like Glassdoor if available (e.g., "4.2/5 on Glassdoor, 3.8/5 on Indeed")
+- \`job_posting_clarity_score\`: Rate from 1-5 how clear and detailed the posting is
+- \`priority_level\`: Leave as null (to be filled by user)
+- \`status\`: Default to "New"
+- \`applied_date\`: Leave as null (to be filled by user)
+- \`interview_notes\`: Leave empty (to be filled by user)
+- \`rating_match\`: Leave as null (to be filled by user)
+- \`hidden\`: Default to false
+
+### CV Match Fields:
+- \`cv_match.overall_match_percentage\`: Overall match percentage (0-100)
+- \`cv_match.requirements_match\`: Array of objects, each containing:
+  - \`requirement\`: The specific job requirement being assessed
+  - \`status\`: One of: "Can do well", "Can transfer", or "Must learn"
+  - \`explanation\`: Explanation of why this status was assigned
+  - \`transferable_skills\`: For "Can transfer" status, array of my skills that could be applied to this requirement and why
+  - \`match_score\`: Score (0-100) for this specific requirement
+- \`cv_match.experience_match.score\`: Score (0-100) for experience match
+- \`cv_match.experience_match.years_required\`: Years of experience required
+- \`cv_match.experience_match.years_experience\`: Years of relevant experience from CV
+- \`cv_match.experience_match.domain_match\`: "Strong", "Moderate", "Limited", or "None"
+- \`cv_match.experience_match.domain_overlap\`: Array of matching domains
+- \`cv_match.experience_match.role_similarity\`: "High", "Medium", or "Low"
+- \`cv_match.seniority_match.score\`: Score (0-100) for seniority alignment
+- \`cv_match.seniority_match.alignment\`: "Upward", "Lateral", or "Downward"
+- \`cv_match.seniority_match.notes\`: Brief explanation of seniority assessment
+- \`cv_match.industry_match.score\`: Score (0-100) for industry alignment
+- \`cv_match.industry_match.familiarity\`: "High", "Moderate", "Low", or "None"
+- \`cv_match.industry_match.transferable_experience\`: Brief explanation of transferable experience
+- \`cv_match.project_match.score\`: Score (0-100) for project/responsibilities match
+- \`cv_match.project_match.similar_projects\`: Array of similar projects/responsibilities from CV
+- \`cv_match.project_match.environment_similarity\`: "High", "Medium", or "Low"
+- \`cv_match.compensation_alignment.score\`: Score (0-100) for salary match
+- \`cv_match.compensation_alignment.notes\`: Brief assessment of compensation alignment
+- \`cv_match.location_compatibility.score\`: Score (0-100) for location compatibility
+- \`cv_match.location_compatibility.notes\`: Brief assessment of location preference match
+- \`match_summary\`: 1-2 sentence overview of the match quality
+- \`match_score\`: Overall match score (0-100)
+- \`application_reasoning.why_apply\`: 2-3 paragraph compelling argument for why I should apply for this position
+- \`application_reasoning.key_matching_qualifications\`: Array of specific qualifications from my CV that directly match job requirements
+- \`application_reasoning.overall_fit_assessment\`: Overall assessment of my fit for the role (1-2 paragraphs)
+
+## Research Guidelines:
+When researching salary information, please check:
+1. Levels.fyi for tech positions
+2. Glassdoor salary information for the specific company and role
+3. PayScale or Salary.com for general industry standards
+4. Include currency and whether it's annual, monthly, or hourly
+
+I've attached my CV as a file in this ChatGPT project. Please analyze it and compare it against the job requirements.
 `;
 
     // Create a blob from the prompt text
@@ -127,13 +261,13 @@ Important: Ensure all JSON fields are properly formatted, as this output will be
         </div>
 
         {/* Main content: 4 simple steps */}
-        <div className="space-y-8">
+        <div>
           {/* Step 1 */}
-          <div className="flex items-start gap-4">
+          <div className="flex items-start gap-4 pb-6">
             <div className="bg-slate-800 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
               1
             </div>
-            <div>
+            <div className="w-full">
               <h3 className="text-lg font-medium mb-1">
                 Download Prompt Template
               </h3>
@@ -142,7 +276,7 @@ Important: Ensure all JSON fields are properly formatted, as this output will be
               </p>
               <Button
                 onClick={handleDownloadPrompt}
-                className="bg-slate-800 hover:bg-slate-700 text-white"
+                className="bg-slate-800 hover:bg-slate-700 text-white mb-4"
                 size="sm"
               >
                 <Download className="mr-2 h-4 w-4" />
@@ -150,78 +284,175 @@ Important: Ensure all JSON fields are properly formatted, as this output will be
               </Button>
             </div>
           </div>
-
+          {/* Divider */}
+          <div className="border-t border-slate-200 my-2"></div>
           {/* Step 2 */}
-          <div className="flex items-start gap-4">
+          <div className="flex items-start gap-4 py-6">
             <div className="bg-slate-800 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
               2
             </div>
-            <div>
+            <div className="w-full">
               <h3 className="text-lg font-medium mb-1">
                 Create ChatGPT Project
               </h3>
               <p className="text-sm text-slate-600 mb-2">
-                Create a new ChatGPT project and upload your CV
+                Create a new ChatGPT project and upload your CV and the prompt
+                downloaded in the previous step
               </p>
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-100 p-2 rounded">
+              <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-100 p-2 rounded mb-4">
                 <BookOpen className="h-4 w-4" />
                 <span>CV can be in Word, TXT, or PDF format</span>
               </div>
-            </div>
-          </div>
 
-          {/* Step 3 */}
-          <div className="flex items-start gap-4">
-            <div className="bg-slate-800 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-              3
-            </div>
-            <div>
-              <h3 className="text-lg font-medium mb-1">Analyze Job Listing</h3>
-              <p className="text-sm text-slate-600 mb-2">
-                Paste a job URL into ChatGPT with the prompt
-              </p>
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-100 p-2 rounded">
-                <Code className="h-4 w-4" />
-                <span>
-                  Example: "Please analyze this job:
-                  https://example.com/job/123"
-                </span>
+              {/* Screenshots */}
+              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-center justify-center">
+                <p className="text-slate-500 text-sm">
+                  2.1 Add new project in ChatGPT:
+                  <img
+                    src="/images/Step_2_1_add_project.png"
+                    alt="Adding project"
+                    className="rounded-lg border border-slate-200 w-full shadow-sm"
+                  />
+                </p>
+              </div>
+              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-center justify-center">
+                <p className="text-slate-500 text-sm">
+                  2.2 Click add files:
+                  <img
+                    src="/images/Step_2_2_click_add_files.png"
+                    alt="Click add files"
+                    className="rounded-lg border border-slate-200 w-full shadow-sm"
+                  />
+                </p>
+              </div>
+              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-center justify-center">
+                <p className="text-slate-500 text-sm">
+                  2.3 Select files to add:
+                  <img
+                    src="/images/Step_2_3_add_files.png"
+                    alt="Select files to add"
+                    className="rounded-lg border border-slate-200 w-full shadow-sm"
+                  />
+                </p>
               </div>
             </div>
           </div>
+          {/* Divider */}
+          <div className="border-t border-slate-200 my-2"></div>
+          {/* Step 3 */}
+          <div className="flex items-start gap-4 py-6">
+            <div className="bg-slate-800 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+              3
+            </div>
+            <div className="w-full">
+              <h3 className="text-lg font-medium mb-1">Analyze Job Listing</h3>
+              <p className="text-sm text-slate-600 mb-2">
+                Paste a job URL into the ChatGPT project chat
+              </p>
+              <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-100 p-2 rounded mb-4">
+                <Code className="h-4 w-4" />
+                <span>https://example.com/job/123"</span>
+              </div>
 
+              {/* Screenshots */}
+              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-center justify-center">
+                <p className="text-slate-500 text-sm">
+                  3.1 Paste link in project chat:
+                  <img
+                    src="/images/Step_3_paste_link.png"
+                    alt="Paste link"
+                    className="rounded-lg border border-slate-200 w-full shadow-sm"
+                  />
+                </p>
+              </div>
+            </div>
+          </div>
+          {/* Divider */}
+          <div className="border-t border-slate-200 my-2"></div>
           {/* Step 4 */}
-          <div className="flex items-start gap-4">
+          <div className="flex items-start gap-4 py-6">
             <div className="bg-slate-800 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
               4
             </div>
-            <div>
+            <div className="w-full">
               <h3 className="text-lg font-medium mb-1">
                 Import to Job Tracker
               </h3>
               <p className="text-sm text-slate-600 mb-2">
                 Copy the entire JSON response and import it
               </p>
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-100 p-2 rounded">
+              <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-100 p-2 rounded mb-4">
                 <LayoutDashboard className="h-4 w-4" />
                 <span>
-                  Use "JSON Import" button or copy-paste into the form
+                  Copy-paste JSON from ChatGPT to "JSON Parse" in Job Tracker
                 </span>
+              </div>
+
+              {/* Screenshots */}
+              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-center justify-center">
+                <p className="text-slate-500 text-sm">
+                  4.1 Copy json from ChatGPT:
+                  <img
+                    src="/images/Step_4_1_copy_json.png"
+                    alt="Copy JSON"
+                    className="rounded-lg border border-slate-200 w-full shadow-sm"
+                  />
+                </p>
+              </div>
+              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-center justify-center">
+                <p className="text-slate-500 text-sm">
+                  4.2 Select "JSON Paste" in Job Tracker:
+                  <img
+                    src="/images/Step_4_2_add_json.png"
+                    alt="Select JSON"
+                    className="rounded-lg border border-slate-200 w-full shadow-sm"
+                  />
+                </p>
+              </div>
+              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-center justify-center">
+                <p className="text-slate-500 text-sm">
+                  4.3 Paste the JSON response in the text area and click "Parse
+                  JSON":
+                  <img
+                    src="/images/Step_4_3_paste_json.png"
+                    alt="Paste JSON"
+                    className="rounded-lg border border-slate-200 w-full shadow-sm"
+                  />
+                </p>
               </div>
             </div>
           </div>
-        </div>
+          {/* Step 5 */}
+          <div className="flex items-start gap-4 py-6">
+            <div className="bg-slate-800 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+              5
+            </div>
+            <div className="w-full">
+              <h3 className="text-lg font-medium mb-1">
+                Explore results in Job Tracker
+              </h3>
+              <p className="text-sm text-slate-600 mb-2">
+                Explore the results in Job Tracker and see how well you match
+                the job listing
+              </p>
+              <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-100 p-2 rounded mb-4">
+                <LayoutDashboard className="h-4 w-4" />
+                <span>Explore the many features of Job Tracker</span>
+              </div>
 
-        <div className="mt-8 pt-4 border-t border-slate-200">
-          <p className="text-sm text-center text-slate-500">
-            Need help? Contact support at{" "}
-            <a
-              href="mailto:support@jobtracker.com"
-              className="text-slate-700 font-medium"
-            >
-              support@jobtracker.com
-            </a>
-          </p>
+              {/* Screenshots */}
+              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-center justify-center">
+                <p className="text-slate-500 text-sm">
+                  5 Explore results::
+                  <img
+                    src="/images/Step_5_result.png"
+                    alt="See results"
+                    className="rounded-lg border border-slate-200 w-full shadow-sm"
+                  />
+                </p>
+              </div>
+            </div>
+          </div>{" "}
         </div>
       </DialogContent>
     </Dialog>

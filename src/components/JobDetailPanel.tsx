@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Job, JobStatus, RequirementAssessment, RequirementMatch } from '@/types/job';
 import { Button } from '@/components/ui/button';
@@ -15,6 +14,8 @@ import DeleteConfirmationDialog from './DeleteConfirmationDialog';
 import { Progress } from './ui/progress';
 import RequirementsAssessment from './RequirementsAssessment';
 import RequirementsMatchDisplay from './RequirementsMatchDisplay';
+import { getSalaryInfo, renderSalary, SalaryInfo } from '@/lib/salary-utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 interface JobDetailPanelProps {
   job: Job | null;
@@ -31,6 +32,12 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
   const [hidden, setHidden] = useState<boolean>(job?.hidden || false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedReqStatus, setSelectedReqStatus] = useState<string | null>(null);
+  const [salaryInfo, setSalaryInfo] = useState<SalaryInfo>({
+    value: 'Salary not provided',
+    source: 'none',
+    icon: null,
+    tooltip: 'No salary information available'
+  });
 
   // Update state when job changes
   useEffect(() => {
@@ -39,6 +46,11 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
       setStatus(job.status);
       setPriority(job.priority_level);
       setHidden(job.hidden || false);
+      setSalaryInfo(getSalaryInfo(
+        job.possible_salary, 
+        job.salary_from_external_sources, 
+        job.salary_estimate_from_context
+      ));
     }
   }, [job]);
 
@@ -345,25 +357,45 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 </div>
               )}
               
-              {job.possible_salary && (
+              {/* Salary Information Section - Updated */}
+              {salaryInfo.source !== 'none' && (
                 <div>
                   <p className="text-sm text-muted-foreground">Salary Range</p>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex items-center gap-1">
+                          <p>{salaryInfo.value}</p>
+                          {salaryInfo.icon && <salaryInfo.icon className="h-3.5 w-3.5 text-muted-foreground" />}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <p>{salaryInfo.tooltip}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              )}
+              
+              {/* Display raw values for debugging/reference if needed */}
+              {job.possible_salary && salaryInfo.source !== 'direct' && (
+                <div className="hidden">
+                  <p className="text-sm text-muted-foreground">Listed Salary</p>
                   <p>{job.possible_salary}</p>
                 </div>
               )}
               
-              {/* Additional salary fields */}
-              {job.salary_estimate_from_context && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Estimated Salary</p>
-                  <p>{job.salary_estimate_from_context}</p>
+              {job.salary_from_external_sources && salaryInfo.source !== 'external' && (
+                <div className="hidden">
+                  <p className="text-sm text-muted-foreground">External Salary Data</p>
+                  <p>{job.salary_from_external_sources}</p>
                 </div>
               )}
               
-              {job.salary_from_external_sources && (
-                <div>
-                  <p className="text-sm text-muted-foreground">External Salary Data</p>
-                  <p>{job.salary_from_external_sources}</p>
+              {job.salary_estimate_from_context && salaryInfo.source !== 'estimate' && (
+                <div className="hidden">
+                  <p className="text-sm text-muted-foreground">Estimated Salary</p>
+                  <p>{job.salary_estimate_from_context}</p>
                 </div>
               )}
               

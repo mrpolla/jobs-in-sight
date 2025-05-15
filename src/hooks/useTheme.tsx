@@ -1,28 +1,12 @@
 
-import { useState, useEffect, createContext, useContext } from "react";
+import { useState, useEffect } from "react";
 
-interface ThemeContextType {
+interface UseThemeResult {
   isDarkMode: boolean;
   toggleTheme: () => void;
 }
 
-// Create a context to share theme state across the application
-export const ThemeContext = createContext<ThemeContextType>({
-  isDarkMode: false,
-  toggleTheme: () => {},
-});
-
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const themeValue = useThemeImplementation();
-  return (
-    <ThemeContext.Provider value={themeValue}>
-      {children}
-    </ThemeContext.Provider>
-  );
-};
-
-// Custom hook for theme management
-function useThemeImplementation(): ThemeContextType {
+export function useTheme(): UseThemeResult {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
   useEffect(() => {
@@ -57,9 +41,4 @@ function useThemeImplementation(): ThemeContextType {
   }, []);
 
   return { isDarkMode, toggleTheme };
-}
-
-// Export the hook that uses the context
-export function useTheme(): ThemeContextType {
-  return useContext(ThemeContext);
 }

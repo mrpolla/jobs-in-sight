@@ -42,7 +42,6 @@ import {
   DropdownMenuItem, 
   DropdownMenuSeparator 
 } from '@/components/ui/dropdown-menu';
-import { format, formatDistanceToNow } from 'date-fns';
 import { JobStatus, Job, JobFilters, JobSort, SortField } from '@/types/job';
 import JobStatusSelect from './JobStatusSelect';
 import DeleteConfirmationDialog from './DeleteConfirmationDialog';
@@ -54,6 +53,10 @@ import ProjectTooltip from './ProjectTooltip';
 import { Switch } from './ui/switch';
 import RequirementsAssessmentTooltip from './RequirementsAssessmentTooltip';
 import PrioritySelect from './PrioritySelect';
+import { renderRequirementsBar, getMatchedSkills } from './JobListingUtils';
+import { formatRelative, formatDate } from '@/utils/dateUtils';
+import { parseJobData } from '@/utils/jobUtils';
+import { toast } from '@/components/ui/use-toast';
 
 interface JobListingTableProps {
   jobs: Job[];
@@ -82,6 +85,9 @@ export default function JobListingTable({
   const [expandedFilters, setExpandedFilters] = useState(false);
   const [showAllColumns, setShowAllColumns] = useState(false);
   const [jobToDelete, setJobToDelete] = useState<Job | null>(null);
+  
+  // Process jobs data to ensure correct types
+  const processedJobs = jobs.map(job => parseJobData(job));
   
   const handleSort = (field: SortField) => {
     setSort(prev => ({
@@ -116,15 +122,6 @@ export default function JobListingTable({
     }
   };
 
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return formatDistanceToNow(date, { addSuffix: true });
-    } catch (error) {
-      return dateString;
-    }
-  };
-
   const handleFilterChange = (key: keyof JobFilters, value: any) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
@@ -141,6 +138,12 @@ export default function JobListingTable({
   const handleToggleHidden = (job: Job, event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent row click event
     onToggleHidden(job, !job.hidden);
+    
+    toast({
+      title: job.hidden ? "Job is now visible" : "Job is now hidden",
+      description: `${job.position} at ${job.company} has been ${job.hidden ? "unhidden" : "hidden"}.`,
+      duration: 3000,
+    });
   };
   
   const handlePriorityChange = (job: Job, priority: number, event?: React.SyntheticEvent) => {
@@ -153,6 +156,11 @@ export default function JobListingTable({
   const confirmDelete = () => {
     if (jobToDelete) {
       onDeleteJob(jobToDelete.id);
+      toast({
+        title: "Job deleted",
+        description: `${jobToDelete.position} at ${jobToDelete.company} has been deleted.`,
+        duration: 3000,
+      });
       setJobToDelete(null);
     }
   };
@@ -168,7 +176,7 @@ export default function JobListingTable({
     }
   };
 
-  const filteredJobs = jobs.filter(job => {
+  const filteredJobs = processedJobs.filter(job => {
     if (filters.hideHidden && job.hidden) {
       return false;
     }
@@ -247,10 +255,14 @@ export default function JobListingTable({
         comparison = (new Date(b.last_updated).getTime() - new Date(a.last_updated).getTime());
         break;
       case 'hours_per_week':
-        comparison = (a.hours_per_week || 0) - (b.hours_per_week || 0);
+        const hoursA = a.hours_per_week !== undefined ? Number(a.hours_per_week) : 0;
+        const hoursB = b.hours_per_week !== undefined ? Number(b.hours_per_week) : 0;
+        comparison = hoursA - hoursB;
         break;
       case 'vacation_days':
-        comparison = (a.vacation_days || 0) - (b.vacation_days || 0);
+        const vacationA = a.vacation_days !== undefined ? Number(a.vacation_days) : 0;
+        const vacationB = b.vacation_days !== undefined ? Number(b.vacation_days) : 0;
+        comparison = vacationA - vacationB;
         break;
       default:
         comparison = 0;
@@ -258,37 +270,6 @@ export default function JobListingTable({
     
     return sort.direction === 'asc' ? comparison : -comparison;
   });
-
-  const getMatchedSkills = (job: Job): string[] => {
-    if (!job.cv_match?.requirements_match) {
-      return [];
-    }
-    
-    const wellMatchedRequirements = job.cv_match.requirements_match.filter(req => 
-      req.status === "Can do well"
-    );
-    
-    return wellMatchedRequirements.map(req => extractSkillName(req.requirement));
-  };
-  
-  const isTechRequirement = (text: string): boolean => {
-    const techTerms = ["javascript", "typescript", "react", "node", "java", "python", 
-                      "c#", ".net", "angular", "vue", "aws", "azure", "cloud", "api", 
-                      "frontend", "backend", "fullstack", "database", "sql", "nosql", 
-                      "docker", "kubernetes", "devops", "ci/cd", "testing", "agile", 
-                      "scrum", "git", "sap"];
-    
-    const lowercaseText = text.toLowerCase();
-    return techTerms.some(term => lowercaseText.includes(term));
-  };
-  
-  const extractSkillName = (text: string): string => {
-    const match = text.match(/\b(javascript|typescript|react|node|java|python|c#|\.net|angular|vue|aws|azure|sql|sap)\b/i);
-    if (match) return match[0];
-    
-    const simplifiedMatch = text.match(/^(.*?)(experience|knowledge|understanding|proficiency|skills)/i);
-    return simplifiedMatch ? simplifiedMatch[1].trim() : text.split(' ').slice(0, 3).join(' ');
-  };
 
   const handleExportExcel = async () => {
     const headers = [
@@ -308,7 +289,9 @@ export default function JobListingTable({
       (job.tech_stack || []).join(', '),
       job.remote_policy || '',
       job.possible_salary || '',
-      job.start_date || '',
+      job.start_date && isValidDate(job.start_date)
+        ? formatDate(job.start_date, "yyyy-MM-dd")
+        : "",
       job.match_score || job.cv_match?.overall_match_percentage || 'N/A',
       job.last_updated,
       job.url || ''
@@ -327,9 +310,15 @@ export default function JobListingTable({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    
+    toast({
+      title: "Export successful",
+      description: `${sortedJobs.length} jobs exported to CSV.`,
+      duration: 3000,
+    });
   };
 
-  // Fix the renderRequirementsBar function
+  // Fix the renderRequirementsBar function to ensure proper type handling
   const renderRequirementsBar = (job: Job) => {
     if (!job.cv_match?.requirements_match || job.cv_match.requirements_match.length === 0) {
       return <div>N/A</div>;
@@ -338,17 +327,17 @@ export default function JobListingTable({
     const requirementsMatch = job.cv_match.requirements_match;
     
     // Ensure we're working with number type
-    const total: number = requirementsMatch.length;
+    const total = requirementsMatch.length;
     
     // Count each category and ensure they're numbers
-    const canDoWell: number = requirementsMatch.filter(req => req.status === 'Can do well').length;
-    const canTransfer: number = requirementsMatch.filter(req => req.status === 'Can transfer').length;
-    const mustLearn: number = requirementsMatch.filter(req => req.status === 'Must learn').length;
+    const canDoWell = requirementsMatch.filter(req => req.status === 'Can do well').length;
+    const canTransfer = requirementsMatch.filter(req => req.status === 'Can transfer').length;
+    const mustLearn = requirementsMatch.filter(req => req.status === 'Must learn').length;
     
-    // Calculate percentages with explicit number types
-    const wellPercentage: number = total > 0 ? (canDoWell / total) * 100 : 0;
-    const transferPercentage: number = total > 0 ? (canTransfer / total) * 100 : 0;
-    const learnPercentage: number = total > 0 ? (mustLearn / total) * 100 : 0;
+    // Calculate percentages with explicit number types - ensure all operands are numbers
+    const wellPercentage = total > 0 ? (Number(canDoWell) / Number(total)) * 100 : 0;
+    const transferPercentage = total > 0 ? (Number(canTransfer) / Number(total)) * 100 : 0;
+    const learnPercentage = total > 0 ? (Number(mustLearn) / Number(total)) * 100 : 0;
     
     return (
       <div className="w-full">
@@ -750,31 +739,13 @@ export default function JobListingTable({
                     </TableCell>
                     
                     <TableCell>
-                      <RequirementsAssessmentTooltip requirementsMatch={job.cv_match?.requirements_match}>
-                        {renderRequirementsBar(job)}
-                      </RequirementsAssessmentTooltip>
+                      {renderRequirementsBar(job)}
                     </TableCell>
                     
                     <TableCell>
-                      <div className="flex justify-center">
-                        {(job.match_score || job.cv_match?.overall_match_percentage) ? (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white 
-                                ${(job.match_score || job.cv_match?.overall_match_percentage) >= 80 ? 'bg-green-500' : 
-                                  (job.match_score || job.cv_match?.overall_match_percentage) >= 60 ? 'bg-amber-500' : 'bg-red-500'}`}
-                              >
-                                {job.match_score || job.cv_match?.overall_match_percentage}
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Overall match score</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        ) : (
-                          <span>N/A</span>
-                        )}
-                      </div>
+                      <MatchScoreTooltip
+                        score={job.match_score || job.cv_match?.overall_match_percentage}
+                      />
                     </TableCell>
                     
                     {showAllColumns && (
@@ -811,7 +782,7 @@ export default function JobListingTable({
                         </TableCell>
                         
                         <TableCell className="hidden lg:table-cell">
-                          {job.start_date ? format(new Date(job.start_date), 'MMM d, yyyy') : 'N/A'}
+                          {job.start_date ? formatDate(job.start_date, "MMM d, yyyy") : 'N/A'}
                         </TableCell>
                       </>
                     )}
@@ -819,10 +790,10 @@ export default function JobListingTable({
                     <TableCell className="text-right">
                       <Tooltip>
                         <TooltipTrigger className="block">
-                          <span>{formatDate(job.last_updated)}</span>
+                          <span>{formatRelative(job.last_updated)}</span>
                         </TooltipTrigger>
                         <TooltipContent>
-                          {format(new Date(job.last_updated), 'PPP')}
+                          {formatDate(job.last_updated, "PPP")}
                         </TooltipContent>
                       </Tooltip>
                     </TableCell>

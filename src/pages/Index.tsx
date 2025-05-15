@@ -148,11 +148,6 @@ const Index = () => {
         <div className="container flex items-center justify-between">
           <h1 className="text-xl font-bold">Job Tracker</h1>
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={handleExportData}>
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
-
             <Button 
               variant="outline"
               onClick={() => setHelpModalOpen(true)}
@@ -173,10 +168,17 @@ const Index = () => {
         {/* Action Bar */}
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold">Job Applications</h2>
-          <Button onClick={() => setAddJobDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Job
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button onClick={() => setAddJobDialogOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Job
+            </Button>
+            
+            <Button variant="default" onClick={handleExportData} className="bg-purple-600 hover:bg-purple-700">
+              <Download className="mr-2 h-4 w-4" />
+              Export Project
+            </Button>
+          </div>
         </div>
         
         {/* Job Listings Table */}

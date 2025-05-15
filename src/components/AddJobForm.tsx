@@ -25,6 +25,7 @@ import { DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog
 interface AddJobFormProps {
   onSave: (job: Job) => void;
   onCancel: () => void;
+  embedded?: boolean;
 }
 
 const formSchema = z.object({
@@ -43,7 +44,7 @@ const formSchema = z.object({
   interview_notes: z.string().optional(),
 });
 
-export default function AddJobForm({ onSave, onCancel }: AddJobFormProps) {
+export default function AddJobForm({ onSave, onCancel, embedded = false }: AddJobFormProps) {
   const [status, setStatus] = useState<JobStatus>('Applied');
   const [priority, setPriority] = useState<number>(3);
 
@@ -96,235 +97,243 @@ export default function AddJobForm({ onSave, onCancel }: AddJobFormProps) {
     toast.success('Job added successfully!');
   };
 
+  // If embedded, render just the form content
+  const formContent = (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-6">
+            <FormField
+              control={form.control}
+              name="position"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Position</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Frontend Developer" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="company"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Company</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Company Name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <Input placeholder="City, Country" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="job_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job Type</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Full-time, Contract, etc." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="remote_policy"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Remote Policy</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Remote, Hybrid, On-site" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="seniority_level"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Seniority Level</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Junior, Mid-level, Senior" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="space-y-6">
+            <FormField
+              control={form.control}
+              name="possible_salary"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Salary Range</FormLabel>
+                  <FormControl>
+                    <Input placeholder="$80,000 - $100,000" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="tech_stack"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tech Stack</FormLabel>
+                  <FormControl>
+                    <Input placeholder="React, TypeScript, CSS (comma separated)" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Enter technologies separated by commas
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="recruiter_contact"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Recruiter Contact</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Email or phone" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="applied_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Applied Date</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="space-y-2">
+              <FormLabel>Status</FormLabel>
+              <JobStatusSelect value={status} onChange={setStatus} />
+            </div>
+
+            <div className="space-y-2">
+              <FormLabel>Priority</FormLabel>
+              <PrioritySelect value={priority} onChange={setPriority} />
+            </div>
+          </div>
+        </div>
+
+        <FormField
+          control={form.control}
+          name="job_description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Job Description</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Description of the job responsibilities..."
+                  className="min-h-[100px]"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="requirements"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Requirements</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Job requirements and qualifications..."
+                  className="min-h-[100px]"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="interview_notes"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Notes</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Additional notes about the application..."
+                  className="min-h-[100px]"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="flex justify-end space-x-2">
+          <Button variant="outline" type="button" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button type="submit">Add Job</Button>
+        </div>
+      </form>
+    </Form>
+  );
+
+  if (embedded) {
+    return formContent;
+  }
+
   return (
     <DialogContent className="sm:max-w-[600px] max-h-screen overflow-y-auto">
       <DialogHeader>
         <DialogTitle>Add New Job</DialogTitle>
       </DialogHeader>
-      
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-6">
-              <FormField
-                control={form.control}
-                name="position"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Position</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Frontend Developer" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="company"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Company</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Company Name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Location</FormLabel>
-                    <FormControl>
-                      <Input placeholder="City, Country" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="job_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Job Type</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Full-time, Contract, etc." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="remote_policy"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Remote Policy</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Remote, Hybrid, On-site" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="seniority_level"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Seniority Level</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Junior, Mid-level, Senior" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="space-y-6">
-              <FormField
-                control={form.control}
-                name="possible_salary"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Salary Range</FormLabel>
-                    <FormControl>
-                      <Input placeholder="$80,000 - $100,000" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="tech_stack"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tech Stack</FormLabel>
-                    <FormControl>
-                      <Input placeholder="React, TypeScript, CSS (comma separated)" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Enter technologies separated by commas
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="recruiter_contact"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Recruiter Contact</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Email or phone" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="applied_date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Applied Date</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="space-y-2">
-                <FormLabel>Status</FormLabel>
-                <JobStatusSelect value={status} onChange={setStatus} />
-              </div>
-
-              <div className="space-y-2">
-                <FormLabel>Priority</FormLabel>
-                <PrioritySelect value={priority} onChange={setPriority} />
-              </div>
-            </div>
-          </div>
-
-          <FormField
-            control={form.control}
-            name="job_description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Job Description</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Description of the job responsibilities..."
-                    className="min-h-[100px]"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="requirements"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Requirements</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Job requirements and qualifications..."
-                    className="min-h-[100px]"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="interview_notes"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Notes</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Additional notes about the application..."
-                    className="min-h-[100px]"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="flex justify-end space-x-2">
-            <Button variant="outline" type="button" onClick={onCancel}>
-              Cancel
-            </Button>
-            <Button type="submit">Add Job</Button>
-          </div>
-        </form>
-      </Form>
+      {formContent}
     </DialogContent>
   );
 }

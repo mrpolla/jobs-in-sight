@@ -13,11 +13,14 @@ export const format = (date: Date | string | number | null | undefined, formatSt
   try {
     if (!date) return 'N/A';
     
-    // If it's a string, try to parse it first
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    // If it's a string or number, try to parse it first
+    const dateObj = typeof date === 'string' || typeof date === 'number' ? new Date(date) : date;
     
     // Validate the date
-    if (!dateObj || isNaN(dateObj.getTime())) {
+    if (!dateObj) return 'Invalid date';
+    
+    // Check if dateObj is a valid Date object with getTime method
+    if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
       return 'Invalid date';
     }
     

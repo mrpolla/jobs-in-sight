@@ -1,3 +1,4 @@
+
 export interface Job {
   id: string;
   position: string;
@@ -34,8 +35,8 @@ export interface Job {
   last_updated: string;
   hidden?: boolean;
   url?: string;
-  hours_per_week?: string; // Field for working hours
-  vacation_days?: string; // Field for vacation days
+  hours_per_week?: string | number; // Changed to allow both string and number
+  vacation_days?: string | number; // Changed to allow both string and number
   application_reasoning?: {
     why_apply?: string;
     key_matching_qualifications?: string[];

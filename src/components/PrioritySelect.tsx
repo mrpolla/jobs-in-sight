@@ -9,9 +9,9 @@ interface PrioritySelectProps {
 }
 
 const priorities = [
-  { value: 1, label: 'High', className: 'priority-1' },
-  { value: 2, label: 'Medium', className: 'priority-2' },
-  { value: 3, label: 'Low', className: 'priority-3' }
+  { value: 1, label: 'High', className: 'bg-red-500 hover:bg-red-600 text-white' },
+  { value: 2, label: 'Medium', className: 'bg-amber-500 hover:bg-amber-600 text-white' },
+  { value: 3, label: 'Low', className: 'bg-green-500 hover:bg-green-600 text-white' }
 ];
 
 export default function PrioritySelect({ value, onChange, disabled = false }: PrioritySelectProps) {
@@ -35,7 +35,7 @@ export default function PrioritySelect({ value, onChange, disabled = false }: Pr
           </Badge>
         </SelectValue>
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent position="popper" className="bg-popover">
         {priorities.map((priority) => (
           <SelectItem key={priority.value} value={priority.value.toString()}>
             <Badge className={priority.className}>

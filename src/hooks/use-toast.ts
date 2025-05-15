@@ -1,8 +1,8 @@
 
-import { toast as sonnerToast, Toast } from "sonner";
+import { toast as sonnerToast, type ToastT } from "sonner";
 import * as React from "react";
 
-export type ToasterToast = Toast;
+export type ToasterToast = ToastT;
 
 const useToast = () => {
   return {

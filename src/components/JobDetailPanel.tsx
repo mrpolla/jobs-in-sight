@@ -83,8 +83,9 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
     updateJob(updatedJob);
     onJobUpdated(updatedJob);
     setEditMode(false);
+    
+    // Fixed toast call
     toast({
-      title: "Success",
       description: "Job details updated"
     });
   };
@@ -101,8 +102,9 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
       };
       updateJob(updatedJob);
       onJobUpdated(updatedJob);
+      
+      // Fixed toast call
       toast({
-        title: "Status Updated",
         description: `Status changed to ${newStatus}`
       });
     }
@@ -120,8 +122,9 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
       };
       updateJob(updatedJob);
       onJobUpdated(updatedJob);
+      
+      // Fixed toast call
       toast({
-        title: "Priority Updated",
         description: `Priority changed to ${newPriority === 1 ? 'High' : newPriority === 2 ? 'Medium' : 'Low'}`
       });
     }
@@ -139,8 +142,9 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
       };
       updateJob(updatedJob);
       onJobUpdated(updatedJob);
+      
+      // Fixed toast call
       toast({
-        title: newHidden ? "Job Hidden" : "Job Unhidden",
         description: newHidden ? "Job hidden" : "Job unhidden"
       });
     }
@@ -156,8 +160,9 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
     deleteJob(job.id);
     onJobDeleted(job.id);
     setShowDeleteConfirm(false);
+    
+    // Fixed toast call
     toast({
-      title: "Success",
       description: "Job deleted successfully"
     });
   };

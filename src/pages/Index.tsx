@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Download, HelpCircle } from 'lucide-react';
@@ -12,6 +11,7 @@ import UnifiedAddJobModal from '@/components/UnifiedAddJobModal';
 import { Job, JobStatus } from '@/types/job';
 import { loadJobs, saveJobs, updateJob, deleteJob } from '@/lib/storage';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Separator } from '@/components/ui/separator';
 
 const Index = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -184,43 +184,43 @@ const Index = () => {
       </header>
 
       <main className="flex-1 container py-8 space-y-6">
-        {/* Stats Summary Card */}
-        <div className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-sm">
-          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider">Application Status</h3>
-          <StatsSummary jobs={jobs} />
-        </div>
-        
-        {/* Action Bar */}
-        <div className="flex items-center justify-between bg-white dark:bg-gray-900 p-4 rounded-lg shadow-sm">
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Job Applications</h2>
-          <div className="flex items-center gap-2">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button onClick={() => setAddJobDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Job
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  Add a new job application
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+        {/* Integrated Stats Summary and Action Bar */}
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-gray-100 dark:border-gray-800">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Job Applications</h2>
+              <div className="flex items-center gap-2">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button onClick={() => setAddJobDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Job
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Add a new job application
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="default" onClick={handleExportData} className="bg-purple-600 hover:bg-purple-700">
+                        <Download className="mr-2 h-4 w-4" />
+                        Export CSV
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Export all job data as CSV
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </div>
             
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="default" onClick={handleExportData} className="bg-purple-600 hover:bg-purple-700">
-                    <Download className="mr-2 h-4 w-4" />
-                    Export Project
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  Export all job data as JSON
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <StatsSummary jobs={jobs} />
           </div>
         </div>
         

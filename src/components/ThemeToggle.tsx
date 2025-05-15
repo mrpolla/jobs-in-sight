@@ -14,4 +14,7 @@ export function ThemeToggle() {
   );
 }
 
+// Export the useTheme hook for easy access elsewhere
+export { useTheme };
+
 export default ThemeToggle;

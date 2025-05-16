@@ -1,7 +1,9 @@
+
 import React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import ZoomableImage from "./ZoomableImage";
 import {
   Download,
   BookOpen,
@@ -384,7 +386,7 @@ I've attached my CV as a file in this ChatGPT project. Please analyze it and com
                     </span>
                   </div>
                   <div className="p-4">
-                    <img
+                    <ZoomableImage
                       src="/images/Step_2_1_add_project.png"
                       alt="Adding project"
                       className="rounded-lg border border-slate-200 w-full h-auto"
@@ -399,7 +401,7 @@ I've attached my CV as a file in this ChatGPT project. Please analyze it and com
                     </span>
                   </div>
                   <div className="p-4">
-                    <img
+                    <ZoomableImage
                       src="/images/Step_2_3_add_files.png"
                       alt="Select files to add"
                       className="rounded-lg border border-slate-200 w-full h-auto"
@@ -442,7 +444,7 @@ I've attached my CV as a file in this ChatGPT project. Please analyze it and com
                   </span>
                 </div>
                 <div className="p-4">
-                  <img
+                  <ZoomableImage
                     src="/images/Step_3_paste_link.png"
                     alt="Paste link"
                     className="rounded-lg border border-slate-200 w-full h-auto max-w-md mx-auto"
@@ -484,7 +486,7 @@ I've attached my CV as a file in this ChatGPT project. Please analyze it and com
                     </span>
                   </div>
                   <div className="p-4">
-                    <img
+                    <ZoomableImage
                       src="/images/Step_4_1_copy_json.png"
                       alt="Copy JSON"
                       className="rounded-lg border border-slate-200 w-full h-auto"
@@ -499,7 +501,7 @@ I've attached my CV as a file in this ChatGPT project. Please analyze it and com
                     </span>
                   </div>
                   <div className="p-4">
-                    <img
+                    <ZoomableImage
                       src="/images/Step_4_3_paste_json.png"
                       alt="Paste JSON"
                       className="rounded-lg border border-slate-200 w-full h-auto"
@@ -533,7 +535,7 @@ I've attached my CV as a file in this ChatGPT project. Please analyze it and com
                   </span>
                 </div>
                 <div className="p-4 bg-slate-50">
-                  <img
+                  <ZoomableImage
                     src="/images/Step_5_result.png"
                     alt="See results"
                     className="rounded-lg border border-slate-200 w-full h-auto max-w-2xl mx-auto shadow-md"

@@ -7,13 +7,13 @@ Jobs In-Sight is a comprehensive job application tracker designed to help job se
 
 ## ✨ Features
 
-- **Job Application Management**: Track job applications across different statuses (Wishlist, Applied, Interview, Offer, Rejected)
-- **Requirement Match Analysis**: Assess how well your skills match job requirements
-- **Rich Job Details**: Store comprehensive information about each job opportunity
-- **Application Methods**: Easily access application channels (website, email, phone)
+- **Job Application Management**: Track job applications across different statuses (Applied, Interview, Offer, Rejected)
 - **Priority Tracking**: Organize jobs by priority level
-- **Cover Letter Management**: Store and manage cover letters for each application
+- **CV Match Analysis**: Assess how well your skills match the job
+- **Rich Job Details**: Store comprehensive information about each job opportunity
+- **Application Methods**: Easily apply by available application channels (website, email, phone)
 - **Recruiter Contact Information**: Keep track of your recruiter contacts
+- **Cover Letter Management**: Store and manage cover letters for each application
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
 
 ## 🚀 Getting Started
@@ -46,14 +46,6 @@ npm run dev
 3. **Tracking Progress**: Update job statuses as you progress through the application process
 4. **Analyzing Requirements**: Use the requirements assessment tool to evaluate job matches
 5. **Contacting Recruiters**: Easily access recruiter contact information when needed
-
-## 📊 Dashboard & Statistics
-
-Jobs In-Sight provides valuable insights into your job search with:
-- Application status distribution
-- Requirements match statistics
-- Priority level breakdown
-- Timeline visualization
 
 ## 🧩 Tech Stack
 

@@ -44,6 +44,11 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
   });
   const [coverLetter, setCoverLetter] = useState<string | undefined>(job?.cover_letter);
 
+  // Fix the issue with recruiter_contact
+  const recruiterContact = typeof job.recruiter_contact === 'object' ? job.recruiter_contact : null;
+  const hasEmail = recruiterContact?.email ? true : false;
+  const hasPhone = recruiterContact?.phone ? true : false;
+
   // Update state when job changes
   useEffect(() => {
     if (job) {
@@ -651,7 +656,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
             
             <TabsContent value="application" className="space-y-4 mt-4">
               {/* Application Method Links at the top of Application Tab */}
-              {(job.url || job.recruiter_contact?.email || job.recruiter_contact?.phone) && (
+              {(job.url || hasEmail || hasPhone) && (
                 <div className="bg-muted/30 p-4 rounded-lg mb-4">
                   <div className="flex flex-col gap-3">
                     <div className="flex justify-between items-center">

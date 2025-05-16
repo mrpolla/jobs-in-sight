@@ -2,7 +2,7 @@
 import { ExternalLink, Mail, Phone, Globe } from 'lucide-react';
 import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
-import { Job } from '@/types/job';
+import { Job, RecruiterContact } from '@/types/job';
 
 interface ApplicationMethodsProps {
   job: Job;
@@ -19,15 +19,18 @@ export default function ApplicationMethods({
 }: ApplicationMethodsProps) {
   // Extract data needed for application methods
   const jobUrl = job.url || '';
-  const email = job.recruiter_contact?.email || '';
-  const phone = job.recruiter_contact?.phone || '';
+  
+  // Type guard to check if recruiter_contact is an object with email and phone
+  const recruiterContact = typeof job.recruiter_contact === 'object' ? job.recruiter_contact : null;
+  const email = recruiterContact?.email || '';
+  const phone = recruiterContact?.phone || '';
   
   // Generate email subject and body if email is available
   const emailSubject = `Application for ${job.position} position at ${job.company}`;
   
   // Generate email body with cover letter if available
   const emailBody = job.cover_letter 
-    ? `Dear ${job.recruiter_contact?.name || 'Hiring Manager'},\n\n${job.cover_letter}`
+    ? `Dear ${typeof job.recruiter_contact === 'object' && job.recruiter_contact?.name ? job.recruiter_contact.name : 'Hiring Manager'},\n\n${job.cover_letter}`
     : '';
   
   const emailLink = `mailto:${email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;

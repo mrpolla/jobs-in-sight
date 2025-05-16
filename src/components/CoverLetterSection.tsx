@@ -20,7 +20,7 @@ export default function CoverLetterSection({
   coverLetter, 
   onUpdate 
 }: CoverLetterSectionProps) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedCoverLetter, setEditedCoverLetter] = useState(coverLetter || '');
 

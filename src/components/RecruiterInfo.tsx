@@ -17,7 +17,7 @@ interface RecruiterInfoProps {
 }
 
 export default function RecruiterInfo({ recruiterContact }: RecruiterInfoProps) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   
   // Handle legacy string format or undefined
   if (!recruiterContact || typeof recruiterContact === 'string') {

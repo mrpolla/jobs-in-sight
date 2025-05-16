@@ -291,52 +291,11 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
             </div>
           </div>
 
-          {/* Match Score Section */}
-          {(job.match_score || job.cv_match?.overall_match_percentage) && (
-            <div className="mb-6 p-4 bg-muted rounded-lg">
-              <div className="flex items-center justify-between">
-                <h3 className="font-medium">CV Match Score</h3>
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white ${getMatchScoreColor(job.match_score || job.cv_match?.overall_match_percentage)}`}>
-                  {job.cv_match?.overall_match_percentage || job.match_score || 'N/A'}
-                </div>
-              </div>
-              
-              {job.match_summary && (
-                <p className="text-sm mt-2">{job.match_summary}</p>
-              )}
-              
-              {job.cv_match && (
-                <div className="mt-3 space-y-2">
-                  <div>
-                    <div className="flex justify-between text-xs">
-                      <span>Experience</span>
-                      <span>{job.cv_match.experience_match.score}%</span>
-                    </div>
-                    <Progress value={job.cv_match.experience_match.score} className="h-1.5" />
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Recruiter Contact Section */}
-          {job.recruiter_contact && (
-            <RecruiterInfo recruiterContact={job.recruiter_contact} />
-          )}
-
-          {/* Cover Letter Section */}
-          {coverLetter && (
-            <CoverLetterSection 
-              coverLetter={coverLetter}
-              onUpdate={handleUpdateCoverLetter}
-            />
-          )}
-
           <Tabs defaultValue="overview">
             <TabsList className="w-full">
               <TabsTrigger value="overview" className="flex-1">Overview</TabsTrigger>
               <TabsTrigger value="company" className="flex-1">Company</TabsTrigger>
-              <TabsTrigger value="requirements" className="flex-1">Requirements</TabsTrigger>
+              <TabsTrigger value="cv-match" className="flex-1">CV Match</TabsTrigger>
               <TabsTrigger value="application" className="flex-1">Application</TabsTrigger>
             </TabsList>
             
@@ -519,7 +478,35 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
               )}
             </TabsContent>
             
-            <TabsContent value="requirements" className="space-y-4 mt-4">
+            <TabsContent value="cv-match" className="space-y-4 mt-4">
+              {/* Match Score Section - Moved from main panel to this tab */}
+              {(job.match_score || job.cv_match?.overall_match_percentage) && (
+                <div className="mb-6 p-4 bg-muted rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-medium">CV Match Score</h3>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white ${getMatchScoreColor(job.match_score || job.cv_match?.overall_match_percentage)}`}>
+                      {job.cv_match?.overall_match_percentage || job.match_score || 'N/A'}
+                    </div>
+                  </div>
+                  
+                  {job.match_summary && (
+                    <p className="text-sm mt-2">{job.match_summary}</p>
+                  )}
+                  
+                  {job.cv_match && (
+                    <div className="mt-3 space-y-2">
+                      <div>
+                        <div className="flex justify-between text-xs">
+                          <span>Experience</span>
+                          <span>{job.cv_match.experience_match.score}%</span>
+                        </div>
+                        <Progress value={job.cv_match.experience_match.score} className="h-1.5" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {job.requirements && (
                 <div>
                   <p className="text-sm text-muted-foreground">Requirements</p>
@@ -657,6 +644,19 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
             </TabsContent>
             
             <TabsContent value="application" className="space-y-4 mt-4">
+              {/* Recruiter Information Section - Added to top of Application tab */}
+              {job.recruiter_contact && (
+                <RecruiterInfo recruiterContact={job.recruiter_contact} />
+              )}
+              
+              {/* Cover Letter Section - Added below Recruiter Information */}
+              {coverLetter && (
+                <CoverLetterSection 
+                  coverLetter={coverLetter}
+                  onUpdate={handleUpdateCoverLetter}
+                />
+              )}
+
               {job.applied_date && (
                 <div>
                   <p className="text-sm text-muted-foreground">Applied Date</p>

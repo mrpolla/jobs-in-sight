@@ -1,8 +1,6 @@
 
 # Jobs In-Sight
 
-![Jobs In-Sight Logo](public/lovable-uploads/logo.png)
-
 ## 📋 Overview
 
 Jobs In-Sight is a comprehensive job application tracker designed to help job seekers organize their job search process. Track applications, assess job requirements, manage recruiter contacts, and visualize your job search progress—all in one place.

@@ -8,6 +8,7 @@ import JobListingTable from "@/components/JobListingTable";
 import JobDetailPanel from "@/components/JobDetailPanel";
 import HelpModal from "@/components/HelpModal";
 import UnifiedAddJobModal from "@/components/UnifiedAddJobModal";
+import WelcomeBanner from "@/components/WelcomeBanner";
 import { Job, JobStatus } from "@/types/job";
 import { loadJobs, saveJobs, updateJob, deleteJob } from "@/lib/storage";
 import {
@@ -220,6 +221,9 @@ const Index = () => {
           </div>
         </div>
       </header>
+
+      {/* Welcome Banner - Added here */}
+      <WelcomeBanner onShowHelp={() => setHelpModalOpen(true)} />
 
       <main className="flex-1 container py-4 md:py-8 space-y-4 md:space-y-6">
         {/* Title and Action Bar */}

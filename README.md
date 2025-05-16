@@ -1,73 +1,83 @@
-# Welcome to your Lovable project
 
-## Project info
+# Jobs In-Sight
 
-**URL**: https://lovable.dev/projects/a14f7072-5456-4c58-92e9-a68890bb671a
+![Jobs In-Sight Logo](public/lovable-uploads/logo.png)
 
-## How can I edit this code?
+## 📋 Overview
 
-There are several ways of editing your application.
+Jobs In-Sight is a comprehensive job application tracker designed to help job seekers organize their job search process. Track applications, assess job requirements, manage recruiter contacts, and visualize your job search progress—all in one place.
 
-**Use Lovable**
+## ✨ Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a14f7072-5456-4c58-92e9-a68890bb671a) and start prompting.
+- **Job Application Management**: Track job applications across different statuses (Wishlist, Applied, Interview, Offer, Rejected)
+- **Requirement Match Analysis**: Assess how well your skills match job requirements
+- **Rich Job Details**: Store comprehensive information about each job opportunity
+- **Application Methods**: Easily access application channels (website, email, phone)
+- **Priority Tracking**: Organize jobs by priority level
+- **Cover Letter Management**: Store and manage cover letters for each application
+- **Recruiter Contact Information**: Keep track of your recruiter contacts
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🚀 Getting Started
 
-**Use your preferred IDE**
+### Prerequisites
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js (v18 or higher)
+- npm or yarn
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Installation
 
-Follow these steps:
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/jobs-in-sight.git
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Navigate to the project directory
+cd jobs-in-sight
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Install dependencies
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 🔧 Usage
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. **Adding a Job**: Click the "Add Job" button to create a new job entry
+2. **Managing Jobs**: View all your jobs in the main table, sortable by various criteria
+3. **Tracking Progress**: Update job statuses as you progress through the application process
+4. **Analyzing Requirements**: Use the requirements assessment tool to evaluate job matches
+5. **Contacting Recruiters**: Easily access recruiter contact information when needed
 
-**Use GitHub Codespaces**
+## 📊 Dashboard & Statistics
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Jobs In-Sight provides valuable insights into your job search with:
+- Application status distribution
+- Requirements match statistics
+- Priority level breakdown
+- Timeline visualization
 
-## What technologies are used for this project?
+## 🧩 Tech Stack
 
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
+- React & TypeScript
 - Tailwind CSS
+- shadcn/ui components
+- Recharts for data visualization
+- Vite for fast development
 
-## How can I deploy this project?
+## 📱 Mobile Support
 
-Simply open [Lovable](https://lovable.dev/projects/a14f7072-5456-4c58-92e9-a68890bb671a) and click on Share -> Publish.
+Jobs In-Sight is fully responsive and works on mobile devices, allowing you to track your job search on the go.
 
-## Can I connect a custom domain to my Lovable project?
+## 🤝 Contributing
 
-Yes, you can!
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 📄 License
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgements
+
+- Built with [Lovable](https://lovable.dev)
+- Icons provided by [Lucide React](https://lucide.dev)

@@ -564,13 +564,6 @@ I've attached my CV as a file in this ChatGPT project. Please analyze it and com
           <p className="text-sm text-slate-600 mb-4">
             Start by downloading the prompt and analyzing your first job listing
           </p>
-          <Button
-            onClick={handleDownloadPrompt}
-            className="bg-slate-800 hover:bg-slate-700 text-white px-6"
-          >
-            <Download className="mr-2 h-4 w-4" />
-            Download Prompt & Get Started
-          </Button>
         </div>
       </DialogContent>
     </Dialog>

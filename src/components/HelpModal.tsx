@@ -2,7 +2,17 @@ import React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Download, BookOpen, Code, LayoutDashboard } from "lucide-react";
+import {
+  Download,
+  BookOpen,
+  Code,
+  LayoutDashboard,
+  ArrowRight,
+  Sparkles,
+  CheckCircle2,
+  Clock,
+  Briefcase,
+} from "lucide-react";
 
 interface HelpModalProps {
   open: boolean;
@@ -285,214 +295,282 @@ I've attached my CV as a file in this ChatGPT project. Please analyze it and com
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
-        {/* Header */}
-        <div className="bg-slate-800 p-6 rounded-t-lg -mt-6 -mx-6 mb-6">
-          <h2 className="text-xl font-bold text-white">
-            How to Use Job Tracker
-          </h2>
-          <p className="text-slate-300 text-sm">
-            Complete these steps to analyze job opportunities
-          </p>
+      <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto p-0">
+        {/* Header with professional color */}
+        <div className="bg-indigo-700 p-4 rounded-t-lg">
+          <h2 className="text-xl font-bold text-white">Job Tracker</h2>
+
+          {/* Compact Workflow with varied colors */}
+          <div className="flex justify-between items-center mt-2 px-3 py-2 bg-indigo-800 rounded text-white text-xs">
+            <div className="flex items-center gap-1">
+              <Download size={14} className="text-yellow-300" />
+              <span>1. Prompt</span>
+            </div>
+            <ArrowRight size={10} className="text-white/70" />
+            <div className="flex items-center gap-1">
+              <BookOpen size={14} className="text-green-300" />
+              <span>2. Project</span>
+            </div>
+            <ArrowRight size={10} className="text-white/70" />
+            <div className="flex items-center gap-1">
+              <Code size={14} className="text-blue-300" />
+              <span>3. URL</span>
+            </div>
+            <ArrowRight size={10} className="text-white/70" />
+            <div className="flex items-center gap-1">
+              <LayoutDashboard size={14} className="text-orange-300" />
+              <span>4. Import</span>
+            </div>
+            <ArrowRight size={10} className="text-white/70" />
+            <div className="flex items-center gap-1">
+              <Sparkles size={14} className="text-purple-300" />
+              <span>5. Insights</span>
+            </div>
+          </div>
         </div>
 
-        {/* Main content: 4 simple steps */}
-        <div>
+        {/* Main steps content */}
+        <div className="p-6">
+          <h3 className="text-xl font-bold text-indigo-800 mb-6">
+            Quick Start Guide
+          </h3>
+
           {/* Step 1 */}
-          <div className="flex items-start gap-4 pb-6">
-            <div className="bg-slate-800 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-              1
-            </div>
-            <div className="w-full">
-              <h3 className="text-lg font-medium mb-1">
+          <div className="mb-6 border border-blue-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                1
+              </div>
+              <h4 className="text-lg font-semibold text-blue-700">
                 Download Prompt Template
-              </h3>
-              <p className="text-sm text-slate-600 mb-3">
-                Download the prompt template for job analysis
+              </h4>
+            </div>
+            <div className="ml-11">
+              <p className="text-slate-600 mb-3">
+                Start by downloading our specialized prompt that tells AI
+                exactly what to analyze
               </p>
               <Button
                 onClick={handleDownloadPrompt}
-                className="bg-slate-800 hover:bg-slate-700 text-white mb-4"
-                size="sm"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <Download className="mr-2 h-4 w-4" />
                 Download Prompt
               </Button>
             </div>
           </div>
-          {/* Divider */}
-          <div className="border-t border-slate-200 my-2"></div>
+
           {/* Step 2 */}
-          <div className="flex items-start gap-4 py-6">
-            <div className="bg-slate-800 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-              2
+          <div className="mb-6 border border-green-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-green-600 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                2
+              </div>
+              <h4 className="text-lg font-semibold text-green-700">
+                Set Up ChatGPT Project
+              </h4>
             </div>
-            <div className="w-full">
-              <h3 className="text-lg font-medium mb-1">
-                Create ChatGPT Project
-              </h3>
-              <p className="text-sm text-slate-600 mb-2">
-                Create a new ChatGPT project and upload your CV and the prompt
-                downloaded in the previous step
+            <div className="ml-11">
+              <p className="text-slate-600 mb-3">
+                Create a new ChatGPT project (or use another LLM with file
+                upload capabilities)
               </p>
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-100 p-2 rounded mb-4">
-                <BookOpen className="h-4 w-4" />
-                <span>CV can be in Word, TXT, or PDF format</span>
+
+              <div className="grid grid-cols-2 gap-6 mb-4">
+                <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="bg-green-50 py-2 px-3 border-b border-green-100">
+                    <span className="text-sm font-medium text-green-800">
+                      Create a new project
+                    </span>
+                  </div>
+                  <div className="p-4">
+                    <img
+                      src="/images/Step_2_1_add_project.png"
+                      alt="Adding project"
+                      className="rounded-lg border border-slate-200 w-full h-auto"
+                    />
+                  </div>
+                </div>
+
+                <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="bg-green-50 py-2 px-3 border-b border-green-100">
+                    <span className="text-sm font-medium text-green-800">
+                      Upload your CV
+                    </span>
+                  </div>
+                  <div className="p-4">
+                    <img
+                      src="/images/Step_2_3_add_files.png"
+                      alt="Select files to add"
+                      className="rounded-lg border border-slate-200 w-full h-auto"
+                    />
+                  </div>
+                </div>
               </div>
 
-              {/* Screenshots */}
-              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-start justify-start">
-                <p className="text-slate-500 text-sm mb-2">
-                  2.1 Add new project in ChatGPT:
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
+                <p className="font-medium">Pro Tip</p>
+                <p className="text-xs">
+                  Any ChatGPT, Claude, or Gemini project with file upload
+                  capabilities will work great! You can customize the prompt but
+                  keep the JSON structure intact for importing.
                 </p>
-                <img
-                  src="/images/Step_2_1_add_project.png"
-                  alt="Adding project"
-                  className="rounded-lg border border-slate-200 max-w-[80%] object-contain shadow-sm"
-                />
-              </div>
-
-              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-start justify-start">
-                <p className="text-slate-500 text-sm mb-2">
-                  2.2 Click add files:
-                </p>
-                <img
-                  src="/images/Step_2_2_click_add_files.png"
-                  alt="Click add files"
-                  className="rounded-lg border border-slate-200 max-w-[80%] object-contain shadow-sm"
-                />
-              </div>
-
-              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-start justify-start">
-                <p className="text-slate-500 text-sm mb-2">
-                  2.3 Select files to add:
-                </p>
-                <img
-                  src="/images/Step_2_3_add_files.png"
-                  alt="Select files to add"
-                  className="rounded-lg border border-slate-200 max-w-[80%] object-contain shadow-sm"
-                />
               </div>
             </div>
           </div>
-          {/* Divider */}
-          <div className="border-t border-slate-200 my-2"></div>
+
           {/* Step 3 */}
-          <div className="flex items-start gap-4 py-6">
-            <div className="bg-slate-800 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-              3
+          <div className="mb-6 border border-orange-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                3
+              </div>
+              <h4 className="text-lg font-semibold text-orange-700">
+                Analyze Job Listing
+              </h4>
             </div>
-            <div className="w-full">
-              <h3 className="text-lg font-medium mb-1">Analyze Job Listing</h3>
-              <p className="text-sm text-slate-600 mb-2">
-                Paste a job URL into the ChatGPT project chat
+            <div className="ml-11">
+              <p className="text-slate-600 mb-3">
+                Simply paste any job URL into the chat and let AI do the heavy
+                lifting
               </p>
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-100 p-2 rounded mb-4">
-                <Code className="h-4 w-4" />
-                <span>https://example.com/job/123"</span>
+
+              <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm mb-4">
+                <div className="bg-orange-50 py-2 px-3 border-b border-orange-100">
+                  <span className="text-sm font-medium text-orange-800">
+                    Paste any job URL
+                  </span>
+                </div>
+                <div className="p-4">
+                  <img
+                    src="/images/Step_3_paste_link.png"
+                    alt="Paste link"
+                    className="rounded-lg border border-slate-200 w-full h-auto max-w-md mx-auto"
+                  />
+                </div>
               </div>
 
-              {/* Screenshots */}
-              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-start justify-start">
-                <p className="text-slate-500 text-sm mb-2">
-                  3.1 Paste link in project chat:
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                <p className="font-medium">What happens?</p>
+                <p className="text-xs">
+                  The AI will analyze the job, research the company, match
+                  against your CV skills, find salary data, and create a custom
+                  cover letter — all in one step!
                 </p>
-                <img
-                  src="/images/Step_3_paste_link.png"
-                  alt="Paste link"
-                  className="rounded-lg border border-slate-200 max-w-[80%] object-contain shadow-sm"
-                />
               </div>
             </div>
           </div>
-          {/* Divider */}
-          <div className="border-t border-slate-200 my-2"></div>
+
           {/* Step 4 */}
-          <div className="flex items-start gap-4 py-6">
-            <div className="bg-slate-800 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-              4
-            </div>
-            <div className="w-full">
-              <h3 className="text-lg font-medium mb-1">
+          <div className="mb-6 border border-purple-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-purple-600 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                4
+              </div>
+              <h4 className="text-lg font-semibold text-purple-700">
                 Import to Job Tracker
-              </h3>
-              <p className="text-sm text-slate-600 mb-2">
-                Copy the entire JSON response and import it
+              </h4>
+            </div>
+            <div className="ml-11">
+              <p className="text-slate-600 mb-3">
+                Copy the JSON result and import it directly into Job Tracker
               </p>
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-100 p-2 rounded mb-4">
-                <LayoutDashboard className="h-4 w-4" />
-                <span>
-                  Copy-paste JSON from ChatGPT to "JSON Parse" in Job Tracker
-                </span>
-              </div>
 
-              {/* Screenshots */}
-              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-start justify-start">
-                <p className="text-slate-500 text-sm mb-2">
-                  4.1 Copy json from ChatGPT:
-                </p>
-                <img
-                  src="/images/Step_4_1_copy_json.png"
-                  alt="Copy JSON"
-                  className="rounded-lg border border-slate-200 max-w-[80%] object-contain shadow-sm"
-                />
-              </div>
+              <div className="grid grid-cols-2 gap-6 mb-4">
+                <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="bg-purple-50 py-2 px-3 border-b border-purple-100">
+                    <span className="text-sm font-medium text-purple-800">
+                      Copy JSON from AI response
+                    </span>
+                  </div>
+                  <div className="p-4">
+                    <img
+                      src="/images/Step_4_1_copy_json.png"
+                      alt="Copy JSON"
+                      className="rounded-lg border border-slate-200 w-full h-auto"
+                    />
+                  </div>
+                </div>
 
-              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-start justify-start">
-                <p className="text-slate-500 text-sm mb-2">
-                  4.2 Select "JSON Paste" in Job Tracker:
-                </p>
-                <img
-                  src="/images/Step_4_2_add_json.png"
-                  alt="Select JSON"
-                  className="rounded-lg border border-slate-200 max-w-[80%] object-contain shadow-sm"
-                />
-              </div>
-
-              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-start justify-start">
-                <p className="text-slate-500 text-sm mb-2">
-                  4.3 Paste the JSON response in the text area and click "Parse
-                  JSON":
-                </p>
-                <img
-                  src="/images/Step_4_3_paste_json.png"
-                  alt="Paste JSON"
-                  className="rounded-lg border border-slate-200 max-w-[80%] object-contain shadow-sm"
-                />
+                <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="bg-purple-50 py-2 px-3 border-b border-purple-100">
+                    <span className="text-sm font-medium text-purple-800">
+                      Paste & Parse in Job Tracker
+                    </span>
+                  </div>
+                  <div className="p-4">
+                    <img
+                      src="/images/Step_4_3_paste_json.png"
+                      alt="Paste JSON"
+                      className="rounded-lg border border-slate-200 w-full h-auto"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
           {/* Step 5 */}
-          <div className="flex items-start gap-4 py-6">
-            <div className="bg-slate-800 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-              5
+          <div className="mb-6 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-teal-600 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+                5
+              </div>
+              <h4 className="text-lg font-semibold text-teal-700">
+                Explore Your Job Match
+              </h4>
             </div>
-            <div className="w-full">
-              <h3 className="text-lg font-medium mb-1">
-                Explore results in Job Tracker
-              </h3>
-              <p className="text-sm text-slate-600 mb-2">
-                Explore the results in Job Tracker and see how well you match
-                the job listing
+            <div className="ml-11">
+              <p className="text-slate-600 mb-3">
+                See detailed insights about how well you match the job and get a
+                ready-to-use cover letter
               </p>
-              <div className="flex items-center gap-2 text-sm text-slate-700 bg-slate-100 p-2 rounded mb-4">
-                <LayoutDashboard className="h-4 w-4" />
-                <span>Explore the many features of Job Tracker</span>
+
+              <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm mb-4">
+                <div className="bg-teal-50 py-2 px-3 border-b border-teal-100">
+                  <span className="text-sm font-medium text-teal-800">
+                    Comprehensive insights
+                  </span>
+                </div>
+                <div className="p-4 bg-slate-50">
+                  <img
+                    src="/images/Step_5_result.png"
+                    alt="See results"
+                    className="rounded-lg border border-slate-200 w-full h-auto max-w-2xl mx-auto shadow-md"
+                  />
+                </div>
               </div>
 
-              {/* Screenshots */}
-              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-start justify-start">
-                <p className="text-slate-500 text-sm mb-2">
-                  5 Explore results:
-                </p>
-                <img
-                  src="/images/Step_5_result.png"
-                  alt="See results"
-                  className="rounded-lg border border-slate-200 max-w-[80%] object-contain shadow-sm"
-                />
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-800">
+                <p className="font-medium mb-2">What you get:</p>
+                <ul className="list-disc pl-5 text-xs space-y-1">
+                  <li>Detailed job match score and analysis</li>
+                  <li>Skill-by-skill evaluation of your qualifications</li>
+                  <li>Customized cover letter ready to send</li>
+                  <li>Comprehensive company information</li>
+                  <li>Salary estimates from multiple sources</li>
+                  <li>Direct recruiter contact information</li>
+                </ul>
               </div>
             </div>
-          </div>{" "}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="bg-slate-100 p-6 rounded-b-lg border-t border-slate-200 text-center">
+          <p className="font-medium text-slate-800 mb-2">
+            Ready to streamline your job search?
+          </p>
+          <p className="text-sm text-slate-600 mb-4">
+            Start by downloading the prompt and analyzing your first job listing
+          </p>
+          <Button
+            onClick={handleDownloadPrompt}
+            className="bg-slate-800 hover:bg-slate-700 text-white px-6"
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Download Prompt & Get Started
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

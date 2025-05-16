@@ -92,7 +92,7 @@
     border-left: 1px solid hsl(var(--border));
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease-in-out;
-    width: 40%;
+    width: 50%;
   }
   
   @media (max-width: 768px) {

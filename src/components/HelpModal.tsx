@@ -12,9 +12,9 @@ interface HelpModalProps {
 const HelpModal: React.FC<HelpModalProps> = ({ open, onOpenChange }) => {
   const handleDownloadPrompt = () => {
     const promptText = `
-# Prompt for ChatGPT: Job Listing Information Extraction with CV Match Analysis
+# Prompt for ChatGPT: Comprehensive Job Listing Analysis with CV Match and Recruiter Information
 
-I need you to extract detailed information from a job listing URL I'll provide and compare it against my CV that I've uploaded as a file in this ChatGPT project. Please analyze the job posting, research the company, look up relevant salary information, and evaluate how well my CV matches the job requirements. 
+I need you to extract detailed information from a job listing URL I'll provide and compare it against my CV that I've uploaded as a file in this ChatGPT project. Please analyze the job posting, research the company, look up relevant salary information, evaluate how well my CV matches the job requirements, identify all available recruiter contact information, extract relevant technologies and tools, and create a professional cover letter.
 
 Beyond the basic analysis, I also need you to:
 1. Create a compelling reasoning for why I should apply for this position based on my background and the job requirements
@@ -28,6 +28,21 @@ Beyond the basic analysis, I also need you to:
    - "Can do well" = 70-100%
    - "Can transfer" = 40-70%
    - "Must learn" = 0-40%
+6. Find and extract ALL available recruiter information, including:
+   - Name of recruiter or HR contact person
+   - Email address (direct or department)
+   - Phone number
+   - LinkedIn profile (if available)
+   - Department/team
+   - Any specific application instructions from the recruiter
+   - Best contact method (if mentioned)
+7. Write a professional cover letter that:
+   - Aligns my experience with the job requirements in a compelling way
+   - Uses a natural, professional tone (avoid overly corporate jargon or excessively formal language)
+   - Demonstrates understanding of the company and its industry
+   - Highlights 3-4 specific achievements from my CV that are relevant to this role
+   - Explains why I'm interested in this position/company specifically
+   - Keeps to a reasonable length (200-300 words)
 
 EVALUATION GUIDELINES:
 - Be fair but realistic in your evaluation of my CV against the job requirements
@@ -43,15 +58,17 @@ Return all data in English in a clean JSON object that follows the schema below.
 1. First, read my CV file attached in this ChatGPT project to understand my background
 2. Process the URL I provide
 3. Extract information available directly from the job listing (translate to English if necessary)
-3. Research the company's website or reliable sources to fill in missing company information
-4. Search for salary information on sites like Levels.fyi, Glassdoor, PayScale, or similar platforms for the position and company/location
-5. Research company reputation on sites like Glassdoor, Indeed, or Comparably
-6. Compare the job requirements against my CV to determine compatibility, analyzing tech stack match, experience match, seniority alignment, etc.
-7. Format your response as a valid JSON object
-8. For subjective fields (like job posting clarity), provide your best assessment
-9. Do not include markdown formatting, additional explanations, or any text outside the JSON object
-10. Ensure the JSON is properly formatted and valid
-11. All text fields must be in English regardless of the original job posting language
+4. Research the company's website or reliable sources to fill in missing company information
+5. Search for salary information on sites like Levels.fyi, Glassdoor, PayScale, or similar platforms for the position and company/location
+6. Research company reputation on sites like Glassdoor, Indeed, or Comparably
+7. Compare the job requirements against my CV to determine compatibility, analyzing tech stack match, experience match, seniority alignment, etc.
+8. Look thoroughly for all recruiter contact details on the job listing page, company careers page, and application process pages
+9. Write a professional cover letter tailored to this specific position and company
+10. Format your response as a valid JSON object
+11. For subjective fields (like job posting clarity), provide your best assessment
+12. Do not include markdown formatting, additional explanations, or any text outside the JSON object
+13. Ensure the JSON is properly formatted and valid
+14. All text fields must be in English regardless of the original job posting language
 
 ## JSON Schema:
 \`\`\`
@@ -79,7 +96,16 @@ Return all data in English in a clean JSON object that follows the schema below.
   "company_products": "",
   "company_size": "",
   "team_description": "",
-  "recruiter_contact": "",
+  "recruiter_contact": {
+    "name": "",
+    "title": "",
+    "email": "",
+    "phone": "",
+    "linkedin": "",
+    "department": "",
+    "preferred_contact_method": "",
+    "application_instructions": ""
+  },
   "possible_salary": "",
   "salary_estimate_from_context": "",
   "salary_from_external_sources": "",
@@ -142,7 +168,8 @@ Return all data in English in a clean JSON object that follows the schema below.
     "why_apply": "",
     "key_matching_qualifications": [],
     "overall_fit_assessment": ""
-  }
+  },
+  "cover_letter": ""
 }
 \`\`\`
 
@@ -152,7 +179,7 @@ Return all data in English in a clean JSON object that follows the schema below.
 - \`project\`: The main 1-2 tasks/responsibilities of the position
 - \`company\`: Company name
 - \`job_description\`: Concise summary of the role
-- \`tech_stack\`: Array of technologies mentioned
+- \`tech_stack\`: Array of technologies, tools, methodologies, and systems mentioned.
 - \`requirements\`: Key qualifications needed
 - \`product\`: The specific product being worked on (only set if there is a definite product mentioned in the description)
 - \`job_type\`: Full-time, part-time, contract, etc.
@@ -170,7 +197,15 @@ Return all data in English in a clean JSON object that follows the schema below.
 - \`company_products\`: Main products/services
 - \`company_size\`: Number of employees if available
 - \`team_description\`: Information about the team
-- \`recruiter_contact\`: Contact information if available
+- \`recruiter_contact\`: Detailed information about the recruiting contact
+  - \`name\`: Full name of the recruiter or HR contact (if available)
+  - \`title\`: Job title of the recruiter (if available)
+  - \`email\`: Direct email or department email for applications/inquiries
+  - \`phone\`: Phone number for contact (if available)
+  - \`linkedin\`: LinkedIn profile URL (if available)
+  - \`department\`: HR or recruiting department name
+  - \`preferred_contact_method\`: Email, phone, or application form (if specified)
+  - \`application_instructions\`: Any specific instructions for applying
 - \`possible_salary\`: Salary range if mentioned in the posting
 - \`salary_estimate_from_context\`: Estimated salary based on role/location
 - \`salary_from_external_sources\`: Salary information from Levels.fyi, Glassdoor, etc. Include source and range
@@ -183,6 +218,7 @@ Return all data in English in a clean JSON object that follows the schema below.
 - \`interview_notes\`: Leave empty (to be filled by user)
 - \`rating_match\`: Leave as null (to be filled by user)
 - \`hidden\`: Default to false
+- \`cover_letter\`: A well-written, professional cover letter (300-400 words) tailored to the position and company. Use natural language rather than overly formal corporate speak.
 
 ### CV Match Fields:
 - \`cv_match.overall_match_percentage\`: Overall match percentage (0-100)
@@ -249,7 +285,7 @@ I've attached my CV as a file in this ChatGPT project. Please analyze it and com
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
         {/* Header */}
         <div className="bg-slate-800 p-6 rounded-t-lg -mt-6 -mx-6 mb-6">
           <h2 className="text-xl font-bold text-white">
@@ -305,35 +341,37 @@ I've attached my CV as a file in this ChatGPT project. Please analyze it and com
               </div>
 
               {/* Screenshots */}
-              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-center justify-center">
-                <p className="text-slate-500 text-sm">
+              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-start justify-start">
+                <p className="text-slate-500 text-sm mb-2">
                   2.1 Add new project in ChatGPT:
-                  <img
-                    src="/images/Step_2_1_add_project.png"
-                    alt="Adding project"
-                    className="rounded-lg border border-slate-200 w-full shadow-sm"
-                  />
                 </p>
+                <img
+                  src="/images/Step_2_1_add_project.png"
+                  alt="Adding project"
+                  className="rounded-lg border border-slate-200 max-w-[80%] object-contain shadow-sm"
+                />
               </div>
-              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-center justify-center">
-                <p className="text-slate-500 text-sm">
+
+              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-start justify-start">
+                <p className="text-slate-500 text-sm mb-2">
                   2.2 Click add files:
-                  <img
-                    src="/images/Step_2_2_click_add_files.png"
-                    alt="Click add files"
-                    className="rounded-lg border border-slate-200 w-full shadow-sm"
-                  />
                 </p>
+                <img
+                  src="/images/Step_2_2_click_add_files.png"
+                  alt="Click add files"
+                  className="rounded-lg border border-slate-200 max-w-[80%] object-contain shadow-sm"
+                />
               </div>
-              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-center justify-center">
-                <p className="text-slate-500 text-sm">
+
+              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-start justify-start">
+                <p className="text-slate-500 text-sm mb-2">
                   2.3 Select files to add:
-                  <img
-                    src="/images/Step_2_3_add_files.png"
-                    alt="Select files to add"
-                    className="rounded-lg border border-slate-200 w-full shadow-sm"
-                  />
                 </p>
+                <img
+                  src="/images/Step_2_3_add_files.png"
+                  alt="Select files to add"
+                  className="rounded-lg border border-slate-200 max-w-[80%] object-contain shadow-sm"
+                />
               </div>
             </div>
           </div>
@@ -355,15 +393,15 @@ I've attached my CV as a file in this ChatGPT project. Please analyze it and com
               </div>
 
               {/* Screenshots */}
-              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-center justify-center">
-                <p className="text-slate-500 text-sm">
+              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-start justify-start">
+                <p className="text-slate-500 text-sm mb-2">
                   3.1 Paste link in project chat:
-                  <img
-                    src="/images/Step_3_paste_link.png"
-                    alt="Paste link"
-                    className="rounded-lg border border-slate-200 w-full shadow-sm"
-                  />
                 </p>
+                <img
+                  src="/images/Step_3_paste_link.png"
+                  alt="Paste link"
+                  className="rounded-lg border border-slate-200 max-w-[80%] object-contain shadow-sm"
+                />
               </div>
             </div>
           </div>
@@ -389,36 +427,38 @@ I've attached my CV as a file in this ChatGPT project. Please analyze it and com
               </div>
 
               {/* Screenshots */}
-              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-center justify-center">
-                <p className="text-slate-500 text-sm">
+              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-start justify-start">
+                <p className="text-slate-500 text-sm mb-2">
                   4.1 Copy json from ChatGPT:
-                  <img
-                    src="/images/Step_4_1_copy_json.png"
-                    alt="Copy JSON"
-                    className="rounded-lg border border-slate-200 w-full shadow-sm"
-                  />
                 </p>
+                <img
+                  src="/images/Step_4_1_copy_json.png"
+                  alt="Copy JSON"
+                  className="rounded-lg border border-slate-200 max-w-[80%] object-contain shadow-sm"
+                />
               </div>
-              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-center justify-center">
-                <p className="text-slate-500 text-sm">
+
+              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-start justify-start">
+                <p className="text-slate-500 text-sm mb-2">
                   4.2 Select "JSON Paste" in Job Tracker:
-                  <img
-                    src="/images/Step_4_2_add_json.png"
-                    alt="Select JSON"
-                    className="rounded-lg border border-slate-200 w-full shadow-sm"
-                  />
                 </p>
+                <img
+                  src="/images/Step_4_2_add_json.png"
+                  alt="Select JSON"
+                  className="rounded-lg border border-slate-200 max-w-[80%] object-contain shadow-sm"
+                />
               </div>
-              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-center justify-center">
-                <p className="text-slate-500 text-sm">
+
+              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-start justify-start">
+                <p className="text-slate-500 text-sm mb-2">
                   4.3 Paste the JSON response in the text area and click "Parse
                   JSON":
-                  <img
-                    src="/images/Step_4_3_paste_json.png"
-                    alt="Paste JSON"
-                    className="rounded-lg border border-slate-200 w-full shadow-sm"
-                  />
                 </p>
+                <img
+                  src="/images/Step_4_3_paste_json.png"
+                  alt="Paste JSON"
+                  className="rounded-lg border border-slate-200 max-w-[80%] object-contain shadow-sm"
+                />
               </div>
             </div>
           </div>
@@ -441,15 +481,15 @@ I've attached my CV as a file in this ChatGPT project. Please analyze it and com
               </div>
 
               {/* Screenshots */}
-              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-center justify-center">
-                <p className="text-slate-500 text-sm">
-                  5 Explore results::
-                  <img
-                    src="/images/Step_5_result.png"
-                    alt="See results"
-                    className="rounded-lg border border-slate-200 w-full shadow-sm"
-                  />
+              <div className="mt-2 border border-dashed border-slate-300 rounded-lg p-4 bg-slate-50 flex flex-col items-start justify-start">
+                <p className="text-slate-500 text-sm mb-2">
+                  5 Explore results:
                 </p>
+                <img
+                  src="/images/Step_5_result.png"
+                  alt="See results"
+                  className="rounded-lg border border-slate-200 max-w-[80%] object-contain shadow-sm"
+                />
               </div>
             </div>
           </div>{" "}

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Job, JobStatus, RecruiterContact, RequirementAssessment, RequirementMatch } from '@/types/job';
 import { Button } from '@/components/ui/button';
@@ -20,6 +19,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/t
 import SalaryDisplay from './SalaryDisplay';
 import RecruiterInfo from './RecruiterInfo';
 import CoverLetterSection from './CoverLetterSection';
+import ApplicationMethods from './ApplicationMethods';
 
 interface JobDetailPanelProps {
   job: Job | null;
@@ -270,6 +270,12 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 <X className="h-4 w-4" />
               </Button>
             </div>
+          </div>
+
+          {/* Add Application Methods section */}
+          <div className="flex items-center justify-between bg-muted/30 p-3 rounded-lg mb-6">
+            <h4 className="text-sm font-medium">Apply Now:</h4>
+            <ApplicationMethods job={job} variant="buttons" includeLabels={true} />
           </div>
 
           <div className="flex flex-wrap gap-3 mb-6">
@@ -644,12 +650,30 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
             </TabsContent>
             
             <TabsContent value="application" className="space-y-4 mt-4">
-              {/* Recruiter Information Section - Added to top of Application tab */}
+              {/* Application Method Links at the top of Application Tab */}
+              {(job.url || job.recruiter_contact?.email || job.recruiter_contact?.phone) && (
+                <div className="bg-muted/30 p-4 rounded-lg mb-4">
+                  <div className="flex flex-col gap-3">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-medium">Application Methods:</h4>
+                      {job.application_deadline && (
+                        <div className="text-sm flex items-center text-amber-600 dark:text-amber-400">
+                          <Calendar className="h-4 w-4 mr-1" />
+                          <span>Deadline: {formatDate(job.application_deadline)}</span>
+                        </div>
+                      )}
+                    </div>
+                    <ApplicationMethods job={job} variant="buttons" includeLabels={true} />
+                  </div>
+                </div>
+              )}
+              
+              {/* Recruiter Information Section */}
               {job.recruiter_contact && (
                 <RecruiterInfo recruiterContact={job.recruiter_contact} />
               )}
               
-              {/* Cover Letter Section - Added below Recruiter Information */}
+              {/* Cover Letter Section */}
               {coverLetter && (
                 <CoverLetterSection 
                   coverLetter={coverLetter}
@@ -661,13 +685,6 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 <div>
                   <p className="text-sm text-muted-foreground">Applied Date</p>
                   <p>{formatDate(job.applied_date)}</p>
-                </div>
-              )}
-              
-              {job.application_deadline && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Application Deadline</p>
-                  <p>{formatDate(job.application_deadline)}</p>
                 </div>
               )}
               

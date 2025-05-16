@@ -51,6 +51,7 @@ import MatchScoreTooltip from './MatchScoreTooltip';
 import ProjectTooltip from './ProjectTooltip';
 import { Switch } from './ui/switch';
 import SalaryDisplay from "./SalaryDisplay";
+import ApplicationMethods from './ApplicationMethods';
 
 interface JobListingTableProps {
   jobs: Job[];
@@ -628,6 +629,10 @@ export default function JobListingTable({
                   )}
                   
                   
+                  <TableHead className="text-center w-[100px]">
+                    Apply
+                  </TableHead>
+                  
                   <TableHead className="w-[100px] text-center">
                     Actions
                   </TableHead>
@@ -744,6 +749,10 @@ export default function JobListingTable({
                       </>
                     )}
                     
+                    {/* Apply Cell with icons */}
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <ApplicationMethods job={job} variant="row" size="sm" />
+                    </TableCell>
                     
                     <TableCell>
                       <div className="flex items-center justify-center gap-1">

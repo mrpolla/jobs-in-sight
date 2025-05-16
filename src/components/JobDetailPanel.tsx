@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from 'react';
-import { Job, JobStatus, RequirementAssessment, RequirementMatch } from '@/types/job';
+import { Job, JobStatus, RecruiterContact, RequirementAssessment, RequirementMatch } from '@/types/job';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { X, Pen, Trash, EyeOff, Eye, ExternalLink, Clock, Calendar } from 'lucide-react';
@@ -17,6 +18,8 @@ import RequirementsMatchDisplay from './RequirementsMatchDisplay';
 import { getSalaryInfo, SalaryInfo } from '@/lib/salary-utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import SalaryDisplay from './SalaryDisplay';
+import RecruiterInfo from './RecruiterInfo';
+import CoverLetterSection from './CoverLetterSection';
 
 interface JobDetailPanelProps {
   job: Job | null;
@@ -39,6 +42,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
     icon: null,
     tooltip: 'No salary information available'
   });
+  const [coverLetter, setCoverLetter] = useState<string | undefined>(job?.cover_letter);
 
   // Update state when job changes
   useEffect(() => {
@@ -47,6 +51,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
       setStatus(job.status);
       setPriority(job.priority_level || 3);
       setHidden(job.hidden || false);
+      setCoverLetter(job.cover_letter);
       setSalaryInfo(getSalaryInfo(
         job.possible_salary, 
         job.salary_from_external_sources, 
@@ -159,6 +164,20 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
 
   const cancelDelete = () => {
     setShowDeleteConfirm(false);
+  };
+
+  const handleUpdateCoverLetter = (updatedCoverLetter: string) => {
+    if (!job) return;
+    
+    const updatedJob: Job = {
+      ...job,
+      cover_letter: updatedCoverLetter,
+      last_updated: new Date().toISOString()
+    };
+    
+    updateJob(updatedJob);
+    onJobUpdated(updatedJob);
+    setCoverLetter(updatedCoverLetter);
   };
 
   // Open URL in a new tab
@@ -298,6 +317,19 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 </div>
               )}
             </div>
+          )}
+
+          {/* Recruiter Contact Section */}
+          {job.recruiter_contact && (
+            <RecruiterInfo recruiterContact={job.recruiter_contact} />
+          )}
+
+          {/* Cover Letter Section */}
+          {coverLetter && (
+            <CoverLetterSection 
+              coverLetter={coverLetter}
+              onUpdate={handleUpdateCoverLetter}
+            />
           )}
 
           <Tabs defaultValue="overview">
@@ -636,13 +668,6 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                 <div>
                   <p className="text-sm text-muted-foreground">Application Deadline</p>
                   <p>{formatDate(job.application_deadline)}</p>
-                </div>
-              )}
-              
-              {job.recruiter_contact && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Recruiter Contact</p>
-                  <p>{job.recruiter_contact}</p>
                 </div>
               )}
               

@@ -1,10 +1,11 @@
+
 import React from "react";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Job, RequirementMatch, RequirementAssessment } from "@/types/job";
+import { Job, RequirementMatch, RequirementAssessment, RecruiterContact } from "@/types/job";
 import { ScrollArea } from "./ui/scroll-area";
 import { Badge } from "./ui/badge";
 import RequirementsAssessment from "./RequirementsAssessment";
@@ -18,6 +19,7 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 import { Progress } from "./ui/progress";
+import { Mail, Phone, Linkedin } from "lucide-react";
 
 interface ProjectTooltipProps {
   job: Job;
@@ -38,6 +40,11 @@ export default function ProjectTooltip({ job, children }: ProjectTooltipProps) {
   // Get the overall match percentage
   const overallMatchPercentage =
     job.cv_match?.overall_match_percentage || job.match_score;
+
+  // Extract recruiter contact information
+  const recruiterContact = job.recruiter_contact && typeof job.recruiter_contact === 'object' 
+    ? job.recruiter_contact as RecruiterContact
+    : null;
 
   return (
     <>
@@ -75,6 +82,38 @@ export default function ProjectTooltip({ job, children }: ProjectTooltipProps) {
                   </p>
                 )}
               </div>
+
+              {/* Recruiter Contact Information */}
+              {recruiterContact && (recruiterContact.name || recruiterContact.email || recruiterContact.phone) && (
+                <div className="border-t pt-2">
+                  <h5 className="text-sm font-semibold">Recruiter Contact</h5>
+                  
+                  {recruiterContact.name && (
+                    <p className="text-sm">{recruiterContact.name}
+                      {recruiterContact.title && `, ${recruiterContact.title}`}
+                    </p>
+                  )}
+                  
+                  {recruiterContact.email && (
+                    <div className="flex items-center gap-1 text-sm">
+                      <Mail className="h-3 w-3 text-muted-foreground" />
+                      <a 
+                        href={`mailto:${recruiterContact.email}`}
+                        className="text-blue-600 dark:text-blue-400 text-xs hover:underline"
+                      >
+                        {recruiterContact.email}
+                      </a>
+                    </div>
+                  )}
+                  
+                  {recruiterContact.phone && (
+                    <div className="flex items-center gap-1 text-sm">
+                      <Phone className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-xs">{recruiterContact.phone}</span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {job.job_description && (
                 <div>

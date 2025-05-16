@@ -21,7 +21,7 @@ export interface Job {
   company_products?: string;
   company_size?: string;
   team_description?: string;
-  recruiter_contact?: string;
+  recruiter_contact?: string | RecruiterContact;
   possible_salary?: string;
   salary_estimate_from_context?: string;
   salary_from_external_sources?: string; // Added this field
@@ -83,6 +83,18 @@ export interface Job {
   };
   match_summary?: string;
   match_score?: number;
+  cover_letter?: string;
+}
+
+export interface RecruiterContact {
+  name: string;
+  title: string;
+  email: string;
+  phone: string;
+  linkedin: string;
+  department: string;
+  preferred_contact_method: string;
+  application_instructions: string;
 }
 
 export interface RequirementAssessment {

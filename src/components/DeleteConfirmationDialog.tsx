@@ -19,7 +19,7 @@ export default function DeleteConfirmationDialog({
 }: DeleteConfirmationDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] z-[100]">
         <DialogHeader>
           <DialogTitle className="flex items-center text-destructive">
             <Trash className="mr-2 h-5 w-5" />

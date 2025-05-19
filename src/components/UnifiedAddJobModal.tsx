@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -103,8 +102,9 @@ export default function UnifiedAddJobModal({
   };
 
   const handleJsonImport = () => {
-    if (parsedJobs) {
-      parsedJobs.forEach(job => onAddJob(job));
+    if (parsedJobs && parsedJobs.length > 0) {
+      // FIX: Add all jobs in a single batch instead of iterating through them
+      onAddJob({...parsedJobs[0], batch: parsedJobs});
       toast.success(`Successfully imported ${parsedJobs.length} job(s)`);
       handleClose();
     }
@@ -201,7 +201,8 @@ export default function UnifiedAddJobModal({
 
   const handleFileImport = () => {
     if (uploadedJobs.length > 0) {
-      uploadedJobs.forEach(job => onAddJob(job));
+      // FIX: Add all jobs in a single batch instead of iterating through them
+      onAddJob({...uploadedJobs[0], batch: uploadedJobs});
       toast.success(`Successfully imported ${uploadedJobs.length} job${uploadedJobs.length === 1 ? '' : 's'}`);
       handleClose();
     }
@@ -209,7 +210,10 @@ export default function UnifiedAddJobModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[650px] max-h-screen overflow-y-auto">
+      <DialogContent className="sm:max-w-[650px] max-h-screen overflow-y-auto" aria-describedby="dialog-description">
+        <span id="dialog-description" className="sr-only">
+          Add job dialog with options to paste JSON, upload file, or add manually
+        </span>
         <DialogHeader>
           <DialogTitle>Add Job</DialogTitle>
         </DialogHeader>

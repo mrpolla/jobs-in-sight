@@ -64,7 +64,8 @@ export default function JsonImportDialog({ onImport, onCancel }: JsonImportDialo
   };
 
   const handleImport = () => {
-    if (parsedJobs) {
+    if (parsedJobs && parsedJobs.length > 0) {
+      // Fix: Pass all jobs at once rather than iterating
       onImport(parsedJobs);
       toast.success(`Successfully imported ${parsedJobs.length} job(s)`);
     }
@@ -72,7 +73,10 @@ export default function JsonImportDialog({ onImport, onCancel }: JsonImportDialo
 
   return (
     <Dialog open={true} onOpenChange={() => onCancel()}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px]" aria-describedby="json-import-description">
+        <span id="json-import-description" className="sr-only">
+          Import jobs from JSON data
+        </span>
         <DialogHeader>
           <DialogTitle>Import Jobs from JSON</DialogTitle>
           <DialogDescription>

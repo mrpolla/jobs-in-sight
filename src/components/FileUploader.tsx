@@ -106,21 +106,19 @@ export function FileUploader({ onImport, onCancel }: FileUploaderProps) {
     }
   };
 
-  const handleClickUpload = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
   const handleImport = () => {
     if (parsedJobs.length > 0) {
+      // Fix: Pass the entire array of jobs rather than calling onImport for each job
       onImport(parsedJobs);
       toast.success(`Successfully imported ${parsedJobs.length} job${parsedJobs.length === 1 ? '' : 's'}`);
     }
   };
 
   return (
-    <DialogContent className="sm:max-w-lg">
+    <DialogContent className="sm:max-w-lg" aria-describedby="file-uploader-description">
+      <span id="file-uploader-description" className="sr-only">
+        Upload JSON file with job data
+      </span>
       <DialogHeader>
         <DialogTitle>Upload Job Data</DialogTitle>
         <DialogDescription>
@@ -150,7 +148,7 @@ export function FileUploader({ onImport, onCancel }: FileUploaderProps) {
             <p className="text-muted-foreground">
               Drag and drop your JSON file here, or click to browse
             </p>
-            <Button onClick={handleClickUpload}>Select File</Button>
+            <Button onClick={() => fileInputRef.current?.click()}>Select File</Button>
           </div>
         </div>
       ) : (

@@ -1,4 +1,3 @@
-
 export interface Job {
   id: string;
   position: string;
@@ -24,7 +23,7 @@ export interface Job {
   recruiter_contact?: string | RecruiterContact;
   possible_salary?: string;
   salary_estimate_from_context?: string;
-  salary_from_external_sources?: string; // Added this field
+  salary_from_external_sources?: string; 
   benefits?: string;
   company_reputation?: string;
   job_posting_clarity_score?: number;
@@ -36,8 +35,8 @@ export interface Job {
   last_updated: string;
   hidden?: boolean;
   url?: string;
-  hours_per_week?: string; // Field for working hours
-  vacation_days?: string; // Field for vacation days
+  hours_per_week?: string;
+  vacation_days?: string; 
   application_reasoning?: {
     why_apply?: string;
     key_matching_qualifications?: string[];
@@ -84,6 +83,8 @@ export interface Job {
   match_summary?: string;
   match_score?: number;
   cover_letter?: string;
+  // Added for batch import handling - will be present only during the import process
+  batch?: Job[];
 }
 
 export interface RecruiterContact {

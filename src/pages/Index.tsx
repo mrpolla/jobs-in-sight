@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Download, HelpCircle } from "lucide-react";
@@ -49,9 +50,19 @@ const Index = () => {
   };
 
   const handleAddJob = (job: Job) => {
-    const updatedJobs = [...jobs, job];
-    setJobs(updatedJobs);
-    saveJobs(updatedJobs);
+    // Check if this is a batch import (from JSON or file)
+    if (job.batch && Array.isArray(job.batch)) {
+      // Handle batch import
+      const batchJobs = job.batch;
+      const updatedJobs = [...jobs, ...batchJobs];
+      setJobs(updatedJobs);
+      saveJobs(updatedJobs);
+    } else {
+      // Handle single job add
+      const updatedJobs = [...jobs, job];
+      setJobs(updatedJobs);
+      saveJobs(updatedJobs);
+    }
     toast.success("Job added successfully");
   };
 

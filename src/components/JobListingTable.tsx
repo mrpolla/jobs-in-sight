@@ -587,12 +587,12 @@ export default function JobListingTable({
             </p>
           </div>
         ) : (
-          <div className="rounded-md border overflow-hidden">
+          <div className="rounded-md border">
             <div className="table-container">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[200px]">
+                    <TableHead className="w-[180px]">
                       <Button
                         variant="ghost"
                         className="p-0 hover:bg-transparent font-medium"
@@ -603,7 +603,7 @@ export default function JobListingTable({
                     </TableHead>
 
                     {/* Project Column */}
-                    <TableHead>
+                    <TableHead className="w-[140px]">
                       <Button
                         variant="ghost"
                         className="p-0 hover:bg-transparent font-medium"
@@ -613,7 +613,7 @@ export default function JobListingTable({
                       </Button>
                     </TableHead>
 
-                    <TableHead>
+                    <TableHead className="w-[160px]">
                       <Button
                         variant="ghost"
                         className="p-0 hover:bg-transparent font-medium"

@@ -39,7 +39,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { format, formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow, isValid } from "date-fns";
 import { JobStatus, Job, JobFilters, JobSort, SortField } from "@/types/job";
 import JobStatusSelect from "./JobStatusSelect";
 import PrioritySelect from "./PrioritySelect";
@@ -133,9 +133,14 @@ export default function JobListingTable({
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
+      // Check if the date is valid before formatting
+      if (!isValid(date)) {
+        return "Invalid date";
+      }
       return formatDistanceToNow(date, { addSuffix: true });
     } catch (error) {
-      return dateString;
+      console.error("Error formatting date:", error);
+      return "Invalid date";
     }
   };
 
@@ -238,9 +243,6 @@ export default function JobListingTable({
       case "status":
         comparison = a.status.localeCompare(b.status);
         break;
-      case "priority_level":
-        comparison = a.priority_level - b.priority_level;
-        break;
       case "tech_stack":
         const techA = (a.tech_stack || []).join(", ");
         const techB = (b.tech_stack || []).join(", ");
@@ -272,25 +274,51 @@ export default function JobListingTable({
         break;
       case "start_date":
         if (a.start_date && b.start_date) {
-          comparison =
-            new Date(a.start_date).getTime() - new Date(b.start_date).getTime();
+          try {
+            const dateA = new Date(a.start_date);
+            const dateB = new Date(b.start_date);
+            
+            // Check if both dates are valid
+            if (isValid(dateA) && isValid(dateB)) {
+              comparison = dateA.getTime() - dateB.getTime();
+            } else {
+              // Handle invalid dates
+              comparison = a.start_date.localeCompare(b.start_date);
+            }
+          } catch (error) {
+            console.error("Error comparing dates:", error);
+            comparison = 0;
+          }
         } else if (a.start_date) {
           comparison = -1;
         } else if (b.start_date) {
           comparison = 1;
         }
         break;
+      case "priority_level":
+        comparison = a.priority_level - b.priority_level;
+        break;
       case "match_score":
-        const scoreA =
-          a.match_score || a.cv_match?.overall_match_percentage || 0;
-        const scoreB =
-          b.match_score || b.cv_match?.overall_match_percentage || 0;
+        const scoreA = a.match_score || a.cv_match?.overall_match_percentage || 0;
+        const scoreB = b.match_score || b.cv_match?.overall_match_percentage || 0;
         comparison = scoreA - scoreB;
         break;
       case "last_updated":
-        comparison =
-          new Date(b.last_updated).getTime() -
-          new Date(a.last_updated).getTime();
+        try {
+          const dateA = new Date(a.last_updated);
+          const dateB = new Date(b.last_updated);
+          
+          // Check if both dates are valid
+          if (isValid(dateA) && isValid(dateB)) {
+            comparison = dateB.getTime() - dateA.getTime();
+          } else {
+            // Handle invalid dates
+            comparison = 0;
+          }
+        } catch (error) {
+          console.error("Error comparing last_updated dates:", error);
+          comparison = 0;
+        }
         break;
       default:
         comparison = 0;
@@ -836,7 +864,7 @@ export default function JobListingTable({
                         </TableCell>
 
                         <TableCell className="hidden lg:table-cell">
-                          {job.start_date
+                          {job.start_date && isValid(new Date(job.start_date))
                             ? format(new Date(job.start_date), "MMM d, yyyy")
                             : "N/A"}
                         </TableCell>
@@ -844,10 +872,16 @@ export default function JobListingTable({
                         <TableCell className="hidden lg:table-cell">
                           <Tooltip>
                             <TooltipTrigger className="block">
-                              <span>{formatDate(job.last_updated)}</span>
+                              <span>
+                                {isValid(new Date(job.last_updated))
+                                  ? formatDate(job.last_updated)
+                                  : "Invalid date"}
+                              </span>
                             </TooltipTrigger>
                             <TooltipContent>
-                              {format(new Date(job.last_updated), "PPP")}
+                              {isValid(new Date(job.last_updated))
+                                ? format(new Date(job.last_updated), "PPP")
+                                : "Invalid date"}
                             </TooltipContent>
                           </Tooltip>
                         </TableCell>

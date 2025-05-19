@@ -183,7 +183,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
       {/* Enhanced Header */}
       <header className="border-b py-4 px-6 bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-10">
-        <div className="container flex items-center justify-between">
+        <div className="w-[95%] mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img
               src={
@@ -225,7 +225,7 @@ const Index = () => {
       {/* Welcome Banner - Added here */}
       <WelcomeBanner onShowHelp={() => setHelpModalOpen(true)} />
 
-      <main className="flex-1 container py-4 md:py-8 space-y-4 md:space-y-6">
+      <main className="flex-1 w-[95%] mx-auto py-4 md:py-8 space-y-4 md:space-y-6">
         {/* Title and Action Bar */}
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm overflow-hidden">
           <div className="p-4 border-b border-gray-100 dark:border-gray-800">

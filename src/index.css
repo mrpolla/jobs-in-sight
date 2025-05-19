@@ -165,6 +165,26 @@
     max-width: 400px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   }
+
+  /* Table scrolling enhancements */
+  .table-container {
+    position: relative;
+    max-height: 70vh;
+    overflow-y: auto;
+    overflow-x: auto;
+    border-radius: inherit;
+  }
+
+  @media (max-width: 768px) {
+    .table-container {
+      max-height: 50vh;
+    }
+  }
+
+  .table-container table {
+    width: 100%;
+    min-width: max-content;
+  }
 }
  
 @layer base {
@@ -202,5 +222,24 @@ button {
 }
 
 ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Improved scrollbar visibility for tables */
+.table-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.3);
 }

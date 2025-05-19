@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -170,14 +171,21 @@
     position: relative;
     max-height: 70vh;
     overflow-y: auto;
-    overflow-x: auto;
     border-radius: inherit;
+    display: flex;
+    flex-direction: column;
   }
 
   @media (max-width: 768px) {
     .table-container {
       max-height: 50vh;
     }
+  }
+
+  /* Wrapper to create fixed horizontal scrollbar */
+  .table-scroll-wrapper {
+    overflow-x: auto;
+    margin-bottom: 4px; /* Space for the scrollbar */
   }
 
   .table-container table {
@@ -229,20 +237,20 @@ button {
 }
 
 /* Improved scrollbar visibility for tables */
-.table-container::-webkit-scrollbar {
+.table-scroll-wrapper::-webkit-scrollbar {
   width: 8px;
   height: 10px;
 }
 
-.table-container::-webkit-scrollbar-track {
+.table-scroll-wrapper::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.05);
 }
 
-.table-container::-webkit-scrollbar-thumb {
+.table-scroll-wrapper::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
 }
 
-.table-container::-webkit-scrollbar-thumb:hover {
+.table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.3);
 }

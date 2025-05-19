@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Table,
@@ -559,7 +558,7 @@ export default function JobListingTable({
             </p>
           </div>
         ) : (
-          <div className="rounded-md border overflow-auto max-h-[calc(100vh-240px)] w-[110%] -ml-[5%]">
+          <div className="rounded-md border overflow-auto">
             <Table>
               <TableHeader>
                 <TableRow>

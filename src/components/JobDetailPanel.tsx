@@ -237,7 +237,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
 
   return (
     <>
-      <div className="side-panel w-full sm:w-[98%] bg-background shadow-xl border-l">
+      <div className="side-panel w-full sm:w-[98%] bg-background shadow-xl border-l z-[9990]">
         <div className="p-6 relative">
           <div className="flex justify-between items-start mb-4">
             <div>

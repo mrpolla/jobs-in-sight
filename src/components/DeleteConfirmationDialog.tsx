@@ -1,13 +1,6 @@
 
 import React from 'react';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription, 
-  DialogFooter 
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Trash } from 'lucide-react';
 
@@ -26,13 +19,13 @@ export default function DeleteConfirmationDialog({
 }: DeleteConfirmationDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="flex items-center text-destructive">
             <Trash className="mr-2 h-5 w-5" />
             Confirm Deletion
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="pt-2">
             Are you sure you want to delete the job <span className="font-semibold">{jobTitle}</span>?
             <p className="mt-2">This action cannot be undone.</p>
           </DialogDescription>

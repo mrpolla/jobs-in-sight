@@ -37,6 +37,16 @@ export default function RequirementsMatchDisplay({ requirements, compact = false
     return null;
   }
 
+  // Sort requirements by status: "Can do well" first, then "Can transfer", then "Must learn"
+  const sortedRequirements = [...requirements].sort((a, b) => {
+    const statusOrder: Record<string, number> = {
+      'Can do well': 0,
+      'Can transfer': 1,
+      'Must learn': 2
+    };
+    return statusOrder[a.status] - statusOrder[b.status];
+  });
+
   if (compact) {
     // Display compact summary of requirements
     const counts = requirements.reduce((acc, req) => {
@@ -71,7 +81,7 @@ export default function RequirementsMatchDisplay({ requirements, compact = false
   return (
     <div className="mt-2 space-y-3">
       <h6 className="text-xs font-medium">Requirements Assessment</h6>
-      {requirements.map((req, index) => (
+      {sortedRequirements.map((req, index) => (
         <div key={index} className="text-xs border-l-2 pl-2 py-0.5" style={{ borderLeftColor: req.status === 'Can do well' ? 'rgb(34, 197, 94)' : req.status === 'Can transfer' ? 'rgb(245, 158, 11)' : 'rgb(239, 68, 68)' }}>
           <div className="flex justify-between items-start">
             <div className="flex-1">

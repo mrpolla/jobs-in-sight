@@ -59,6 +59,16 @@ export default function MatchScoreTooltip({ score, matchData, summary, requireme
   
   const statusCounts = getStatusCounts(requirements);
 
+  // Sort requirements if they exist: "Can do well" first, then "Can transfer", then "Must learn"
+  const sortedRequirements = requirements ? [...requirements].sort((a, b) => {
+    const statusOrder: Record<string, number> = {
+      'Can do well': 0,
+      'Can transfer': 1,
+      'Must learn': 2
+    };
+    return statusOrder[a.status] - statusOrder[b.status];
+  }) : [];
+
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
@@ -149,11 +159,11 @@ export default function MatchScoreTooltip({ score, matchData, summary, requireme
               <Progress value={matchData.location_compatibility?.score || 0} className="h-2" />
             </div>
             
-            {requirements && requirements.length > 0 && (
+            {sortedRequirements.length > 0 && (
               <div className="mt-2 pt-2 border-t">
                 <p className="text-xs font-medium mb-1">Requirements Match</p>
                 <div className="space-y-2 max-h-60 overflow-y-auto">
-                  {requirements.map((req, idx) => (
+                  {sortedRequirements.map((req, idx) => (
                     <div key={idx} className="text-xs">
                       <div className="flex items-center gap-1">
                         <div className={`w-2 h-2 rounded-full ${

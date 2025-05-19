@@ -231,6 +231,25 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
   const filteredRequirementsAssessment = selectedReqStatus
     ? requirementsAssessment.filter(req => req.status === selectedReqStatus)
     : requirementsAssessment;
+
+  // Sort requirements by status: "Can do well" first, then "Can transfer", then "Must learn"
+  const sortedRequirementsMatch = [...filteredRequirementsMatch].sort((a, b) => {
+    const statusOrder: Record<string, number> = {
+      'Can do well': 0,
+      'Can transfer': 1,
+      'Must learn': 2
+    };
+    return statusOrder[a.status] - statusOrder[b.status];
+  });
+
+  const sortedRequirementsAssessment = [...filteredRequirementsAssessment].sort((a, b) => {
+    const statusOrder: Record<string, number> = {
+      'Can do well': 0,
+      'Can transfer': 1,
+      'Must learn': 2
+    };
+    return statusOrder[a.status] - statusOrder[b.status];
+  });
   
   // Get matched skills for tech stack display
   const matchedSkills = getMatchedSkills(job);
@@ -564,7 +583,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
               )}
               
               {/* Requirements Match Section */}
-              {requirementsMatch.length > 0 && (
+              {sortedRequirementsMatch.length > 0 && (
                 <div className="border rounded-md p-4 mt-4">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium">Requirements Match</h4>
@@ -604,7 +623,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                     </div>
                   </div>
                   
-                  <RequirementsMatchDisplay requirements={filteredRequirementsMatch} />
+                  <RequirementsMatchDisplay requirements={sortedRequirementsMatch} />
                 </div>
               )}
               
@@ -649,7 +668,7 @@ export default function JobDetailPanel({ job, onClose, onJobUpdated, onJobDelete
                     </div>
                   </div>
                   
-                  <RequirementsAssessment requirements={filteredRequirementsAssessment} />
+                  <RequirementsAssessment requirements={sortedRequirementsAssessment} />
                 </div>
               )}
             </TabsContent>
